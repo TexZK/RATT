@@ -1,0 +1,10 @@
+# Backup files
+*~
+*.?\#*
+
+# Compiler outputs
+*.mcs
+*.err
+src/*/obj
+*.mptags
+*.tagsrc
