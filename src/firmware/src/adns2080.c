@@ -11,14 +11,13 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
-#include "Compiler.h"
-#include "GenericTypeDefs.h"
-#include "HardwareProfile.h"
+#include "app.h"
 #include "TimeDelay.h"
-
+#include "usb/usb_user.h"
 #include "adns2080.h"
 
-#include <spi.h>	// FIXME: Hand-written code works better -.-''
+#include <spi.h>	// FIXME: Hand-written code works better >.<
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL DEFINITIONS
@@ -72,7 +71,6 @@ void Adns_Initialize( void )
 	adns_status.motionInt = 0;
 	adns_status.dataReady = 0;
 	
-	adns_serviceCalls = 0;
 	adns_deltaX = 0;
 	adns_deltaY = 0;
 	adns_x = 0;
@@ -126,13 +124,10 @@ void Adns_Service( void )
 		adns_status.motionInt = 0;		// Clear the motion flag
 		
 		Adns_ResetCommunication();
-		Adns_Select();
 		burst = Adns_BurstReadMotionDeltasBlocking();
-		Adns_Deselect();
 		
 		Adns_EnableInterrupt();
 		
-		adns_motion = burst.motion.bits;
 		adns_deltaY = burst.deltaY;
 		adns_deltaX = burst.deltaX;
 		
@@ -143,7 +138,7 @@ void Adns_Service( void )
 	
 	// Check if a HID packet can be sent
 	if ( adns_status.dataReady ) {
-		if ( USBTxReady() ) {
+		if ( Usb_TxReady() ) {
 			ADNS_HID_TX_DATA data;
 			
 			// Build the packet
@@ -154,7 +149,7 @@ void Adns_Service( void )
 			*((ADNS_HID_TX_DATA*)usb_txBuffer) = data;
 			
 			// Send the HID packet
-			USBTxBufferedPacket();
+			Usb_TxBufferedPacket();
 			
 			// Clear the delta state
 			Adns_DisableInterrupt();
@@ -230,12 +225,11 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	ADNS_BURST_MOTION_DELTAS result;
 	
 	ADNS_TRIS_MISO = 0;
-	WriteSPI( ADNS_REG_MOTION_BURST );
+	//WriteSPI( ADNS_REG_MOTION_BURST ); // TODO
 	Adns_AddressDataDelay();
 	OneUsDelay();	// FIXME
 	ADNS_TRIS_MISO = 1;
 	
-	result.motion.Val = ReadSPI();
 	result.deltaY = ReadSPI();
 	result.deltaX = ReadSPI();
 	

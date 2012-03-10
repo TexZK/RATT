@@ -1,22 +1,22 @@
 /*******************************************************************************
   File Information:
     FileName:     	usb_function_hid.h
-    Dependencies:	See INCLUDES section
-    Processor:		PIC18 or PIC24 USB Microcontrollers
-    Hardware:		The code is natively intended to be used on the following
-    				hardware platforms: PICDEMô FS USB Demo Board, 
+    Dependencies:   See INCLUDES section
+    Processor:      Microchip USB Microcontrollers
+    Hardware:       The code is natively intended to be used on the following
+    				hardware platforms: PICDEM FS USB Demo Board, 
     				PIC18F87J50 FS USB Plug-In Module, or
     				Explorer 16 + PIC24 USB PIM.  The firmware may be
     				modified for use on other USB platforms by editing the
     				HardwareProfile.h file.
-    Complier:  	Microchip C18 (for PIC18) or C30 (for PIC24)
-    Company:		Microchip Technology, Inc.
+    Complier:  	    Microchip C18, C30, C32
+    Company:        Microchip Technology, Inc.
     
     Software License Agreement:
     
     The software supplied herewith by Microchip Technology Incorporated
-    (the ìCompanyî) for its PICÆ Microcontroller is intended and
-    supplied to you, the Companyís customer, for use solely and
+    (the ‚ÄúCompany‚Äù) for its PIC¬Æ Microcontroller is intended and
+    supplied to you, the Company‚Äôs customer, for use solely and
     exclusively on Microchip PIC Microcontroller products. The
     software is owned by the Company and/or its supplier, and is
     protected under applicable copyright laws. All rights are reserved.
@@ -25,12 +25,20 @@
     civil liability for the breach of the terms and conditions of this
     license.
     
-    THIS SOFTWARE IS PROVIDED IN AN ìAS ISî CONDITION. NO WARRANTIES,
+    THIS SOFTWARE IS PROVIDED IN AN ‚ÄúAS IS‚Äù CONDITION. NO WARRANTIES,
     WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED
     TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
     PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. THE COMPANY SHALL NOT,
     IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR
-    CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.  
+    CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+
+  File Description:
+    
+    Change History:
+     Rev   Date         Description
+     1.0   11/19/2004   Initial release
+     2.1   02/26/2007   Updated for simplicity and to use common
+                        coding style
 
   Summary:
     This file contains all of functions, macros, definitions, variables,
@@ -125,6 +133,45 @@
 #define HID_PROTOCOL_KEYBOARD       0x01
 #define HID_PROTOCOL_MOUSE          0x02
 
+/********************************************************************
+	Function:
+		void USBCheckHIDRequest(void)
+
+ 	Summary:
+ 		This routine handles HID specific request that happen on EP0.
+        This function should be called from the USBCBCheckOtherReq() call back
+        function whenever implementing a HID device.
+
+ 	Description:
+ 		This routine handles HID specific request that happen on EP0.  These
+        include, but are not limited to, requests for the HID report
+        descriptors.  This function should be called from the
+        USBCBCheckOtherReq() call back function whenever using an HID device.
+
+        Typical Usage:
+        <code>
+        void USBCBCheckOtherReq(void)
+        {
+            //Since the stack didn't handle the request I need to check
+            //  my class drivers to see if it is for them
+            USBCheckHIDRequest();
+        }
+        </code>
+
+	PreCondition:
+		None
+
+	Parameters:
+		None
+
+	Return Values:
+		None
+
+	Remarks:
+		None
+
+ *******************************************************************/
+void USBCheckHIDRequest(void);
 
 /********************************************************************
     Function:
@@ -210,7 +257,10 @@
         None
         
     Parameters:
-        None
+        USB_HANDLE handle - the handle for the transfer in question.
+        The handle is returned by the HIDTxPacket() and HIDRxPacket()
+        functions.  Please insure that USB_HANDLE objects are initialized
+        to NULL.
         
     Return Values:
         TRUE - the HID handle is still busy
@@ -249,9 +299,9 @@
         None
         
     Parameters:
-        ep - the endpoint you want to send the data out of
-        data - pointer to the data that you wish to send
-        len - the length of the data that you wish to send
+        BYTE ep    - the endpoint you want to send the data out of
+        BYTE* data - pointer to the data that you wish to send
+        WORD len   - the length of the data that you wish to send
         
     Return Values:
         USB_HANDLE - a handle for the transfer.  This information
@@ -285,9 +335,9 @@
         None
         
     Parameters:
-        ep - the endpoint you want to receive the data into
-        data - pointer to where the data will go when it arrives
-        len - the length of the data that you wish to receive
+        BYTE ep    - the endpoint you want to receive the data into
+        BYTE* data - pointer to where the data will go when it arrives
+        WORD len   - the length of the data that you wish to receive
         
     Return Values:
         USB_HANDLE - a handle for the transfer.  This information
@@ -335,8 +385,5 @@ extern volatile BYTE CtrlTrfData[USB_EP0_BUFF_SIZE];
 #if !defined(__USB_DESCRIPTORS_C)
 extern ROM struct{BYTE report[HID_RPT01_SIZE];}hid_rpt01;
 #endif
-
-/** Section: PUBLIC PROTOTYPES **********************************************/
-void USBCheckHIDRequest(void);
 
 #endif //HID_H

@@ -93,10 +93,10 @@ Description:
 #if defined(__18CXX)
     #include "USB/usb_hal_pic18.h"
 #elif defined(__C30__)
-	#if defined(__dsPIC33EP512MU810__) 
+	#if defined(__dsPIC33E__) 
 	    #include "USB/usb_hal_dspic33E.h"
 	#elif defined(__PIC24E__)
-		#include "USB/usb_hal_pic24E.h"
+		#include "USB/usb_hal_pic24e.h"
 	#else
     #include "USB/usb_hal_pic24.h"
 	#endif

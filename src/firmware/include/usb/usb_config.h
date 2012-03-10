@@ -81,8 +81,7 @@
 
 //#define USB_POLLING
 #define USB_INTERRUPT
-#define	USB_INTERRUPT_PRIORITY		0
-
+#define	USB_INTERRUPT_PRIORITY	0
 
 /* Parameter definitions are defined in usb_device.h */
 #define USB_PULLUP_OPTION USB_PULLUP_ENABLE

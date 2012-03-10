@@ -223,63 +223,10 @@ typedef enum
 
 /** Function Prototypes **********************************************/
 
-/**************************************************************************
-  Function:
-        void USBDeviceTasks(void)
-    
-  Summary:
-    This function is the main state machine of the USB device side stack.
-    This function should be called periodically to receive and transmit
-    packets through the stack. This function should be called preferably
-    once every 100us during the enumeration process. After the enumeration
-    process this function still needs to be called periodically to respond
-    to various situations on the bus but is more relaxed in its time
-    requirements. This function should also be called at least as fast as
-    the OUT data expected from the PC.
 
-  Description:
-    This function is the main state machine of the USB device side stack.
-    This function should be called periodically to receive and transmit
-    packets through the stack. This function should be called preferably
-    once every 100us during the enumeration process. After the enumeration
-    process this function still needs to be called periodically to respond
-    to various situations on the bus but is more relaxed in its time
-    requirements. This function should also be called at least as fast as
-    the OUT data expected from the PC.
-
-    Typical usage:
-    <code>
-    void main(void)
-    {
-        USBDeviceInit()
-        while(1)
-        {
-            USBDeviceTasks();
-            if((USBGetDeviceState() \< CONFIGURED_STATE) ||
-               (USBIsDeviceSuspended() == TRUE))
-            {
-                //Either the device is not configured or we are suspended
-                //  so we don't want to do execute any application code
-                continue;   //go back to the top of the while loop
-            }
-            else
-            {
-                //Otherwise we are free to run user application code.
-                UserApplication();
-            }
-        }
-    }
-    </code>
-
-  Conditions:
-    None
-  Remarks:
-    This function should be called preferably once every 100us during the
-    enumeration process. After the enumeration process this function still
-    needs to be called periodically to respond to various situations on the
-    bus but is more relaxed in its time requirements.                      
-  **************************************************************************/
-void USBDeviceTasks(void);
+/******************************************************************************/
+/** External API Functions ****************************************************/
+/******************************************************************************/
 
 /**************************************************************************
     Function:
@@ -305,6 +252,856 @@ void USBDeviceTasks(void);
                                                           
   **************************************************************************/
 void USBDeviceInit(void);
+
+/**************************************************************************
+  Function:
+        void USBDeviceTasks(void)
+    
+  Summary:
+    This function is the main state machine/transaction handler of the USB 
+    device side stack.  When the USB stack is operated in "USB_POLLING" mode 
+    (usb_config.h user option) the USBDeviceTasks() function should be called 
+    periodically to receive and transmit packets through the stack. This 
+    function also takes care of control transfers associated with the USB 
+    enumeration process, and detecting various USB events (such as suspend).  
+    This function should be called at least once every 1.8ms during the USB 
+    enumeration process. After the enumeration process is complete (which can 
+    be determined when USBGetDeviceState() returns CONFIGURED_STATE), the 
+    USBDeviceTasks() handler may be called the faster of: either once 
+    every 9.8ms, or as often as needed to make sure that the hardware USTAT 
+    FIFO never gets full.  A good rule of thumb is to call USBDeviceTasks() at
+    a minimum rate of either the frequency that USBTransferOnePacket() gets 
+    called, or, once/1.8ms, whichever is faster.  See the inline code comments 
+    near the top of usb_device.c for more details about minimum timing 
+    requirements when calling USBDeviceTasks().
+    
+    When the USB stack is operated in "USB_INTERRUPT" mode, it is not necessary
+    to call USBDeviceTasks() from the main loop context.  In the USB_INTERRUPT
+    mode, the USBDeviceTasks() handler only needs to execute when a USB 
+    interrupt occurs, and therefore only needs to be called from the interrupt 
+    context.
+
+  Description:
+    This function is the main state machine/transaction handler of the USB 
+    device side stack.  When the USB stack is operated in "USB_POLLING" mode 
+    (usb_config.h user option) the USBDeviceTasks() function should be called 
+    periodically to receive and transmit packets through the stack. This 
+    function also takes care of control transfers associated with the USB 
+    enumeration process, and detecting various USB events (such as suspend).  
+    This function should be called at least once every 1.8ms during the USB 
+    enumeration process. After the enumeration process is complete (which can 
+    be determined when USBGetDeviceState() returns CONFIGURED_STATE), the 
+    USBDeviceTasks() handler may be called the faster of: either once 
+    every 9.8ms, or as often as needed to make sure that the hardware USTAT 
+    FIFO never gets full.  A good rule of thumb is to call USBDeviceTasks() at
+    a minimum rate of either the frequency that USBTransferOnePacket() gets 
+    called, or, once/1.8ms, whichever is faster.  See the inline code comments 
+    near the top of usb_device.c for more details about minimum timing 
+    requirements when calling USBDeviceTasks().
+    
+    When the USB stack is operated in "USB_INTERRUPT" mode, it is not necessary
+    to call USBDeviceTasks() from the main loop context.  In the USB_INTERRUPT
+    mode, the USBDeviceTasks() handler only needs to execute when a USB 
+    interrupt occurs, and therefore only needs to be called from the interrupt 
+    context.
+
+    Typical usage:
+    <code>
+    void main(void)
+    {
+        USBDeviceInit();
+        while(1)
+        {
+            USBDeviceTasks(); //Takes care of enumeration and other USB events
+            if((USBGetDeviceState() \< CONFIGURED_STATE) ||
+               (USBIsDeviceSuspended() == TRUE))
+            {
+                //Either the device is not configured or we are suspended,
+                // so we don't want to execute any USB related application code
+                continue;   //go back to the top of the while loop
+            }
+            else
+            {
+                //Otherwise we are free to run USB and non-USB related user 
+                //application code.
+                UserApplication();
+            }
+        }
+    }
+    </code>
+
+  Precondition:
+    Make sure the USBDeviceInit() function has been called prior to calling
+    USBDeviceTasks() for the first time.
+  Remarks:
+    USBDeviceTasks() does not need to be called while in the USB suspend mode, 
+    if the user application firmware in the USBCBSuspend() callback function
+    enables the ACTVIF USB interrupt source and put the microcontroller into 
+    sleep mode.  If the application firmware decides not to sleep the 
+    microcontroller core during USB suspend (ex: continues running at full 
+    frequency, or clock switches to a lower frequency), then the USBDeviceTasks()
+    function must still be called periodically, at a rate frequent enough to 
+    ensure the 10ms resume recovery interval USB specification is met.  Assuming
+    a worst case primary oscillator and PLL start up time of <5ms, then 
+    USBDeviceTasks() should be called once every 5ms in this scenario.
+   
+    When the USB cable is detached, or the USB host is not actively powering 
+    the VBUS line to +5V nominal, the application firmware does not always have 
+    to call USBDeviceTasks() frequently, as no USB activity will be taking 
+    place.  However, if USBDeviceTasks() is not called regularly, some 
+    alternative means of promptly detecting when VBUS is powered (indicating 
+    host attachment), or not powered (host powered down or USB cable unplugged)
+    is still needed.  For self or dual self/bus powered USB applications, see 
+    the USBDeviceAttach() and USBDeviceDetach() API documentation for additional 
+    considerations.
+                     
+  **************************************************************************/
+void USBDeviceTasks(void);
+
+
+/*******************************************************************************
+  Function:
+        void USBEnableEndpoint(BYTE ep, BYTE options)
+    
+  Summary:
+    This function will enable the specified endpoint with the specified
+    options
+  Description:
+    This function will enable the specified endpoint with the specified
+    options.
+    
+    Typical Usage:
+    <code>
+    void USBCBInitEP(void)
+    {
+        USBEnableEndpoint(MSD_DATA_IN_EP,USB_IN_ENABLED|USB_OUT_ENABLED|USB_HANDSHAKE_ENABLED|USB_DISALLOW_SETUP);
+        USBMSDInit();
+    }
+    </code>
+    
+    In the above example endpoint number MSD_DATA_IN_EP is being configured
+    for both IN and OUT traffic with handshaking enabled. Also since
+    MSD_DATA_IN_EP is not endpoint 0 (MSD does not allow this), then we can
+    explicitly disable SETUP packets on this endpoint.
+  Conditions:
+    None
+  Input:
+    BYTE ep -       the endpoint to be configured
+    BYTE options -  optional settings for the endpoint. The options should
+                    be ORed together to form a single options string. The
+                    available optional settings for the endpoint. The
+                    options should be ORed together to form a single options
+                    string. The available options are the following\:
+                    * USB_HANDSHAKE_ENABLED enables USB handshaking (ACK,
+                      NAK)
+                    * USB_HANDSHAKE_DISABLED disables USB handshaking (ACK,
+                      NAK)
+                    * USB_OUT_ENABLED enables the out direction
+                    * USB_OUT_DISABLED disables the out direction
+                    * USB_IN_ENABLED enables the in direction
+                    * USB_IN_DISABLED disables the in direction
+                    * USB_ALLOW_SETUP enables control transfers
+                    * USB_DISALLOW_SETUP disables control transfers
+                    * USB_STALL_ENDPOINT STALLs this endpoint
+  Return:
+    None
+  Remarks:
+    None                                                                                                          
+  *****************************************************************************/
+void USBEnableEndpoint(BYTE ep, BYTE options);
+
+
+/*************************************************************************
+  Function:
+    USB_HANDLE USBTransferOnePacket(BYTE ep, BYTE dir, BYTE* data, BYTE len)
+    
+  Summary:
+    Transfers a single packet (one transaction) of data on the USB bus.
+
+  Description:
+    The USBTransferOnePacket() function prepares a USB endpoint
+    so that it may send data to the host (an IN transaction), or 
+    receive data from the host (an OUT transaction).  The 
+    USBTransferOnePacket() function can be used both to receive	and 
+    send data to the host.  This function is the primary API function 
+    provided by the USB stack firmware for sending or receiving application 
+    data over the USB port.  
+
+    The USBTransferOnePacket() is intended for use with all application 
+    endpoints.  It is not used for sending or receiving applicaiton data 
+    through endpoint 0 by using control transfers.  Separate API 
+    functions, such as USBEP0Receive(), USBEP0SendRAMPtr(), and
+    USBEP0SendROMPtr() are provided for this purpose.
+
+    The	USBTransferOnePacket() writes to the Buffer Descriptor Table (BDT)
+    entry associated with an endpoint buffer, and sets the UOWN bit, which 
+    prepares the USB hardware to allow the transaction to complete.  The 
+    application firmware can use the USBHandleBusy() macro to check the 
+    status of the transaction, to see if the data has been successfully 
+    transmitted yet.
+
+
+    Typical Usage
+    <code>
+    //make sure that the we are in the configured state
+    if(USBGetDeviceState() == CONFIGURED_STATE)
+    {
+        //make sure that the last transaction isn't busy by checking the handle
+        if(!USBHandleBusy(USBInHandle))
+        {
+	        //Write the new data that we wish to send to the host to the INPacket[] array
+	        INPacket[0] = USEFUL_APPLICATION_VALUE1;
+	        INPacket[1] = USEFUL_APPLICATION_VALUE2;
+	        //INPacket[2] = ... (fill in the rest of the packet data)
+	      
+            //Send the data contained in the INPacket[] array through endpoint "EP_NUM"
+            USBInHandle = USBTransferOnePacket(EP_NUM,IN_TO_HOST,(BYTE*)&INPacket[0],sizeof(INPacket));
+        }
+    }
+    </code>
+
+  Conditions:
+    Before calling USBTransferOnePacket(), the following should be true.
+    1.  The USB stack has already been initialized (USBDeviceInit() was called).
+    2.  A transaction is not already pending on the specified endpoint.  This
+        is done by checking the previous request using the USBHandleBusy() 
+        macro (see the typical usage example).
+    3.  The host has already sent a set configuration request and the 
+        enumeration process is complete.
+        This can be checked by verifying that the USBGetDeviceState() 
+        macro returns "CONFIGURED_STATE", prior to calling 
+        USBTransferOnePacket().
+ 					
+  Input:
+    BYTE ep - The endpoint number that the data will be transmitted or 
+	          received on
+    BYTE dir - The direction of the transfer
+               This value is either OUT_FROM_HOST or IN_TO_HOST
+    BYTE* data - For IN transactions: pointer to the RAM buffer containing 
+                 the data to be sent to the host.  For OUT transactions: pointer
+                 to the RAM buffer that the received data should get written to.
+   BYTE len - Length of the data needing to be sent (for IN transactions).
+              For OUT transactions, the len parameter should normally be set
+              to the endpoint size specified in the endpoint descriptor.    
+
+  Return Values:
+    USB_HANDLE - handle to the transfer.  The handle is a pointer to 
+                 the BDT entry associated with this transaction.  The
+                 status of the transaction (ex: if it is complete or still
+                 pending) can be checked using the USBHandleBusy() macro
+                 and supplying the USB_HANDLE provided by
+                 USBTransferOnePacket().
+
+  Remarks:
+    If calling the USBTransferOnePacket() function from within the USBCBInitEP()
+    callback function, the set configuration is still being processed and the
+    USBDeviceState may not be == CONFIGURED_STATE yet.  In this	special case, 
+    the USBTransferOnePacket() may still be called, but make sure that the 
+    endpoint has been enabled and initialized by the USBEnableEndpoint() 
+    function first.  
+    
+  *************************************************************************/
+USB_HANDLE USBTransferOnePacket(BYTE ep,BYTE dir,BYTE* data,BYTE len);
+
+/********************************************************************
+    Function:
+        void USBStallEndpoint(BYTE ep, BYTE dir)
+        
+    Summary:
+         Configures the specified endpoint to send STALL to the host, the next
+         time the host tries to access the endpoint.
+    
+    PreCondition:
+        None
+        
+    Parameters:
+        BYTE ep - The endpoint number that should be configured to send STALL.
+        BYTE dir - The direction of the endpoint to STALL, either 
+                   IN_TO_HOST or OUT_FROM_HOST.
+        
+    Return Values:
+        None
+        
+    Remarks:
+        None
+
+ *******************************************************************/
+void USBStallEndpoint(BYTE ep, BYTE dir);
+/**************************************************************************
+    Function:
+        void USBCancelIO(BYTE endpoint)
+    
+    Description:
+        This function cancels the transfers pending on the specified endpoint.
+        This function can only be used after a SETUP packet is received and 
+        before that setup packet is handled.  This is the time period in which
+        the EVENT_EP0_REQUEST is thrown, before the event handler function
+        returns to the stack.
+
+    Precondition:
+  
+    Parameters:
+        BYTE endpoint - the endpoint number you wish to cancel the transfers for
+     
+    Return Values:
+        None
+        
+    Remarks:
+        None
+                                                          
+  **************************************************************************/
+void USBCancelIO(BYTE endpoint);
+
+/**************************************************************************
+    Function:
+        void USBDeviceDetach(void)
+   
+    Summary:
+        This function configures the USB module to "soft detach" itself from
+        the USB host.
+        
+    Description:
+        This function configures the USB module to perform a "soft detach"
+        operation, by disabling the D+ (or D-) ~1.5k pull up resistor, which
+        lets the host know the device is present and attached.  This will make
+        the host think that the device has been unplugged.  This is potentially
+        useful, as it allows the USB device to force the host to re-enumerate
+        the device (on the firmware has re-enabled the USB module/pull up, by
+        calling USBDeviceAttach(), to "soft re-attach" to the host).
+        
+    Precondition:
+        Should only be called when USB_INTERRUPT is defined.  See remarks
+        section if USB_POLLING mode option is being used (usb_config.h option).
+
+        Additionally, this function should only be called from the main() loop 
+        context.  Do not call this function from within an interrupt handler, as 
+        this function may modify global interrupt enable bits and settings.
+        
+    Parameters:
+        None
+     
+    Return Values:
+        None
+        
+    Remarks:
+        If the application firmware calls USBDeviceDetach(), it is strongly
+        recommended that the firmware wait at least >= 80ms before calling
+        USBDeviceAttach().  If the firmeware performs a soft detach, and then
+        re-attaches too soon (ex: after a few micro seconds for instance), some
+        hosts may interpret this as an unexpected "glitch" rather than as a
+        physical removal/re-attachment of the USB device.  In this case the host
+        may simply ignore the event without re-enumerating the device.  To 
+        ensure that the host properly detects and processes the device soft
+        detach/re-attach, it is recommended to make sure the device remains 
+        detached long enough to mimic a real human controlled USB 
+        unplug/re-attach event (ex: after calling USBDeviceDetach(), do not
+        call USBDeviceAttach() for at least 80+ms, preferrably longer.
+        
+        Neither the USBDeviceDetach() or USBDeviceAttach() functions are blocking
+        or take long to execute.  It is the application firmware's 
+        responsibility for adding the 80+ms delay, when using these API 
+        functions.
+        
+        Note: The Windows plug and play event handler processing is fairly 
+        slow, especially in certain versions of Windows, and for certain USB
+        device classes.  It has been observed that some device classes need to
+        provide even more USB detach dwell interval (before calling 
+        USBDeviceAttach()), in order to work correctly after re-enumeration.
+        If the USB device is a CDC class device, it is recommended to wait
+        at least 1.5 seconds or longer, before soft re-attaching to the host,
+        to provide the plug and play event handler enough time to finish 
+        processing the removal event, before the re-attach occurs.
+        
+        If the application is using the USB_POLLING mode option, then the 
+        USBDeviceDetach() and USBDeviceAttach() functions are not available.  
+        In this mode, the USB stack relies on the "#define USE_USB_BUS_SENSE_IO" 
+        and "#define USB_BUS_SENSE" options in the 
+        HardwareProfile – [platform name].h file. 
+
+        When using the USB_POLLING mode option, and the 
+        "#define USE_USB_BUS_SENSE_IO" definition has been commented out, then 
+        the USB stack assumes that it should always enable the USB module at 
+        pretty much all times.  Basically, anytime the application firmware 
+        calls USBDeviceTasks(), the firmware will automatically enable the USB 
+        module.  This mode would typically be selected if the application was 
+        designed to be a purely bus powered device.  In this case, the 
+        application is powered from the +5V VBUS supply from the USB port, so 
+        it is correct and sensible in this type of application to power up and 
+        turn on the USB module, at anytime that the microcontroller is 
+        powered (which implies the USB cable is attached and the host is also 
+        powered).
+
+        In a self powered application, the USB stack is designed with the 
+        intention that the user will enable the "#define USE_USB_BUS_SENSE_IO" 
+        option in the HardwareProfile – [platform name].h file.  When this 
+        option is defined, then the USBDeviceTasks() function will automatically 
+        check the I/O pin port value of the designated pin (based on the 
+        #define USB_BUS_SENSE option in the HardwareProfile – [platform name].h 
+        file), every time the application calls USBDeviceTasks().  If the 
+        USBDeviceTasks() function is executed and finds that the pin defined by 
+        the #define USB_BUS_SENSE is in a logic low state, then it will 
+        automatically disable the USB module and tri-state the D+ and D- pins.  
+        If however the USBDeviceTasks() function is executed and finds the pin 
+        defined by the #define USB_BUS_SENSE is in a logic high state, then it 
+        will automatically enable the USB module, if it has not already been 
+        enabled.        
+                                                          
+  **************************************************************************/
+void USBDeviceDetach(void);
+
+/*DOM-IGNORE-BEGIN*/
+#if !defined(USB_INTERRUPT)
+    #define USBDeviceDetach() 
+#endif
+/*DOM-IGNORE-END*/
+
+/**************************************************************************
+    Function:
+        void USBDeviceAttach(void)
+    
+    Summary:
+        Checks if VBUS is present, and that the USB module is not already 
+        initalized, and if so, enables the USB module so as to signal device 
+        attachment to the USB host.   
+
+    Description:
+        This function indicates to the USB host that the USB device has been
+        attached to the bus.  This function needs to be called in order for the
+        device to start to enumerate on the bus.
+                
+    Precondition:
+        Should only be called when USB_INTERRUPT is defined.  Also, should only 
+        be called from the main() loop context.  Do not call USBDeviceAttach()
+        from within an interrupt handler, as the USBDeviceAttach() function
+        may modify global interrupt enable bits and settings.
+
+        For normal USB devices:
+        Make sure that if the module was previously on, that it has been turned off 
+        for a long time (ex: 100ms+) before calling this function to re-enable the module.
+        If the device turns off the D+ (for full speed) or D- (for low speed) ~1.5k ohm
+        pull up resistor, and then turns it back on very quickly, common hosts will sometimes 
+        reject this event, since no human could ever unplug and reattach a USB device in a 
+        microseconds (or nanoseconds) timescale.  The host could simply treat this as some kind 
+        of glitch and ignore the event altogether.  
+    Parameters:
+        None
+     
+    Return Values:
+        None       
+    
+    Remarks: 
+		See also the USBDeviceDetach() API function documentation.                                                 
+****************************************************************************/
+void USBDeviceAttach(void);
+
+/*DOM-IGNORE-BEGIN*/
+#if !defined(USB_INTERRUPT)
+    #define USBDeviceAttach() 
+#endif
+/*DOM-IGNORE-END*/
+
+
+/*******************************************************************************
+  Function: void USBCtrlEPAllowStatusStage(void);
+    
+  Summary: This function prepares the proper endpoint 0 IN or endpoint 0 OUT 
+            (based on the controlTransferState) to allow the status stage packet
+            of a control transfer to complete.  This function gets used 
+            internally by the USB stack itself, but it may also be called from
+            the application firmware, IF the application firmware called
+            the USBDeferStatusStage() function during the initial processing
+            of the control transfer request.  In this case, the application
+            must call the USBCtrlEPAllowStatusStage() once, after it has fully
+            completed processing and handling the data stage portion of the
+            request.  
+            
+            If the application firmware has no need for delaying control 
+            transfers, and therefore never calls USBDeferStatusStage(), then the
+            application firmware should not call USBCtrlEPAllowStatusStage().
+            
+  Description:
+    
+  Conditions:
+    None
+
+  Input:
+
+  Return:
+
+  Remarks:
+    None                                                                                                          
+  *****************************************************************************/
+void USBCtrlEPAllowStatusStage(void);
+
+
+
+/*******************************************************************************
+  Function: void USBCtrlEPAllowDataStage(void);
+    
+  Summary: This function allows the data stage of either a host-to-device or
+            device-to-host control transfer (with data stage) to complete.
+            This function is meant to be used in conjunction with either the
+            USBDeferOUTDataStage() or USBDeferINDataStage().  If the firmware
+            does not call either USBDeferOUTDataStage() or USBDeferINDataStage(),
+            then the firmware does not need to manually call 
+            USBCtrlEPAllowDataStage(), as the USB stack will call this function
+            instead.
+     
+  Description:
+    
+  Conditions: A control transfer (with data stage) should already be pending, 
+                if the firmware calls this function.  Additionally, the firmware
+                should have called either USBDeferOUTDataStage() or 
+                USBDeferINDataStage() at the start of the control transfer, if
+                the firmware will be calling this function manually.
+
+  Input:
+
+  Return:
+
+  Remarks: 
+  *****************************************************************************/
+void USBCtrlEPAllowDataStage(void);
+
+
+/*******************************************************************************
+  Function: void USBDeferOUTDataStage(void);
+    
+  Summary: This function will cause the USB hardware to continuously NAK the
+           OUT data packets sent from the host, during the data stage of a
+           device to host control transfer.  This allows the firmware more time
+           to prepare the RAM buffer that will eventually be used to receive the
+           data from the host.  This is also useful, if the firmware wishes to
+           receive the OUT data in a different context than what the
+           USBDeviceTasks() function executes at.
+           
+           Calling this function (macro) will assert ownership of the currently
+           pending control transfer.  Therefore, the USB stack will not STALL
+           when it reaches the data stage of the control transfer, even if the
+           firmware has not (yet) called the USBEP0Receive() API function.  
+           However, the application firware must still (eventually, once it is 
+           ready) call one of the aforementioned API function.
+           
+           Example Usage:
+           
+           1.  Host sends a SETUP packet to the device, requesting a host to 
+                device control transfer, with data stage (OUT data packets).
+           2.  USBDeviceTasks() executes, and then calls the USBCBCheckOtherReq()
+                callback event handler.  The USBCBCheckOtherReq() calls the
+                application specific/device class specific handler that detects
+                the type of control transfer.
+           3.  If the firmware needs more time before it wishes to receive the 
+                first OUT data packet, or, if the firmware wishes to process the 
+                command in a different context, then it may call 
+                USBDeferOUTDataStage(), in the context of the 
+                USBCBCheckOtherReq() handler function.
+           4.  If the firmware called USBDeferOUTDataStage() in step #3 above,
+                then the hardware will NAK the OUT data packets sent by the
+                host, for the OUT data stage.
+           5.  Once the firmware is ready, it should then call USBEP0Receive(), 
+                to prepare the USB stack to receive the OUT data from the host,
+                and to write it to the user specified buffer.
+           6.  The firmware should now call USBCtrlEPAllowDataStage().  This
+                will allow the data stage to complete.  Once all OUT data has
+                been received, the user callback function (provided by the
+                function pointer provided when calling USBEP0Receive()) will
+                get called.            
+           7.  Once all data has been received from the host, the status stage 
+                (a 0-byte IN packet) will complete automatically (assuming the 
+                firmware did not call USBDeferStatusStage() during step #3).
+            
+     
+  Description:
+    
+  Conditions: Before calling USBDeferOUTDataStage(), the firmware should first
+                verify that the control transfer has a data stage, and that
+                it is of type host-to-device (OUT).
+
+  Input:
+
+  Return:
+
+  Remarks: Section 9.2.6 of the official USB 2.0 specifications indicates that
+           the USB device must be able to receive all bytes and complete the
+           control transfer within a maximum of 5 seconds.
+            
+           If the firmware calls USBDeferOUTDataStage(), it must eventually call
+           USBEP0Receive(), and then call USBCtrlEPAllowDataStage().  If it does 
+           not do this, the control transfer will never be able to complete.
+           This will break the USB connection, as the host needs to be able to
+           communicate over EP0, in order to perform basic tasks including 
+           enumeration. 
+           
+           The firmware should never call both USBDeferINDataStage() and 
+           USBDeferOUTDataStage() during the same control transfer.  These 
+           functions are mutually exclusive (a control transfer with data stage
+           can never contain both IN and OUT data packets during the data stage).
+  *****************************************************************************/
+void USBDeferOUTDataStage(void);
+extern volatile BOOL USBDeferOUTDataStagePackets;
+/*DOM-IGNORE-BEGIN*/
+#define USBDeferOUTDataStage()   {USBDeferOUTDataStagePackets = TRUE; outPipes[0].info.bits.busy = 1;}
+/*DOM-IGNORE-END*/
+
+/*******************************************************************************
+  Function: void USBDeferStatusStage(void);
+    
+  Summary: Calling this function will prevent the USB stack from automatically
+            enabling the status stage for the currently pending control transfer
+            from completing immediately after all data bytes have been sent or 
+            received.  This is useful if a class handler or USB application 
+            firmware project uses control transfers for sending/receiving data 
+            over EP0, but requires time in order to finish processing and/or to 
+            consume the data.
+            
+            For example: Consider an application which receives OUT data from the
+            USB host, through EP0 using control transfers.  Now assume that this
+            application wishes to do something time consuming with this data (ex:
+            transmit it to and save it to an external EEPROM device, connected 
+            via SPI/I2C/etc.).  In this case, it would typically be desireable to
+            defer allowing the USB status stage of the control transfer to complete,
+            until after the data has been fully sent to the EEPROM device and saved.
+            
+            If the USB class handler firmware that processes the control transfer
+            SETUP packet determines that it will need extra time to complete the
+            control transfer, it may optionally call USBDeferStatusStage().  If it
+            does so, it is then the responsibility of the application firmware to
+            eventually call USBCtrlEPAllowStatusStage(), once the firmware has
+            finished processing the data associated with the control transfer.
+            
+            If the firmware call USBDeferStatusStage(), but never calls 
+            USBCtrlEPAllowStatusStage(), then one of two possibilities will occur.
+            
+            1.  If the "USB_ENABLE_STATUS_STAGE_TIMEOUTS" option is commented in
+                usb_config.h, then the status stage of the control transfer will
+                never be able to complete.  This is an error case and should be
+                avoided.
+            2.  If the "USB_ENABLE_STATUS_STAGE_TIMEOUTS" option is enabled in 
+                usb_config.h, then the USBDeviceTasks() function will 
+                automatically call USBCtrlEPAllowStatusStage(), after the 
+                "USB_STATUS_STAGE_TIMEOUT" has elapsed, since the last quanta of
+                "progress" has occurred in the control transfer.  Progress is 
+                defined as the last successful transaction completing on EP0 IN or
+                EP0 OUT.
+                Although the timeouts feature allows the status stage to
+                [eventually] complete, it is still preferable to manually call 
+                USBCtrlEPAllowStatusStage() after the application firmware has
+                finished processing/consuming the control transfer data, as this
+                will allow for much faster processing of control transfers, and
+                therefore much higher data rates and better user responsiveness.
+  Description:
+    
+  Conditions:
+    None
+
+  Input:
+
+  Return:
+
+  Remarks:  If this function is called, is should get called after the SETUP
+            packet has arrived (the control transfer has started), but before
+            the USBCtrlEPServiceComplete() function has been called by the USB
+            stack.  Therefore, the normal place to call USBDeferStatusStage()
+            would be from within the USBCBCheckOtherReq() handler context.  For
+            example, in a HID application using control transfers, the
+            USBDeferStatusStage() function would be called from within the
+            USER_GET_REPORT_HANDLER or USER_SET_REPORT_HANDLER functions.                                                                                                                
+  *****************************************************************************/
+void USBDeferStatusStage(void);
+extern volatile BOOL USBDeferStatusStagePacket;
+/*DOM-IGNORE-BEGIN*/
+#define USBDeferStatusStage()   {USBDeferStatusStagePacket = TRUE;}
+/*DOM-IGNORE-END*/
+
+
+/*******************************************************************************
+  Function: BOOL USBOUTDataStageDeferred(void);
+    
+  Summary: Returns TRUE if a control transfer with OUT data stage is pending,
+            and the firmware has called USBDeferOUTDataStage(), but has not
+            yet called USBCtrlEPAllowDataStage().
+           Returns FALSE if a control transfer with OUT data stage is either
+            not pending, or the firmware did not call USBDeferOUTDataStage()
+            at the start of the control transfer.
+            
+           This function (macro) would typically be used in the case where the
+           USBDeviceTasks() function executes in the interrupt context (ex:
+           USB_INTERRUPT option selected in usb_config.h), but the firmware
+           wishes to take care of handling the data stage of the control transfer
+           in the main loop context.  
+           
+           In this scenario, typical usage would be:
+           1.  Host starts a control transfer with OUT data stage.
+           2.  USBDeviceTasks() (in this scenario, interrupt context) executes.
+           3.  USBDeviceTasks() calls USBCBCheckOtherReq(), which in turn
+                determines that the control transfer is class specific, with
+                OUT data stage.
+           4.  The user code in USBCBCheckOtherReq() (also in interrupt context,
+                since it is called from USBDeviceTasks(), and therefore executes
+                at the same priority/context) calls USBDeferOUTDataStage().
+           
+           5.  Meanwhile, in the main loop context, a polling handler may be 
+                periodically checking if(USBOUTDataStageDeferred() == TRUE).
+                Ordinarily, it would evaluate false, but when a control transfer
+                becomes pending, and after the USBDeferOUTDataStage() macro has
+                been called (ex: in the interrupt context), the if() statement
+                will evaluate true.  In this case, the main loop context can then
+                take care of receiving the data, by calling USBEP0Receive() and
+                USBCtrlEPAllowDataStage().
+     
+  Description:
+    
+  Conditions: 
+
+  Input:
+
+  Return:
+
+  Remarks: 
+  *****************************************************************************/
+BOOL USBOUTDataStageDeferred(void);
+/*DOM-IGNORE-BEGIN*/
+#define USBOUTDataStageDeferred() USBDeferOUTDataStagePackets
+/*DOM-IGNORE-END*/
+
+/*******************************************************************************
+  Function: void USBDeferINDataStage(void);
+    
+  Summary: This function will cause the USB hardware to continuously NAK the
+           IN token packets sent from the host, during the data stage of a
+           device to host control transfer.  This allows the firmware more time
+           to process and prepare the IN data packets that will eventually be
+           sent to the host.  This is also useful, if the firmware needs to
+           process/prepare the IN data in a different context than what the
+           USBDeviceTasks() function executes at.
+           
+           Calling this function (macro) will assert ownership of the currently
+           pending control transfer.  Therefore, the USB stack will not STALL
+           when it reaches the data stage of the control transfer, even if the
+           firmware has not (yet) called the USBEP0SendRAMPtr() or 
+           USBEP0SendROMPtr() API function.  However, the application firware 
+           must still (eventually, once it is ready) call one of the 
+           aforementioned API functions.
+           
+           Example Usage:
+           
+           1.  Host sends a SETUP packet to the device, requesting a device to 
+                host control transfer, with data stage.
+           2.  USBDeviceTasks() executes, and then calls the USBCBCheckOtherReq()
+                callback event handler.  The USBCBCheckOtherReq() calls the
+                application specific/device class specific handler that detects
+                the type of control transfer.
+           3.  If the firmware needs more time to prepare the first IN data packet,
+                or, if the firmware wishes to process the command in a different
+                context (ex: if USBDeviceTasks() executes as an interrupt handler,
+                but the IN data stage data needs to be prepared in the main loop
+                context), then it may call USBDeferINDataStage(), in the context
+                of the USBCBCheckOtherReq() handler function.
+           4.  If the firmware called USBDeferINDataStage() in step #3 above,
+                then the hardware will NAK the IN token packets sent by the
+                host, for the IN data stage.
+           5.  Once the firmware is ready, and has successfully prepared the
+                data to be sent to the host in fulfillment of the control
+                transfer, it should then call USBEP0SendRAMPtr() or
+                USBEP0SendROMPtr(), to prepare the USB stack to know how many
+                bytes to send to the host, and from what source location.
+           6.  The firmware should now call USBCtrlEPAllowDataStage().  This
+                will allow the data stage to complete.  The USB stack will send
+                the data buffer specified by the USBEP0SendRAMPtr() or 
+                USBEP0SendROMPtr() function, when it was called.
+           7.  Once all data has been sent to the host, or if the host performs
+                early termination, the status stage (a 0-byte OUT packet) will
+                complete automatically (assuming the firmware did not call
+                USBDeferStatusStage() during step #3).
+            
+     
+  Description:
+    
+  Conditions: Before calling USBDeferINDataStage(), the firmware should first
+                verify that the control transfer has a data stage, and that
+                it is of type device-to-host (IN).
+
+  Input:
+
+  Return:
+
+  Remarks: Section 9.2.6 of the official USB 2.0 specifications indicates that
+            the USB device must return the first IN data packet within 500ms
+            of the start of the control transfer.  In order to meet this
+            specification, the firmware must call USBEP0SendRAMPtr() or
+            USBEP0SendROMPtr(), and then call USBCtrlEPAllowDataStage(), in
+            less than 500ms from the start of the control transfer.    
+            
+           If the firmware calls USBDeferINDataStage(), it must eventually call
+           USBEP0SendRAMPtr() or USBEP0SendROMPtr(), and then call 
+           USBCtrlEPAllowDataStage().  If it does not do this, the control
+           transfer will never be able to complete.
+           
+           The firmware should never call both USBDeferINDataStage() and 
+           USBDeferOUTDataStage() during the same control transfer.  These 
+           functions are mutually exclusive (a control transfer with data stage
+           can never contain both IN and OUT data packets during the data stage).
+  *****************************************************************************/
+void USBDeferINDataStage(void);
+extern volatile BOOL USBDeferINDataStagePackets;
+/*DOM-IGNORE-BEGIN*/
+#define USBDeferINDataStage()   {USBDeferINDataStagePackets = TRUE; inPipes[0].info.bits.busy = 1;}
+/*DOM-IGNORE-END*/
+
+
+
+/*******************************************************************************
+  Function: BOOL USBINDataStageDeferred(void);
+    
+  Summary: Returns TRUE if a control transfer with IN data stage is pending,
+            and the firmware has called USBDeferINDataStage(), but has not
+            yet called USBCtrlEPAllowDataStage().
+           Returns FALSE if a control transfer with IN data stage is either
+            not pending, or the firmware did not call USBDeferINDataStage()
+            at the start of the control transfer.
+            
+           This function (macro) would typically be used in the case where the
+           USBDeviceTasks() function executes in the interrupt context (ex:
+           USB_INTERRUPT option selected in usb_config.h), but the firmware
+           wishes to take care of handling the data stage of the control transfer
+           in the main loop context.  
+           
+           In this scenario, typical usage would be:
+           1.  Host starts a control transfer with IN data stage.
+           2.  USBDeviceTasks() (in this scenario, interrupt context) executes.
+           3.  USBDeviceTasks() calls USBCBCheckOtherReq(), which in turn
+                determines that the control transfer is class specific, with
+                IN data stage.
+           4.  The user code in USBCBCheckOtherReq() (also in interrupt context,
+                since it is called from USBDeviceTasks(), and therefore executes
+                at the same priority/context) calls USBDeferINDataStage().
+           
+           5.  Meanwhile, in the main loop context, a polling handler may be 
+                periodically checking if(USBINDataStageDeferred() == TRUE).
+                Ordinarily, it would evaluate false, but when a control transfer
+                becomes pending, and after the USBDeferINDataStage() macro has
+                been called (ex: in the interrupt context), the if() statement
+                will evaluate true.  In this case, the main loop context can then
+                take care of sending the data (when ready), by calling 
+                USBEP0SendRAMPtr() or USBEP0SendROMPtr() and 
+                USBCtrlEPAllowDataStage().
+     
+  Description:
+    
+  Conditions: 
+
+  Input:
+
+  Return:
+
+  Remarks: 
+  *****************************************************************************/
+BOOL USBINDataStageDeferred(void);
+/*DOM-IGNORE-BEGIN*/
+#define USBINDataStageDeferred() USBDeferINDataStagePackets
+/*DOM-IGNORE-END*/
+
+
 
 /********************************************************************
   Function:
@@ -431,19 +1228,25 @@ USB_DEVICE_STATE USBGetDeviceState(void);
 #define USBGetDeviceState() USBDeviceState
 /*DOM-IGNORE-END*/
 
+
+
 /***************************************************************************
   Function:
         BOOL USBGetSuspendState(void)
     
   Summary:
-    This function indicates if this device is currently suspended. When a
-    device is suspended it will not be able to transfer data over the bus.
+    This function indicates if the USB port that this device is attached to is 
+    currently suspended. When suspended, it will not be able to transfer data 
+    over the bus.
   Description:
-    This function indicates if this device is currently suspended. When a
-    device is suspended it will not be able to transfer data over the bus.
+    This function indicates if the USB port that this device is attached to is 
+    currently suspended. When suspended, it will not be able to transfer data 
+    over the bus.
     This function can be used by the application to skip over section of
     code that do not need to exectute if the device is unable to send data
-    over the bus.
+    over the bus.  This function can also be used to help determine when it is 
+    legal to perform USB remote wakeup signalling, for devices supporting this
+    feature.  
     
     Typical usage:
     <code>
@@ -454,7 +1257,7 @@ USB_DEVICE_STATE USBGetDeviceState(void);
            {
                USBDeviceTasks();
                if((USBGetDeviceState() \< CONFIGURED_STATE) ||
-                  (USBIsDeviceSuspended() == TRUE))
+                  (USBGetSuspendState() == TRUE))
                {
                    //Either the device is not configured or we are suspended
                    //  so we don't want to do execute any application code
@@ -471,63 +1274,15 @@ USB_DEVICE_STATE USBGetDeviceState(void);
   Conditions:
     None
   Return Values:
-    TRUE -   this device is suspended.
-    FALSE -  this device is not suspended.
+    TRUE -   the USB port this device is attached to is suspended.
+    FALSE -  the USB port this device is attached to is not suspended.
   Remarks:
-    None                                                                    
+    This function is the same as USBIsBusSuspended().                                                                    
   ***************************************************************************/
 BOOL USBGetSuspendState(void);
-
-/*******************************************************************************
-  Function:
-        void USBEnableEndpoint(BYTE ep, BYTE options)
-    
-  Summary:
-    This function will enable the specified endpoint with the specified
-    options
-  Description:
-    This function will enable the specified endpoint with the specified
-    options.
-    
-    Typical Usage:
-    <code>
-    void USBCBInitEP(void)
-    {
-        USBEnableEndpoint(MSD_DATA_IN_EP,USB_IN_ENABLED|USB_OUT_ENABLED|USB_HANDSHAKE_ENABLED|USB_DISALLOW_SETUP);
-        USBMSDInit();
-    }
-    </code>
-    
-    In the above example endpoint number MSD_DATA_IN_EP is being configured
-    for both IN and OUT traffic with handshaking enabled. Also since
-    MSD_DATA_IN_EP is not endpoint 0 (MSD does not allow this), then we can
-    explicitly disable SETUP packets on this endpoint.
-  Conditions:
-    None
-  Input:
-    BYTE ep -       the endpoint to be configured
-    BYTE options -  optional settings for the endpoint. The options should
-                    be ORed together to form a single options string. The
-                    available optional settings for the endpoint. The
-                    options should be ORed together to form a single options
-                    string. The available options are the following\:
-                    * USB_HANDSHAKE_ENABLED enables USB handshaking (ACK,
-                      NAK)
-                    * USB_HANDSHAKE_DISABLED disables USB handshaking (ACK,
-                      NAK)
-                    * USB_OUT_ENABLED enables the out direction
-                    * USB_OUT_DISABLED disables the out direction
-                    * USB_IN_ENABLED enables the in direction
-                    * USB_IN_DISABLED disables the in direction
-                    * USB_ALLOW_SETUP enables control transfers
-                    * USB_DISALLOW_SETUP disables control transfers
-                    * USB_STALL_ENDPOINT STALLs this endpoint
-  Return:
-    None
-  Remarks:
-    None                                                                                                          
-  *****************************************************************************/
-void USBEnableEndpoint(BYTE ep, BYTE options);
+/*DOM-IGNORE-BEGIN*/
+#define USBGetSuspendState() USBBusIsSuspended
+/*DOM-IGNORE-END*/
 
 /*******************************************************************************
   Function:
@@ -633,97 +1388,6 @@ void USBSoftDetach(void);
 #define USBSoftDetach()  U1CON = 0; U1IE = 0; USBDeviceState = DETACHED_STATE;
 /*DOM-IGNORE-END*/
 
-/*************************************************************************
-  Function:
-    USB_HANDLE USBTransferOnePacket(BYTE ep, BYTE dir, BYTE* data, BYTE len)
-    
-  Summary:
-    Transfers a single packet (one transaction) of data on the USB bus.
-
-  Description:
-    The USBTransferOnePacket() function prepares a USB endpoint
-    so that it may send data to the host (an IN transaction), or 
-    receive data from the host (an OUT transaction).  The 
-    USBTransferOnePacket() function can be used both to receive	and 
-    send data to the host.  This function is the primary API function 
-    provided by the USB stack firmware for sending or receiving application 
-    data over the USB port.  
-
-    The USBTransferOnePacket() is intended for use with all application 
-    endpoints.  It is not used for sending or receiving applicaiton data 
-    through endpoint 0 by using control transfers.  Separate API 
-    functions, such as USBEP0Receive(), USBEP0SendRAMPtr(), and
-    USBEP0SendROMPtr() are provided for this purpose.
-
-    The	USBTransferOnePacket() writes to the Buffer Descriptor Table (BDT)
-    entry associated with an endpoint buffer, and sets the UOWN bit, which 
-    prepares the USB hardware to allow the transaction to complete.  The 
-    application firmware can use the USBHandleBusy() macro to check the 
-    status of the transaction, to see if the data has been successfully 
-    transmitted yet.
-
-
-    Typical Usage
-    <code>
-    //make sure that the we are in the configured state
-    if(USBGetDeviceState() == CONFIGURED_STATE)
-    {
-        //make sure that the last transaction isn't busy by checking the handle
-        if(!USBHandleBusy(USBInHandle))
-        {
-	        //Write the new data that we wish to send to the host to the INPacket[] array
-	        INPacket[0] = USEFUL_APPLICATION_VALUE1;
-	        INPacket[1] = USEFUL_APPLICATION_VALUE2;
-	        //INPacket[2] = ... (fill in the rest of the packet data)
-	      
-            //Send the data contained in the INPacket[] array through endpoint "EP_NUM"
-            USBInHandle = USBTransferOnePacket(EP_NUM,IN_TO_HOST,(BYTE*)&INPacket[0],sizeof(INPacket));
-        }
-    }
-    </code>
-
-  Conditions:
-    Before calling USBTransferOnePacket(), the following should be true.
-    1.  The USB stack has already been initialized (USBDeviceInit() was called).
-    2.  A transaction is not already pending on the specified endpoint.  This
-        is done by checking the previous request using the USBHandleBusy() 
-        macro (see the typical usage example).
-    3.  The host has already sent a set configuration request and the 
-        enumeration process is complete.
-        This can be checked by verifying that the USBGetDeviceState() 
-        macro returns "CONFIGURED_STATE", prior to calling 
-        USBTransferOnePacket().
- 					
-  Input:
-    BYTE ep - The endpoint number that the data will be transmitted or 
-	          received on
-    BYTE dir - The direction of the transfer
-               This value is either OUT_FROM_HOST or IN_TO_HOST
-    BYTE* data - For IN transactions: pointer to the RAM buffer containing 
-                 the data to be sent to the host.  For OUT transactions: pointer
-                 to the RAM buffer that the received data should get written to.
-   BYTE len - Length of the data needing to be sent (for IN transactions).
-              For OUT transactions, the len parameter should normally be set
-              to the endpoint size specified in the endpoint descriptor.    
-
-  Return Values:
-    USB_HANDLE - handle to the transfer.  The handle is a pointer to 
-                 the BDT entry associated with this transaction.  The
-                 status of the transaction (ex: if it is complete or still
-                 pending) can be checked using the USBHandleBusy() macro
-                 and supplying the USB_HANDLE provided by
-                 USBTransferOnePacket().
-
-  Remarks:
-    If calling the USBTransferOnePacket() function from within the USBCBInitEP()
-    callback function, the set configuration is still being processed and the
-    USBDeviceState may not be == CONFIGURED_STATE yet.  In this	special case, 
-    the USBTransferOnePacket() may still be called, but make sure that the 
-    endpoint has been enabled and initialized by the USBEnableEndpoint() 
-    function first.  
-    
-  *************************************************************************/
-USB_HANDLE USBTransferOnePacket(BYTE ep,BYTE dir,BYTE* data,BYTE len);
 
 /*************************************************************************
   Function:
@@ -1121,179 +1785,6 @@ USB_HANDLE USBRxOnePacket(BYTE ep, BYTE* data, WORD len);
 #define USBRxOnePacket(ep,data,len)      USBTransferOnePacket(ep,OUT_FROM_HOST,data,len)
 /*DOM-IGNORE-END*/
 
-/********************************************************************
-    Function:
-        void USBStallEndpoint(BYTE ep, BYTE dir)
-        
-    Summary:
-         Configures the specified endpoint to send STALL to the host, the next
-         time the host tries to access the endpoint.
-    
-    PreCondition:
-        None
-        
-    Parameters:
-        BYTE ep - The endpoint number that should be configured to send STALL.
-        BYTE dir - The direction of the endpoint to STALL, either 
-                   IN_TO_HOST or OUT_FROM_HOST.
-        
-    Return Values:
-        None
-        
-    Remarks:
-        None
-
- *******************************************************************/
-void USBStallEndpoint(BYTE ep, BYTE dir);
-
-/**************************************************************************
-    Function:
-        void USBDeviceDetach(void)
-   
-    Summary:
-        This function configures the USB module to "soft detach" itself from
-        the USB host.
-        
-    Description:
-        This function configures the USB module to perform a "soft detach"
-        operation, by disabling the D+ (or D-) ~1.5k pull up resistor, which
-        lets the host know the device is present and attached.  This will make
-        the host think that the device has been unplugged.  This is potentially
-        useful, as it allows the USB device to force the host to re-enumerate
-        the device (on the firmware has re-enabled the USB module/pull up, by
-        calling USBDeviceAttach(), to "soft re-attach" to the host).
-        
-    Precondition:
-        Should only be called when USB_INTERRUPT is defined.  See remarks
-        section if USB_POLLING mode option is being used (usb_config.h option).
-
-        Additionally, this function should only be called from the main() loop 
-        context.  Do not call this function from within an interrupt handler, as 
-        this function may modify global interrupt enable bits and settings.
-        
-    Parameters:
-        None
-     
-    Return Values:
-        None
-        
-    Remarks:
-        If the application firmware calls USBDeviceDetach(), it is strongly
-        recommended that the firmware wait at least >= 80ms before calling
-        USBDeviceAttach().  If the firmeware performs a soft detach, and then
-        re-attaches too soon (ex: after a few micro seconds for instance), some
-        hosts may interpret this as an unexpected "glitch" rather than as a
-        physical removal/re-attachment of the USB device.  In this case the host
-        may simply ignore the event without re-enumerating the device.  To 
-        ensure that the host properly detects and processes the device soft
-        detach/re-attach, it is recommended to make sure the device remains 
-        detached long enough to mimic a real human controlled USB 
-        unplug/re-attach event (ex: after calling USBDeviceDetach(), do not
-        call USBDeviceAttach() for at least 80+ms, preferrably longer.
-        
-        Neither the USBDeviceDetach() or USBDeviceAttach() functions are blocking
-        or take long to execute.  It is the application firmware's 
-        responsibility for adding the 80+ms delay, when using these API 
-        functions.
-        
-        Note: The Windows plug and play event handler processing is fairly 
-        slow, especially in certain versions of Windows, and for certain USB
-        device classes.  It has been observed that some device classes need to
-        provide even more USB detach dwell interval (before calling 
-        USBDeviceAttach()), in order to work correctly after re-enumeration.
-        If the USB device is a CDC class device, it is recommended to wait
-        at least 1.5 seconds or longer, before soft re-attaching to the host,
-        to provide the plug and play event handler enough time to finish 
-        processing the removal event, before the re-attach occurs.
-        
-        If the application is using the USB_POLLING mode option, then the 
-        USBDeviceDetach() and USBDeviceAttach() functions are not available.  
-        In this mode, the USB stack relies on the "#define USE_USB_BUS_SENSE_IO" 
-        and "#define USB_BUS_SENSE" options in the 
-        HardwareProfile – [platform name].h file. 
-
-        When using the USB_POLLING mode option, and the 
-        "#define USE_USB_BUS_SENSE_IO" definition has been commented out, then 
-        the USB stack assumes that it should always enable the USB module at 
-        pretty much all times.  Basically, anytime the application firmware 
-        calls USBDeviceTasks(), the firmware will automatically enable the USB 
-        module.  This mode would typically be selected if the application was 
-        designed to be a purely bus powered device.  In this case, the 
-        application is powered from the +5V VBUS supply from the USB port, so 
-        it is correct and sensible in this type of application to power up and 
-        turn on the USB module, at anytime that the microcontroller is 
-        powered (which implies the USB cable is attached and the host is also 
-        powered).
-
-        In a self powered application, the USB stack is designed with the 
-        intention that the user will enable the "#define USE_USB_BUS_SENSE_IO" 
-        option in the HardwareProfile – [platform name].h file.  When this 
-        option is defined, then the USBDeviceTasks() function will automatically 
-        check the I/O pin port value of the designated pin (based on the 
-        #define USB_BUS_SENSE option in the HardwareProfile – [platform name].h 
-        file), every time the application calls USBDeviceTasks().  If the 
-        USBDeviceTasks() function is executed and finds that the pin defined by 
-        the #define USB_BUS_SENSE is in a logic low state, then it will 
-        automatically disable the USB module and tri-state the D+ and D- pins.  
-        If however the USBDeviceTasks() function is executed and finds the pin 
-        defined by the #define USB_BUS_SENSE is in a logic high state, then it 
-        will automatically enable the USB module, if it has not already been 
-        enabled.        
-                                                          
-  **************************************************************************/
-void USBDeviceDetach(void);
-
-/*DOM-IGNORE-BEGIN*/
-#if !defined(USB_INTERRUPT)
-    #define USBDeviceDetach() 
-#endif
-/*DOM-IGNORE-END*/
-
-/**************************************************************************
-    Function:
-        void USBDeviceAttach(void)
-    
-    Summary:
-        Checks if VBUS is present, and that the USB module is not already 
-        initalized, and if so, enables the USB module so as to signal device 
-        attachment to the USB host.   
-
-    Description:
-        This function indicates to the USB host that the USB device has been
-        attached to the bus.  This function needs to be called in order for the
-        device to start to enumerate on the bus.
-                
-    Precondition:
-        Should only be called when USB_INTERRUPT is defined.  Also, should only 
-        be called from the main() loop context.  Do not call USBDeviceAttach()
-        from within an interrupt handler, as the USBDeviceAttach() function
-        may modify global interrupt enable bits and settings.
-
-        For normal USB devices:
-        Make sure that if the module was previously on, that it has been turned off 
-        for a long time (ex: 100ms+) before calling this function to re-enable the module.
-        If the device turns off the D+ (for full speed) or D- (for low speed) ~1.5k ohm
-        pull up resistor, and then turns it back on very quickly, common hosts will sometimes 
-        reject this event, since no human could ever unplug and reattach a USB device in a 
-        microseconds (or nanoseconds) timescale.  The host could simply treat this as some kind 
-        of glitch and ignore the event altogether.  
-    Parameters:
-        None
-     
-    Return Values:
-        None       
-    
-    Remarks: 
-		See also the USBDeviceDetach() API function documentation.                                                 
-****************************************************************************/
-void USBDeviceAttach(void);
-
-/*DOM-IGNORE-BEGIN*/
-#if !defined(USB_INTERRUPT)
-    #define USBDeviceAttach() 
-#endif
-/*DOM-IGNORE-END*/
-
 /*******************************************************************************
   Function:
     BOOL USB_APPLICATION_EVENT_HANDLER(BYTE address, USB_EVENT event, void *pdata, WORD size);
@@ -1357,433 +1848,6 @@ void *USBDeviceCBGetDescriptor (    UINT16 *length,
                                     UINT8 *ptr_type,
                                     DESCRIPTOR_ID *id);
 
-
-/*******************************************************************************
-  Function: void USBCtrlEPAllowStatusStage(void);
-    
-  Summary: This function prepares the proper endpoint 0 IN or endpoint 0 OUT 
-            (based on the controlTransferState) to allow the status stage packet
-            of a control transfer to complete.  This function gets used 
-            internally by the USB stack itself, but it may also be called from
-            the application firmware, IF the application firmware called
-            the USBDeferStatusStage() function during the initial processing
-            of the control transfer request.  In this case, the application
-            must call the USBCtrlEPAllowStatusStage() once, after it has fully
-            completed processing and handling the data stage portion of the
-            request.  
-            
-            If the application firmware has no need for delaying control 
-            transfers, and therefore never calls USBDeferStatusStage(), then the
-            application firmware should not call USBCtrlEPAllowStatusStage().
-            
-  Description:
-    
-  Conditions:
-    None
-
-  Input:
-
-  Return:
-
-  Remarks:
-    None                                                                                                          
-  *****************************************************************************/
-void USBCtrlEPAllowStatusStage(void);
-
-/*******************************************************************************
-  Function: void USBDeferStatusStage(void);
-    
-  Summary: Calling this function will prevent the USB stack from automatically
-            enabling the status stage for the currently pending control transfer
-            from completing immediately after all data bytes have been sent or 
-            received.  This is useful if a class handler or USB application 
-            firmware project uses control transfers for sending/receiving data 
-            over EP0, but requires time in order to finish processing and/or to 
-            consume the data.
-            
-            For example: Consider an application which receives OUT data from the
-            USB host, through EP0 using control transfers.  Now assume that this
-            application wishes to do something time consuming with this data (ex:
-            transmit it to and save it to an external EEPROM device, connected 
-            via SPI/I2C/etc.).  In this case, it would typically be desireable to
-            defer allowing the USB status stage of the control transfer to complete,
-            until after the data has been fully sent to the EEPROM device and saved.
-            
-            If the USB class handler firmware that processes the control transfer
-            SETUP packet determines that it will need extra time to complete the
-            control transfer, it may optionally call USBDeferStatusStage().  If it
-            does so, it is then the responsibility of the application firmware to
-            eventually call USBCtrlEPAllowStatusStage(), once the firmware has
-            finished processing the data associated with the control transfer.
-            
-            If the firmware call USBDeferStatusStage(), but never calls 
-            USBCtrlEPAllowStatusStage(), then one of two possibilities will occur.
-            
-            1.  If the "USB_ENABLE_STATUS_STAGE_TIMEOUTS" option is commented in
-                usb_config.h, then the status stage of the control transfer will
-                never be able to complete.  This is an error case and should be
-                avoided.
-            2.  If the "USB_ENABLE_STATUS_STAGE_TIMEOUTS" option is enabled in 
-                usb_config.h, then the USBDeviceTasks() function will 
-                automatically call USBCtrlEPAllowStatusStage(), after the 
-                "USB_STATUS_STAGE_TIMEOUT" has elapsed, since the last quanta of
-                "progress" has occurred in the control transfer.  Progress is 
-                defined as the last successful transaction completing on EP0 IN or
-                EP0 OUT.
-                Although the timeouts feature allows the status stage to
-                [eventually] complete, it is still preferable to manually call 
-                USBCtrlEPAllowStatusStage() after the application firmware has
-                finished processing/consuming the control transfer data, as this
-                will allow for much faster processing of control transfers, and
-                therefore much higher data rates and better user responsiveness.
-  Description:
-    
-  Conditions:
-    None
-
-  Input:
-
-  Return:
-
-  Remarks:  If this function is called, is should get called after the SETUP
-            packet has arrived (the control transfer has started), but before
-            the USBCtrlEPServiceComplete() function has been called by the USB
-            stack.  Therefore, the normal place to call USBDeferStatusStage()
-            would be from within the USBCBCheckOtherReq() handler context.  For
-            example, in a HID application using control transfers, the
-            USBDeferStatusStage() function would be called from within the
-            USER_GET_REPORT_HANDLER or USER_SET_REPORT_HANDLER functions.                                                                                                                
-  *****************************************************************************/
-void USBDeferStatusStage(void);
-extern volatile BOOL USBDeferStatusStagePacket;
-/*DOM-IGNORE-BEGIN*/
-#define USBDeferStatusStage()   {USBDeferStatusStagePacket = TRUE;}
-/*DOM-IGNORE-END*/
-
-
-/*******************************************************************************
-  Function: void USBCtrlEPAllowDataStage(void);
-    
-  Summary: This function allows the data stage of either a host-to-device or
-            device-to-host control transfer (with data stage) to complete.
-            This function is meant to be used in conjunction with either the
-            USBDeferOUTDataStage() or USBDeferINDataStage().  If the firmware
-            does not call either USBDeferOUTDataStage() or USBDeferINDataStage(),
-            then the firmware does not need to manually call 
-            USBCtrlEPAllowDataStage(), as the USB stack will call this function
-            instead.
-     
-  Description:
-    
-  Conditions: A control transfer (with data stage) should already be pending, 
-                if the firmware calls this function.  Additionally, the firmware
-                should have called either USBDeferOUTDataStage() or 
-                USBDeferINDataStage() at the start of the control transfer, if
-                the firmware will be calling this function manually.
-
-  Input:
-
-  Return:
-
-  Remarks: 
-  *****************************************************************************/
-void USBCtrlEPAllowDataStage(void);
-
-
-/*******************************************************************************
-  Function: void USBDeferOUTDataStage(void);
-    
-  Summary: This function will cause the USB hardware to continuously NAK the
-           OUT data packets sent from the host, during the data stage of a
-           device to host control transfer.  This allows the firmware more time
-           to prepare the RAM buffer that will eventually be used to receive the
-           data from the host.  This is also useful, if the firmware wishes to
-           receive the OUT data in a different context than what the
-           USBDeviceTasks() function executes at.
-           
-           Calling this function (macro) will assert ownership of the currently
-           pending control transfer.  Therefore, the USB stack will not STALL
-           when it reaches the data stage of the control transfer, even if the
-           firmware has not (yet) called the USBEP0Receive() API function.  
-           However, the application firware must still (eventually, once it is 
-           ready) call one of the aforementioned API function.
-           
-           Example Usage:
-           
-           1.  Host sends a SETUP packet to the device, requesting a host to 
-                device control transfer, with data stage (OUT data packets).
-           2.  USBDeviceTasks() executes, and then calls the USBCBCheckOtherReq()
-                callback event handler.  The USBCBCheckOtherReq() calls the
-                application specific/device class specific handler that detects
-                the type of control transfer.
-           3.  If the firmware needs more time before it wishes to receive the 
-                first OUT data packet, or, if the firmware wishes to process the 
-                command in a different context, then it may call 
-                USBDeferOUTDataStage(), in the context of the 
-                USBCBCheckOtherReq() handler function.
-           4.  If the firmware called USBDeferOUTDataStage() in step #3 above,
-                then the hardware will NAK the OUT data packets sent by the
-                host, for the OUT data stage.
-           5.  Once the firmware is ready, it should then call USBEP0Receive(), 
-                to prepare the USB stack to receive the OUT data from the host,
-                and to write it to the user specified buffer.
-           6.  The firmware should now call USBCtrlEPAllowDataStage().  This
-                will allow the data stage to complete.  Once all OUT data has
-                been received, the user callback function (provided by the
-                function pointer provided when calling USBEP0Receive()) will
-                get called.            
-           7.  Once all data has been received from the host, the status stage 
-                (a 0-byte IN packet) will complete automatically (assuming the 
-                firmware did not call USBDeferStatusStage() during step #3).
-            
-     
-  Description:
-    
-  Conditions: Before calling USBDeferOUTDataStage(), the firmware should first
-                verify that the control transfer has a data stage, and that
-                it is of type host-to-device (OUT).
-
-  Input:
-
-  Return:
-
-  Remarks: Section 9.2.6 of the official USB 2.0 specifications indicates that
-           the USB device must be able to receive all bytes and complete the
-           control transfer within a maximum of 5 seconds.
-            
-           If the firmware calls USBDeferOUTDataStage(), it must eventually call
-           USBEP0Receive(), and then call USBCtrlEPAllowDataStage().  If it does 
-           not do this, the control transfer will never be able to complete.
-           This will break the USB connection, as the host needs to be able to
-           communicate over EP0, in order to perform basic tasks including 
-           enumeration. 
-           
-           The firmware should never call both USBDeferINDataStage() and 
-           USBDeferOUTDataStage() during the same control transfer.  These 
-           functions are mutually exclusive (a control transfer with data stage
-           can never contain both IN and OUT data packets during the data stage).
-  *****************************************************************************/
-void USBDeferOUTDataStage(void);
-extern volatile BOOL USBDeferOUTDataStagePackets;
-/*DOM-IGNORE-BEGIN*/
-#define USBDeferOUTDataStage()   {USBDeferOUTDataStagePackets = TRUE; outPipes[0].info.bits.busy = 1;}
-/*DOM-IGNORE-END*/
-
-
-
-/*******************************************************************************
-  Function: BOOL USBOUTDataStageDeferred(void);
-    
-  Summary: Returns TRUE if a control transfer with OUT data stage is pending,
-            and the firmware has called USBDeferOUTDataStage(), but has not
-            yet called USBCtrlEPAllowDataStage().
-           Returns FALSE if a control transfer with OUT data stage is either
-            not pending, or the firmware did not call USBDeferOUTDataStage()
-            at the start of the control transfer.
-            
-           This function (macro) would typically be used in the case where the
-           USBDeviceTasks() function executes in the interrupt context (ex:
-           USB_INTERRUPT option selected in usb_config.h), but the firmware
-           wishes to take care of handling the data stage of the control transfer
-           in the main loop context.  
-           
-           In this scenario, typical usage would be:
-           1.  Host starts a control transfer with OUT data stage.
-           2.  USBDeviceTasks() (in this scenario, interrupt context) executes.
-           3.  USBDeviceTasks() calls USBCBCheckOtherReq(), which in turn
-                determines that the control transfer is class specific, with
-                OUT data stage.
-           4.  The user code in USBCBCheckOtherReq() (also in interrupt context,
-                since it is called from USBDeviceTasks(), and therefore executes
-                at the same priority/context) calls USBDeferOUTDataStage().
-           
-           5.  Meanwhile, in the main loop context, a polling handler may be 
-                periodically checking if(USBOUTDataStageDeferred() == TRUE).
-                Ordinarily, it would evaluate false, but when a control transfer
-                becomes pending, and after the USBDeferOUTDataStage() macro has
-                been called (ex: in the interrupt context), the if() statement
-                will evaluate true.  In this case, the main loop context can then
-                take care of receiving the data, by calling USBEP0Receive() and
-                USBCtrlEPAllowDataStage().
-     
-  Description:
-    
-  Conditions: 
-
-  Input:
-
-  Return:
-
-  Remarks: 
-  *****************************************************************************/
-BOOL USBOUTDataStageDeferred(void);
-/*DOM-IGNORE-BEGIN*/
-#define USBOUTDataStageDeferred() USBDeferOUTDataStagePackets
-/*DOM-IGNORE-END*/
-
-/*******************************************************************************
-  Function: void USBDeferINDataStage(void);
-    
-  Summary: This function will cause the USB hardware to continuously NAK the
-           IN token packets sent from the host, during the data stage of a
-           device to host control transfer.  This allows the firmware more time
-           to process and prepare the IN data packets that will eventually be
-           sent to the host.  This is also useful, if the firmware needs to
-           process/prepare the IN data in a different context than what the
-           USBDeviceTasks() function executes at.
-           
-           Calling this function (macro) will assert ownership of the currently
-           pending control transfer.  Therefore, the USB stack will not STALL
-           when it reaches the data stage of the control transfer, even if the
-           firmware has not (yet) called the USBEP0SendRAMPtr() or 
-           USBEP0SendROMPtr() API function.  However, the application firware 
-           must still (eventually, once it is ready) call one of the 
-           aforementioned API functions.
-           
-           Example Usage:
-           
-           1.  Host sends a SETUP packet to the device, requesting a device to 
-                host control transfer, with data stage.
-           2.  USBDeviceTasks() executes, and then calls the USBCBCheckOtherReq()
-                callback event handler.  The USBCBCheckOtherReq() calls the
-                application specific/device class specific handler that detects
-                the type of control transfer.
-           3.  If the firmware needs more time to prepare the first IN data packet,
-                or, if the firmware wishes to process the command in a different
-                context (ex: if USBDeviceTasks() executes as an interrupt handler,
-                but the IN data stage data needs to be prepared in the main loop
-                context), then it may call USBDeferINDataStage(), in the context
-                of the USBCBCheckOtherReq() handler function.
-           4.  If the firmware called USBDeferINDataStage() in step #3 above,
-                then the hardware will NAK the IN token packets sent by the
-                host, for the IN data stage.
-           5.  Once the firmware is ready, and has successfully prepared the
-                data to be sent to the host in fulfillment of the control
-                transfer, it should then call USBEP0SendRAMPtr() or
-                USBEP0SendROMPtr(), to prepare the USB stack to know how many
-                bytes to send to the host, and from what source location.
-           6.  The firmware should now call USBCtrlEPAllowDataStage().  This
-                will allow the data stage to complete.  The USB stack will send
-                the data buffer specified by the USBEP0SendRAMPtr() or 
-                USBEP0SendROMPtr() function, when it was called.
-           7.  Once all data has been sent to the host, or if the host performs
-                early termination, the status stage (a 0-byte OUT packet) will
-                complete automatically (assuming the firmware did not call
-                USBDeferStatusStage() during step #3).
-            
-     
-  Description:
-    
-  Conditions: Before calling USBDeferINDataStage(), the firmware should first
-                verify that the control transfer has a data stage, and that
-                it is of type device-to-host (IN).
-
-  Input:
-
-  Return:
-
-  Remarks: Section 9.2.6 of the official USB 2.0 specifications indicates that
-            the USB device must return the first IN data packet within 500ms
-            of the start of the control transfer.  In order to meet this
-            specification, the firmware must call USBEP0SendRAMPtr() or
-            USBEP0SendROMPtr(), and then call USBCtrlEPAllowDataStage(), in
-            less than 500ms from the start of the control transfer.    
-            
-           If the firmware calls USBDeferINDataStage(), it must eventually call
-           USBEP0SendRAMPtr() or USBEP0SendROMPtr(), and then call 
-           USBCtrlEPAllowDataStage().  If it does not do this, the control
-           transfer will never be able to complete.
-           
-           The firmware should never call both USBDeferINDataStage() and 
-           USBDeferOUTDataStage() during the same control transfer.  These 
-           functions are mutually exclusive (a control transfer with data stage
-           can never contain both IN and OUT data packets during the data stage).
-  *****************************************************************************/
-void USBDeferINDataStage(void);
-extern volatile BOOL USBDeferINDataStagePackets;
-/*DOM-IGNORE-BEGIN*/
-#define USBDeferINDataStage()   {USBDeferINDataStagePackets = TRUE; inPipes[0].info.bits.busy = 1;}
-/*DOM-IGNORE-END*/
-
-
-
-/*******************************************************************************
-  Function: BOOL USBINDataStageDeferred(void);
-    
-  Summary: Returns TRUE if a control transfer with IN data stage is pending,
-            and the firmware has called USBDeferINDataStage(), but has not
-            yet called USBCtrlEPAllowDataStage().
-           Returns FALSE if a control transfer with IN data stage is either
-            not pending, or the firmware did not call USBDeferINDataStage()
-            at the start of the control transfer.
-            
-           This function (macro) would typically be used in the case where the
-           USBDeviceTasks() function executes in the interrupt context (ex:
-           USB_INTERRUPT option selected in usb_config.h), but the firmware
-           wishes to take care of handling the data stage of the control transfer
-           in the main loop context.  
-           
-           In this scenario, typical usage would be:
-           1.  Host starts a control transfer with IN data stage.
-           2.  USBDeviceTasks() (in this scenario, interrupt context) executes.
-           3.  USBDeviceTasks() calls USBCBCheckOtherReq(), which in turn
-                determines that the control transfer is class specific, with
-                IN data stage.
-           4.  The user code in USBCBCheckOtherReq() (also in interrupt context,
-                since it is called from USBDeviceTasks(), and therefore executes
-                at the same priority/context) calls USBDeferINDataStage().
-           
-           5.  Meanwhile, in the main loop context, a polling handler may be 
-                periodically checking if(USBINDataStageDeferred() == TRUE).
-                Ordinarily, it would evaluate false, but when a control transfer
-                becomes pending, and after the USBDeferINDataStage() macro has
-                been called (ex: in the interrupt context), the if() statement
-                will evaluate true.  In this case, the main loop context can then
-                take care of sending the data (when ready), by calling 
-                USBEP0SendRAMPtr() or USBEP0SendROMPtr() and 
-                USBCtrlEPAllowDataStage().
-     
-  Description:
-    
-  Conditions: 
-
-  Input:
-
-  Return:
-
-  Remarks: 
-  *****************************************************************************/
-BOOL USBINDataStageDeferred(void);
-/*DOM-IGNORE-BEGIN*/
-#define USBINDataStageDeferred() USBDeferINDataStagePackets
-/*DOM-IGNORE-END*/
-
-
-
-/**************************************************************************
-    Function:
-        void USBCancelIO(BYTE endpoint)
-    
-    Description:
-        This function cancels the transfers pending on the specified endpoint.
-        This function can only be used after a SETUP packet is received and 
-        before that setup packet is handled.  This is the time period in which
-        the EVENT_EP0_REQUEST is thrown, before the event handler function
-        returns to the stack.
-
-    Precondition:
-  
-    Parameters:
-        BYTE endpoint - the endpoint number you wish to cancel the transfers for
-     
-    Return Values:
-        None
-        
-    Remarks:
-        None
-                                                          
-  **************************************************************************/
-void USBCancelIO(BYTE endpoint);
 
 
 /** Section: MACROS ******************************************************/

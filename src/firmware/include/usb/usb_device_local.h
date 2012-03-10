@@ -465,9 +465,9 @@ typedef union
 #endif
 
 #if defined USB_DISABLE_NONSTANDARD_EP0_REQUEST_HANDLER 
-    #define USB_DISABLE_NONSTANDARD_EP0_REQUEST_HANDLER(event,pointer,size)                 
+    #define USB_NONSTANDARD_EP0_REQUEST_HANDLER(event,pointer,size)                 
 #else
-    #define USB_DISABLE_NONSTANDARD_EP0_REQUEST_HANDLER(event,pointer,size)       USER_USB_CALLBACK_EVENT_HANDLER(event,pointer,size)
+    #define USB_NONSTANDARD_EP0_REQUEST_HANDLER(event,pointer,size)       USER_USB_CALLBACK_EVENT_HANDLER(event,pointer,size)
 #endif
 
 #if defined USB_DISABLE_SET_DESCRIPTOR_HANDLER 

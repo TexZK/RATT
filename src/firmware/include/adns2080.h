@@ -63,14 +63,7 @@ typedef struct {
 } ADNS_STATUS;						/// Device status
 
 
-typedef union {
-	ADNS_BITS_MOTION	bits;
-	unsigned char		Val;
-} ADNS_MOTION;						/// Motion Burst register, with bits and byte value
-
-
 typedef struct {
-	ADNS_MOTION	motion;
 	signed char	deltaY;
 	signed char	deltaX;
 } ADNS_BURST_MOTION_DELTAS;			/// Motion burst registers: motion, delta Y, delta X

@@ -87,7 +87,17 @@
     
     C:\\Microchip Solutions\\Microchip\\Include
     
-    C:\\Microchip Solutions\\My Demo Application  
+    C:\\Microchip Solutions\\My Demo Application 
+
+
+ Change History:
+   Rev    Description
+   ----   ------------------------------------------
+   1.0    Initial release
+   2.1    Updated for simplicity and to use common
+          coding style
+   2.6    Minor changes in defintions
+
 *******************************************************************/
 
 #ifndef USB_FUNCTION_HID_C
@@ -118,24 +128,26 @@ BYTE active_protocol;   // [0] Boot Protocol [1] Report Protocol
 #endif     
 
 /** Section: DECLARATIONS ***************************************************/
-#pragma code
+#if defined(__18CXX)
+    #pragma code
+#endif
 
 /** Section: CLASS SPECIFIC REQUESTS ****************************************/
 
 /********************************************************************
 	Function:
 		void USBCheckHIDRequest(void)
-		
+
  	Summary:
- 		This routine handles HID specific request that happen on EP0.  
-        This function should be called from the USBCBCheckOtherReq() call back 
+ 		This routine handles HID specific request that happen on EP0.
+        This function should be called from the USBCBCheckOtherReq() call back
         function whenever implementing a HID device.
 
  	Description:
  		This routine handles HID specific request that happen on EP0.  These
-        include, but are not limited to, requests for the HID report 
-        descriptors.  This function should be called from the 
-        USBCBCheckOtherReq() call back function whenever using an HID device.	
+        include, but are not limited to, requests for the HID report
+        descriptors.  This function should be called from the
+        USBCBCheckOtherReq() call back function whenever using an HID device.
 
         Typical Usage:
         <code>
@@ -146,16 +158,16 @@ BYTE active_protocol;   // [0] Boot Protocol [1] Report Protocol
             USBCheckHIDRequest();
         }
         </code>
-		
+
 	PreCondition:
 		None
-		
+
 	Parameters:
 		None
-		
+
 	Return Values:
 		None
-		
+
 	Remarks:
 		None
  
@@ -249,6 +261,82 @@ void USBCheckHIDRequest(void)
 
 }//end USBCheckHIDRequest
 
+/********************************************************************
+    Function:
+        USB_HANDLE HIDTxPacket(BYTE ep, BYTE* data, WORD len)
+        
+    Summary:
+        Sends the specified data out the specified endpoint
+
+    Description:
+        This function sends the specified data out the specified 
+        endpoint and returns a handle to the transfer information.
+
+        Typical Usage:
+        <code>
+        //make sure that the last transfer isn't busy by checking the handle
+        if(!HIDTxHandleBusy(USBInHandle))
+        {
+            //Send the data contained in the ToSendDataBuffer[] array out on
+            //  endpoint HID_EP
+            USBInHandle = HIDTxPacket(HID_EP,(BYTE*)&ToSendDataBuffer[0],sizeof(ToSendDataBuffer));
+        }
+        </code>
+        
+    PreCondition:
+        None
+        
+    Parameters:
+        BYTE ep    - the endpoint you want to send the data out of
+        BYTE* data - pointer to the data that you wish to send
+        WORD len   - the length of the data that you wish to send
+        
+    Return Values:
+        USB_HANDLE - a handle for the transfer.  This information
+        should be kept to track the status of the transfer
+        
+    Remarks:
+        None
+  
+ *******************************************************************/
+ // Implemented as a macro. See usb_function_hid.h
+
+/********************************************************************
+    Function:
+        USB_HANDLE HIDRxPacket(BYTE ep, BYTE* data, WORD len)
+        
+    Summary:
+        Receives the specified data out the specified endpoint
+        
+    Description:
+        Receives the specified data out the specified endpoint.
+
+        Typical Usage:
+        <code>
+        //Read 64-bytes from endpoint HID_EP, into the ReceivedDataBuffer array.
+        //  Make sure to save the return handle so that we can check it later
+        //  to determine when the transfer is complete.
+        USBOutHandle = HIDRxPacket(HID_EP,(BYTE*)&ReceivedDataBuffer,64);
+        </code>
+
+    PreCondition:
+        None
+        
+    Parameters:
+        BYTE ep    - the endpoint you want to receive the data into
+        BYTE* data - pointer to where the data will go when it arrives
+        WORD len   - the length of the data that you wish to receive
+        
+    Return Values:
+        USB_HANDLE - a handle for the transfer.  This information
+        should be kept to track the status of the transfer
+        
+    Remarks:
+        None
+  
+ *******************************************************************/
+  // Implemented as a macro. See usb_function_hid.h
+  
 /** USER API *******************************************************/
 
 #endif

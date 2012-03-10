@@ -42,7 +42,7 @@ PAT	2010.03.07	ADDED include "Compiler.h"
 	#include <plib.h>
 #endif
 #include "Compiler.h"
-#include "HardwareProfile.h"
+#include "app.h"
 #include "TimeDelay.h" 
 
 /****************************************************************************
