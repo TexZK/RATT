@@ -31,7 +31,7 @@
 // HEADERS
 
 #include "app.h"
-#include "../../bootloader/include/bootloader.h"
+#include "bootloader.h"
 #include "usb/usb.h"
 #include "usb/usb_function_hid.h"
 #include "usb/usb_user.h"

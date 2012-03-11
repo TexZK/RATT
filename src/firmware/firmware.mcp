@@ -50,6 +50,7 @@ file_022=.
 file_023=usb
 file_024=.
 file_025=.
+file_026=.
 [GENERATED_FILES]
 file_000=no
 file_001=no
@@ -77,6 +78,7 @@ file_022=no
 file_023=no
 file_024=no
 file_025=no
+file_026=no
 [OTHER_FILES]
 file_000=no
 file_001=no
@@ -104,6 +106,7 @@ file_022=no
 file_023=no
 file_024=no
 file_025=no
+file_026=no
 [FILE_INFO]
 file_000=src\usb\usb_descriptors.c
 file_001=src\usb\usb_device.c
@@ -130,7 +133,8 @@ file_021=C:\MCC18\h\p18f14k50.h
 file_022=include\adns2080.h
 file_023=include\usb\usb_user.h
 file_024=include\app.h
-file_025=lkr\rm18lf14k50.lkr
+file_025=include\bootloader.h
+file_026=lkr\rm18lf14k50.lkr
 [SUITE_INFO]
 suite_guid={5B7D72DD-9861-47BD-9F60-2BE967BF8416}
 suite_state=

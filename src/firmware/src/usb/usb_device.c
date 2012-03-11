@@ -244,6 +244,7 @@ firmware design flexibility.
 
 /** INCLUDES *******************************************************/
 #include "usb/usb.h"
+#include "bootloader.h"
 #include "app.h"
 
 #include "usb/usb_device_local.h"
