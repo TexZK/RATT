@@ -19,24 +19,23 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL DEFINITIONS
 
-#define PROGRAMMABLE_WITH_USB_HID_BOOTLOADER	
-
 // Frequencies
-#define SYS_FOSC				48000000		/// Oscillator frequency
-#define	SYS_FCY					(SYS_FOSC / 4)	/// Instruction clock rate
-#define	GetInstructionClock()	SYS_FCY			/// (Legacy definition for Fcy)
+#define SYS_FOSC				48000000			/// Oscillator frequency
+#define	SYS_FCY					(SYS_FOSC / 4)		/// Instruction clock rate
+#define	GetInstructionClock()	SYS_FCY				/// (Legacy definition for Fcy)
 
-#define	self_power 0							/// (Legacy definition)
+
+// Bootloader/User button
+#define	BUTTON_TRIS				TRISAbits.TRISA3	/// User button tristate (always = 1)
+#define	BUTTON_PIN				PORTAbits.RA3		/// User button pin, active low
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
-#pragma udata data_app_global
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL PROTOTYPES
-#pragma code code_app_global
 
 /**
  * Initializes the system.
@@ -47,15 +46,12 @@ void App_Initialize( void );
 /**
  * One microsecond delay, precise timing.
  */
-// 
-#define OneUsDelayPrecise()	{Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();}	// @ 48 MHz
+#define	OneUsDelayPrecise()	{Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();}	// @ 48 MHz
 
 
 /**
- * One microsecond delay, coarse.
+ * One microsecond delay, with possible compiler-dependent jitter.
  */
 void OneUsDelay( void );
 
-
-#pragma code
 #endif	/* !__APP_H__ */

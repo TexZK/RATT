@@ -31,6 +31,7 @@
 // HEADERS
 
 #include "app.h"
+#include "../../bootloader/include/bootloader.h"
 #include "usb/usb.h"
 #include "usb/usb_function_hid.h"
 #include "usb/usb_user.h"
@@ -265,10 +266,6 @@ void USBCBSendResume( void );
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // VECTOR REMAPPING (for HID bootloader)
 
-#define	REMAPPED_RESET_VECTOR_ADDRESS			0x1000
-#define	REMAPPED_HIGH_INTERRUPT_VECTOR_ADDRESS	0x1008
-#define	REMAPPED_LOW_INTERRUPT_VECTOR_ADDRESS	0x1018
-
 #pragma code
 extern void _startup ( void );	// See c018i.c in your C18 compiler dir
 #pragma code REMAPPED_RESET_VECTOR = REMAPPED_RESET_VECTOR_ADDRESS
@@ -277,35 +274,30 @@ void _reset( void )
     _asm goto _startup _endasm
 }
 
-#pragma code
 #pragma code REMAPPED_HIGH_INTERRUPT_VECTOR = REMAPPED_HIGH_INTERRUPT_VECTOR_ADDRESS
 void Remapped_High_ISR( void )
 {
      _asm goto HighPriorityISR _endasm
 }
 
-#pragma code
 #pragma code REMAPPED_LOW_INTERRUPT_VECTOR = REMAPPED_LOW_INTERRUPT_VECTOR_ADDRESS
 void Remapped_Low_ISR( void )
 {
      _asm goto LowPriorityISR _endasm
 }
 
-#pragma code
 #pragma code HIGH_INTERRUPT_VECTOR = 0x08
 void High_ISR( void )
 {
      _asm goto REMAPPED_HIGH_INTERRUPT_VECTOR_ADDRESS _endasm
 }
 
-#pragma code
 #pragma code LOW_INTERRUPT_VECTOR = 0x18
 void Low_ISR( void )
 {
      _asm goto REMAPPED_LOW_INTERRUPT_VECTOR_ADDRESS _endasm
 }
 
-#pragma code
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // INTERRUPTS
