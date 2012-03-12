@@ -29,21 +29,23 @@
 // LOCAL VARIABLES
 #pragma udata data_adns_local
 
+ADNS_HID_DATA	adns_hidData;			/// HID report data
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
 #pragma udata access data_adns_global_access
 
-near ADNS_STATUS	adns_status;		/// Device status.
+near ADNS_STATUS	adns_status;		/// Device status
 
 
 #pragma udata data_adns_global
 
-signed char			adns_deltaY;		/// Copy of Delta_Y register been read.
-signed char			adns_deltaX;		/// Copy of Delta_X register been read.
+signed short		adns_deltaY;		/// Copy of Delta_Y register been read
+signed short		adns_deltaX;		/// Copy of Delta_X register been read
 
-signed short		adns_y;				/// Current Y position.
-signed short		adns_x;				/// Current X position.
+signed short		adns_y;				/// Y position since last HID report
+signed short		adns_x;				/// X position since last HID report
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -74,7 +76,7 @@ unsigned char Adns_ReadSPI( void );
 
 void Adns_WriteSPI( unsigned char value )
 {
-	unsigned char dummy;
+	volatile unsigned char dummy;
 	
 	dummy = SSPBUF;					// Clear buffer state
 	SSPCON1bits.WCOL = 0;
@@ -89,7 +91,9 @@ void Adns_WriteSPI( unsigned char value )
 
 unsigned char Adns_ReadSPI( void )
 {
-	unsigned char dummy = SSPBUF;	// Clear buffer state
+	volatile unsigned char dummy;
+	
+	dummy = SSPBUF;					// Clear buffer state
 	SSPCON1bits.WCOL = 0;
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
 	
@@ -150,6 +154,10 @@ void Adns_Initialize( void )
 	adns_x = 0;
 	adns_y = 0;
 	
+	adns_hidData.reportID = 0;
+	adns_hidData.deltaX = 0;
+	adns_hidData.deltaY = 0;
+	
 	// Reset the device
 	Adns_ResetCommunication();
 	
@@ -183,11 +191,10 @@ void Adns_Service( void )
 		ADNS_BURST_MOTION_DELTAS burst;
 		
 		Adns_DisableInterrupt();
-		adns_status.motionInt = 0;		// Clear the motion flag
-		
+		adns_status.motionInt = 0;
+		YELLOW_LED = LED_ON;
 		Adns_ResetCommunication();
 		burst = Adns_BurstReadMotionDeltasBlocking();
-		
 		Adns_EnableInterrupt();
 		
 		adns_deltaY = burst.deltaY;
@@ -196,21 +203,18 @@ void Adns_Service( void )
 		adns_x += (signed short)adns_deltaX;
 		adns_y += (signed short)adns_deltaY;
 		adns_status.dataReady = 1;
-		
-		YELLOW_LED = LED_ON;
 	}
 	
 	// Check if a HID packet can be sent
 	if ( adns_status.dataReady ) {
 		if ( Usb_TxReady() ) {
-			ADNS_HID_TX_DATA data;
-			
 			// Build the packet
 			Adns_DisableInterrupt();
-			data.deltaX = adns_x;
-			data.deltaY = adns_y;
+			++adns_hidData.reportID;
+			adns_hidData.deltaX = adns_x;
+			adns_hidData.deltaY = adns_y;
 			Adns_EnableInterrupt();
-			*((ADNS_HID_TX_DATA*)usb_txBuffer) = data;
+			*((ADNS_HID_DATA *)usb_txBuffer) = adns_hidData;
 			
 			// Send the HID packet
 			Usb_TxBufferedPacket();
@@ -283,6 +287,7 @@ unsigned char Adns_ReadBlocking( unsigned char address )
 ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 {
 	ADNS_BURST_MOTION_DELTAS result;
+	unsigned char	high;
 	
 	ADNS_TRIS_MISO = 0;
 	Adns_WriteSPI( ADNS_REG_MOTION_BURST );
@@ -292,6 +297,9 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	
 	result.deltaY = Adns_ReadSPI();
 	result.deltaX = Adns_ReadSPI();
+	high = Adns_ReadSPI();
+	result.deltaY += high & 0x0F;	// Add upper 4 bits
+	result.deltaX += high >> 4;
 	
 	return result;
 }	

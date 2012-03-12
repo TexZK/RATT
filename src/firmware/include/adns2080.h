@@ -188,23 +188,23 @@ typedef struct {
 // Aggregate types of the driver
 
 typedef struct {
-	unsigned	motionInt	: 1;	/// Motion flag (interrupt sets, service clears)
-	unsigned	dataReady	: 1;	/// Data ready flag
-	unsigned				: 6;
-} ADNS_STATUS;						/// Device status
+	unsigned	motionInt		: 1;	/// Motion flag (interrupt sets, service clears)
+	unsigned	dataReady		: 1;	/// Data ready flag
+	unsigned					: 6;
+} ADNS_STATUS;							/// Device status
 
 
 typedef struct {
-	signed char	deltaY;
-	signed char	deltaX;
-} ADNS_BURST_MOTION_DELTAS;			/// Motion burst registers: motion, delta Y, delta X
+	signed short	deltaX;				/// X movement since last motion read
+	signed short	deltaY;				/// Y movement since last motion read
+} ADNS_BURST_MOTION_DELTAS;				/// Motion burst values
 
 
 typedef struct {
-	unsigned long	reportID;		/// Report identifier
-	signed short	deltaX;			/// X movement since last HID report
-	signed short	deltaY;			/// Y movement since last HID report
-} ADNS_HID_TX_DATA;					/// HID data for USB transfers	
+	unsigned long	reportID;			/// Report identifier
+	signed short	deltaX;				/// X movement since last HID report
+	signed short	deltaY;				/// Y movement since last HID report
+} ADNS_HID_DATA;						/// HID data for USB transfers	
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
