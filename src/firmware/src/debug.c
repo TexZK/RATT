@@ -11,25 +11,21 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
-#include "Compiler.h"
-#include "GenericTypeDefs.h"
-#include "HardwareProfile.h"
-
+#include "app.h"
 #include "debug.h"
 
-#include <usart.h>
-#include <stdlib.h>
+#include <usart.h>	// TODO: hand-written code works better >.<"
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL DEFINITIONS
 #pragma udata data_debug_local
 
-#define	EnableTxInt()		{ DEBUG_UART_TX_INT = 1; }
-#define	DisableTxInt()		{ DEBUG_UART_TX_INT = 0; }
+#define	EnableTxInt()		{ DEBUG_UART_INT_TX = 1; }
+#define	DisableTxInt()		{ DEBUG_UART_INT_TX = 0; }
 
-#define	EnableRxInt()		{ DEBUG_UART_RX_INT = 1; }
-#define	DisableRxInt()		{ DEBUG_UART_RX_INT = 0; }
+#define	EnableRxInt()		{ DEBUG_UART_INT_RX = 1; }
+#define	DisableRxInt()		{ DEBUG_UART_INT_RX = 0; }
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -74,7 +70,7 @@ void Debug_Initialize( void )
 		USART_EIGHT_BIT |
 		USART_CONT_RX |
 		USART_BRGH_HIGH,
-		(CLOCK_FREQ / (DEBUG_UART_BAUD_RATE * 16)) - 1
+		(SYS_FOSC / (DEBUG_UART_BAUD_RATE * 16)) - 1
 	);
 	IPR1bits.TXIP = 0;	// Low-priority interrupts
 	IPR1bits.RCIP = 0;
@@ -113,14 +109,14 @@ void Debug_PrintRam( const far ram char * text )
 void Debug_PrintChar( char value )
 {
 	DisableTxInt();
-	if ( debug_uartBufferFree == DEBUG_UART_BUFFER_SIZE && DEBUG_UART_TX_FLAG ) {
+	if ( debug_uartBufferFree == DEBUG_UART_BUFFER_SIZE && DEBUG_UART_FLAG_TX ) {
 		// SW & HW buffers are free, send directly to the USART
 		WriteUSART( value );
 	}
 	else {
 		// If the buffer is full, block until a character is sent
 		if ( debug_uartBufferFree == 0 ) {
-			while ( !DEBUG_UART_TX_FLAG );
+			while ( !DEBUG_UART_FLAG_TX );
 			++debug_uartBufferHead;
 			debug_uartBufferHead &= DEBUG_UART_BUFFER_MASK;
 			++debug_uartBufferFree;
@@ -173,7 +169,7 @@ void Debug_Flush( void )
 {
 	DisableTxInt();
 	while ( debug_uartBufferFree < DEBUG_UART_BUFFER_SIZE ) {
-		while ( !DEBUG_UART_TX_FLAG );
+		while ( !DEBUG_UART_FLAG_TX );
 		WriteUSART( debug_uartBufferData[ debug_uartBufferHead ] );
 		++debug_uartBufferHead;
 		debug_uartBufferHead &= DEBUG_UART_BUFFER_MASK;
@@ -191,7 +187,7 @@ void Debug_TxIntCallback( void )
 	DisableTxInt();
 	if ( debug_uartBufferFree < DEBUG_UART_BUFFER_SIZE )
 	{
-		while ( !DEBUG_UART_TX_FLAG );		// Should always be true
+		while ( !DEBUG_UART_FLAG_TX );		// Should always be true
 		WriteUSART( debug_uartBufferData[ debug_uartBufferHead ] );
 		++debug_uartBufferHead;
 		debug_uartBufferHead &= DEBUG_UART_BUFFER_MASK;

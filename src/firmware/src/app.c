@@ -37,6 +37,7 @@
 #include "usb/usb_user.h"
 #include "adns2080.h"
 #include "leds.h"
+#include "debug.h"
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -364,12 +365,23 @@ void InitializeSystem( void )
     TRISB = ~0;
     TRISC = ~0;
     
+    // Initialize the LEDs module
+    Leds_Initialize();
+    GREEN_LED = LED_ON;
+    YELLOW_LED = LED_ON;
+    RED_LED = LED_ON;
+    
     // Initialize the debug module
-//    Debug_Initialize();
-//    INTCONbits.GIEH = 1;
-//    INTCONbits.GIEL = 1;
-//    Debug_PrintRom( (const far rom char *)"=> RATT <=\nby TexZK\n\n" );
-//    Debug_Flush();
+    Debug_Initialize();
+RED_LED = LED_OFF;
+WaitButtonPress();
+    INTCONbits.GIEH = 1;
+    INTCONbits.GIEL = 1;
+    Debug_PrintRom( (const far rom char *)"=> RATT <=\nby TexZK\n\n" );
+YELLOW_LED = LED_OFF;
+WaitButtonPress();
+    Debug_Flush();
+GREEN_LED = LED_OFF;
     
     // Initialize USB module
 //    Debug_PrintRom( (const far rom char *)"Init USB\n" );
@@ -380,11 +392,6 @@ void InitializeSystem( void )
     // TODO: Initialize ADNS module
 //    Debug_PrintRom( (const far rom char *)"Init ADNS\n" );
 	Adns_Initialize();
-//    Debug_Flush();
-    
-    // Initialize the LEDs module
-//    Debug_PrintRom( (const far rom char *)"Init LEDs\n" );
-    Leds_Initialize();
 //    Debug_Flush();
     
 //    Debug_PrintRom( (const far rom char *)"\nInit OK!\n\n" );
@@ -451,6 +458,13 @@ void main( void )
     	
     	ProcessIO();        
     }
+}
+
+
+void WaitButtonPress( void )
+{
+	while ( !BUTTON_PIN );		// Wait for previous release
+	while ( BUTTON_PIN );		// Wait for button press
 }
 
 

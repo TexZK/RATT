@@ -41,6 +41,12 @@ void App_Initialize( void );
 
 
 /**
+ * Wait for button press, after being released.
+ */
+void WaitButtonPress( void );
+
+
+/**
  * One microsecond delay, precise timing.
  */
 #define	OneUsDelayPrecise()	{Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();}	// @ 48 MHz
