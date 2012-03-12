@@ -22,11 +22,26 @@
 // System properties
 #define	ADNS_DPI						   1000				/// Resolution
 #define	ADNS_INCH_SEC					     30				/// Inches per second
-#define	ADNS_POWERUP_MS					     50				/// Power-up delay in millseconds
 #define	ADNS_MAX_SPI_FREQ				1000000				/// Maximum SPI speed [Hz]
 #define	ADNS_SPI_FREQ					 750000				/// Actual SPI speed [Hz] (see SPI setup)
 
-#define	ADNS_SPI_BYTE_DELAY				((8 * 1000000) / ADNS_SPI_FREQ)	/// Microseconds delay of a byte sent over SPI
+// Delays and timeouts
+#define	ADNS_DLY_MOT_RST_MAX_MS			     50				/// t_MOT-RST
+#define	ADNS_DLY_REST_EN_MAX_S			      1				/// t_REST-EN
+#define	ADNS_DLY_REST_DIS_MAX_S			      1				/// t_REST-DIS
+#define	ADNS_DLY_PD_MAX_MS				     50				/// t_PD
+#define	ADNS_DLY_WAKEUP_MAX_MS			     55				/// t_WAKEUP
+#define	ADNS_DLY_R_SDIO_MAX_NS			    200				/// t_r-SDIO
+#define	ADNS_DLY_F_SDIO_MAX_NS			    200				/// t_f-SDIO
+#define	ADNS_DLY_DLY_SDIO_MAX_NS		    120				/// t_DLY-SDIO
+#define	ADNS_DLY_HOLD_MIN_NS			    250				/// t_hold-SDIO
+#define	ADNS_DLY_HOLD_MAX_NS			(1000000000 / ADNS_SPI_FREQ)	/// t_hold-SDIO
+#define	ADNS_DLY_TIMEOUT_SDIO_MIN_MS	     50				/// t_timeout-SDIO
+#define	ADNS_DLY_TSWR_MIN_MS			     20				/// t_SWR
+#define	ADNS_DLY_TSWW_MIN_MS			     30				/// t_SWW
+#define	ADNS_DLY_TSRX_MIN_NS			    250				/// t_SRW & t_SRR
+#define	ADNS_DLY_TSRAD_MIN_US			      4				/// t_SRAD
+#define	ADNS_DLY_SPI_BYTE_US			((8 * 1000000) / ADNS_SPI_FREQ)	/// Delay of a byte sent over SPI
 
 // Pin definitions
 #define	ADNS_PIN_MISO					PORTBbits.RB4		/// SPI MISO/SDO
@@ -46,15 +61,131 @@
 #define	ADNS_INT_IP						INTCON3bits.INT2IP	/// Interrupt priority (1 = high, 0 = low)
 #define	ADNS_INT_EDGE					INTCON2bits.INTEDG2	/// Interrupt edge (1 = rising, 0 = falling)
 
-// Register addresses
-#define	ADNS_REG_				0x00				/// 
+
+// Register addresses (see datasheet for description)
+#define	ADNS_REG_PROD_ID				0x00		/// Product ID
+#define	ADNS_REG_REV_ID					0x01		/// Revision ID
+#define	ADNS_REG_MOTION_ST				0x02		/// Motion Status 
+#define	ADNS_REG_DELTA_X				0x03		/// Lower byte of Delta_X 
+#define	ADNS_REG_DELTA_Y				0x04		/// Lower byte of Delta_Y
+#define	ADNS_REG_SQUAL					0x05		/// Squal Quality
+#define	ADNS_REG_SHUT_HI				0x06		/// Shutter Open Time (Upper 8-bit) 
+#define	ADNS_REG_SHUT_LO				0x07		/// Shutter Open Time (Lower 8-bit)
+#define	ADNS_REG_PIX_MAX				0x08		/// Maximum Pixel Value
+#define	ADNS_REG_PIX_ACCUM				0x09		/// Average Pixel Value
+#define	ADNS_REG_PIX_MIN				0x0A		/// Minimum Pixel Value
+#define	ADNS_REG_PIX_GRAB				0x0B		/// Pixel Grabber
+#define	ADNS_REG_DELTA_XY_HIGH			0x0C		/// Upper 4 bits of Delta X and Y displacement 
+#define	ADNS_REG_MOUSE_CTRL				0x0D		/// Mouse Control
+#define	ADNS_REG_RUN_DOWNSHIFT			0x0E		/// Run to Rest1 Time 
+#define	ADNS_REG_REST1_PERIOD			0x0F		/// Rest1 Period
+#define	ADNS_REG_REST1_DOWNSHIFT		0x10		/// Rest1 to Rest2 Time
+#define	ADNS_REG_REST2_PERIOD			0x11		/// Rest2 Period
+#define	ADNS_REG_REST2_DOWNSHIFT		0x12		/// Rest2 to Rest3 Time
+#define	ADNS_REG_REST3_PERIOD			0x13		/// Rest3 Period
+#define	ADNS_REG_PERFORMANCE			0x22		/// Performance
+#define	ADNS_REG_RESET					0x3A		/// Reset
+#define	ADNS_REG_NOT_REV_ID				0x3F		/// Inverted Revision ID
+#define	ADNS_REG_LED_CTRL				0x40		/// LED Control
+#define	ADNS_REG_MOTION_CTRL			0x41		/// Motion Control
+#define	ADNS_REG_BURST_READ_FIRST		0x42		/// Burst Read Starting Register 
+#define	ADNS_REG_BURST_READ_LAST		0x44		/// Burst Read Ending Register
+#define	ADNS_REG_REST_MODE_CONFIG		0x45		/// Rest Mode Coni  guration
+#define	ADNS_REG_MOTION_BURST			0x63		/// Burst Read
 
 
-// Register default values
-#define	ADNS_DEF_				
+// Register default values (see datasheet)
+#define	ADNS_DEF_PROD_ID				0x2A
+#define	ADNS_DEF_REV_ID					0x00
+#define	ADNS_DEF_MOTION_ST				0x00
+#define	ADNS_DEF_DELTA_X				0x00
+#define	ADNS_DEF_DELTA_Y				0x00
+#define	ADNS_DEF_SQUAL					0x00
+#define	ADNS_DEF_SHUT_HI				0x00
+#define	ADNS_DEF_SHUT_LO				0x64
+#define	ADNS_DEF_PIX_MAX				0xD0
+#define	ADNS_DEF_PIX_ACCUM				0x80
+#define	ADNS_DEF_PIX_MIN				0x00
+#define	ADNS_DEF_PIX_GRAB				0x00
+#define	ADNS_DEF_DELTA_XY_HIGH			0x00
+#define	ADNS_DEF_MOUSE_CTRL				0x01
+#define	ADNS_DEF_RUN_DOWNSHIFT			0x08
+#define	ADNS_DEF_REST1_PERIOD			0x01
+#define	ADNS_DEF_REST1_DOWNSHIFT		0x1F
+#define	ADNS_DEF_REST2_PERIOD			0x09
+#define	ADNS_DEF_REST2_DOWNSHIFT		0x2F
+#define	ADNS_DEF_REST3_PERIOD			0x31
+#define	ADNS_DEF_PERFORMANCE			0x00
+#define	ADNS_DEF_RESET					0x00
+#define	ADNS_DEF_NOT_REV_ID				0xFF
+#define	ADNS_DEF_LED_CTRL				0x00
+#define	ADNS_DEF_MOTION_CTRL			0x40
+#define	ADNS_DEF_BURST_READ_FIRST		0x03
+#define	ADNS_DEF_BURST_READ_LAST		0x09
+#define	ADNS_DEF_REST_MODE_CONFIG		0x00
+#define	ADNS_DEF_MOTION_BURST			0x00
 
 
-// Bitfields and aggregate types
+// Register bitfields
+
+typedef struct {
+	unsigned					: 7;
+	unsigned	MOTION_ST		: 1;
+} ANDS_BITS_MOTION_ST;
+
+typedef struct {
+	unsigned	S				: 4;
+	unsigned					: 4;
+} ADNS_BITS_SHUT_HI;
+
+typedef struct {
+	unsigned	S				: 8;
+} ADNS_BITS_SHUT_LO;
+
+typedef struct {
+	unsigned	PG				: 7;
+	unsigned	PG_VALID		: 1;
+} ADNS_BITS_PIX_GRAB;
+
+typedef struct {
+	unsigned	DELTA_Y_HI		: 4;
+	unsigned	DELTA_X_HI		: 4;
+} ADNS_BITS_DELTA_XY_HIGH;
+
+typedef struct {
+	unsigned	RES_D			: 1;
+	unsigned	PD				: 1;
+	unsigned	RES				: 3;
+	unsigned	RES_EN			: 1;
+	unsigned					: 1;
+	unsigned	BIT_REPORTING	: 1;
+} ADNS_BITS_MOUSE_CTRL;
+
+typedef struct {
+	unsigned					: 4;
+	unsigned	FORCE			: 3;
+	unsigned					: 1;
+} ADNS_BITS_PERFORMANCE;
+
+typedef struct {
+	unsigned					: 3;
+	unsigned	LCOF			: 1;
+	unsigned					: 4;
+} ADNS_BITS_LED_CTRL;
+
+typedef struct {
+	unsigned					: 6;
+	unsigned	MOT_S			: 1;
+	unsigned	MOT_A			: 1;
+} ADNS_BITS_MOTION_CTRL;
+
+typedef struct {
+	unsigned					: 6;
+	unsigned	RM				: 2;
+} ADNS_BITS_REST_MODE_CONFIG;
+
+
+// Aggregate types of the driver
 
 typedef struct {
 	unsigned	motionInt	: 1;	/// Motion flag (interrupt sets, service clears)
@@ -70,6 +201,7 @@ typedef struct {
 
 
 typedef struct {
+	unsigned long	reportID;		/// Report identifier
 	signed short	deltaX;			/// X movement since last HID report
 	signed short	deltaY;			/// Y movement since last HID report
 } ADNS_HID_TX_DATA;					/// HID data for USB transfers	
@@ -204,5 +336,4 @@ void Adns_AddressDataDelay( void );
 void Adns_ReadSubsequentDelay( void );
 
 
-#pragma code
 #endif	/* !__ADNS3530_H__ */

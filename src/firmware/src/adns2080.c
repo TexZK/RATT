@@ -11,6 +11,7 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
+#include "Compiler.h"
 #include "app.h"
 #include "TimeDelay.h"
 #include "usb/usb_user.h"
@@ -91,9 +92,9 @@ unsigned char Adns_ReadSPI( void )
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
 	
 	SSPBUF = 0xFF;					// Keep MOSI high
-	if ( !SSPCON1bits.WCOL ) {		// Check for no collision
+//	if ( !SSPCON1bits.WCOL ) {		// Check for no collision
 		while ( !PIR1bits.SSPIF );		// Wait until the value is sent
-	}
+//	}
 	return SSPBUF;
 }
 
@@ -161,7 +162,7 @@ void Adns_Initialize( void )
 
 void Adns_PowerUpDelay( void )
 {
-	DelayMs( ADNS_POWERUP_MS );
+	DelayMs( ADNS_DLY_MOT_RST_MAX_MS );
 }
 
 
@@ -248,7 +249,7 @@ unsigned char Adns_CheckCommunication( void )
 
 void Adns_ResetCommunication( void )
 {
-	// TODO
+	DelayMs( ADNS_DLY_TIMEOUT_SDIO_MIN_MS + 1 );
 }
 
 
@@ -276,7 +277,7 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	ADNS_BURST_MOTION_DELTAS result;
 	
 	ADNS_TRIS_MISO = 0;
-	//WriteSPI( ADNS_REG_MOTION_BURST ); // TODO
+	Adns_WriteSPI( ADNS_REG_MOTION_BURST );
 	Adns_AddressDataDelay();
 	OneUsDelay();	// FIXME
 	ADNS_TRIS_MISO = 1;
@@ -290,13 +291,13 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 
 void Adns_WriteWriteDelay( void )
 {
-	Delay10us( (30 + 9 - 2 * ADNS_SPI_BYTE_DELAY) / 10 );
+	Delay10us( (ADNS_DLY_TSWW_MIN_MS + 9 - 2 * ADNS_DLY_SPI_BYTE_US) / 10 );
 }
 
 
 void Adns_WriteReadDelay( void )
 {
-	Delay10us( (20 + 9 - ADNS_SPI_BYTE_DELAY) / 10 );
+	Delay10us( (ADNS_DLY_TSWR_MIN_MS + 9 - ADNS_DLY_SPI_BYTE_US) / 10 );
 }
 
 
@@ -314,18 +315,6 @@ void Adns_ReadSubsequentDelay( void )
 	Nop();
 	Nop();
 	Nop();
-	Nop();
-}	
-
-
-void Adns_WriteInactiveDelay( void )
-{
-	Delay10us( 20 / 10 );
-}	
-
-
-void Adns_ReadInactiveDelay( void )
-{
 	Nop();
 }
 
