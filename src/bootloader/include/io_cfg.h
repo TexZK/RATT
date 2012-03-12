@@ -79,17 +79,17 @@
 #define mLED_2              YELLOW_LED
 #define mLED_3              RED_LED
     
-#define mLED_1_On()         mLED_1 = LED_ON;
-#define mLED_2_On()         mLED_2 = LED_ON;
-#define mLED_3_On()         mLED_3 = LED_ON;
+#define mLED_1_On()         {mLED_1 = LED_ON;}
+#define mLED_2_On()         {mLED_2 = LED_ON;}
+#define mLED_3_On()         {mLED_3 = LED_ON;}
 
-#define mLED_1_Off()        mLED_1 = LED_OFF;
-#define mLED_2_Off()        mLED_2 = LED_OFF;
-#define mLED_3_Off()        mLED_3 = LED_OFF;
+#define mLED_1_Off()        {mLED_1 = LED_OFF;}
+#define mLED_2_Off()        {mLED_2 = LED_OFF;}
+#define mLED_3_Off()        {mLED_3 = LED_OFF;}
 
-#define mLED_1_Toggle()     mLED_1 = !mLED_1;
-#define mLED_2_Toggle()     mLED_2 = !mLED_2;
-#define mLED_3_Toggle()     mLED_3 = !mLED_3;
+#define mLED_1_Toggle()     {mLED_1 = !mLED_1;}
+#define mLED_2_Toggle()     {mLED_2 = !mLED_2;}
+#define mLED_3_Toggle()     {mLED_3 = !mLED_3;}
 
 /** SWITCH *********************************************************/
 #define sw2                 BUTTON_PIN

@@ -97,8 +97,8 @@ bootloader to use more program memory.
 #pragma config PLLEN  = ON
 #pragma config FCMEN  = OFF
 #pragma config IESO   = OFF
-#pragma config PWRTEN = OFF
-#pragma config BOREN  = OFF
+#pragma config PWRTEN = ON
+#pragma config BOREN  = ON
 #pragma config BORV   = 30
 #pragma config WDTEN  = OFF
 #pragma config WDTPS  = 32768
@@ -269,18 +269,18 @@ static void InitializeSystem(void)
 void BlinkUSBStatus(void)
 {
     static unsigned short led_count = 0;
-
-    if ( ++led_count >= 10000 ) {
-	    led_count = 0;
-	}
+	
+    led_count = (led_count + 1) & ((1 << 14) - 1);
 
 	if ( usb_device_state < CONFIGURED_STATE ) {
 		mLED_1_Off();
 		mLED_2_On();
+		mLED_3_On();
 	} 
 	else if ( led_count == 0 ) {
 		mLED_1_Toggle();
 		mLED_2_Toggle();
+		mLED_3_Off();
 	}
 }
 
