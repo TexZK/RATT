@@ -11,21 +11,27 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
+#include "Compiler.h"
 #include "app.h"
 #include "debug.h"
-
-#include <usart.h>	// TODO: hand-written code works better >.<"
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL DEFINITIONS
 #pragma udata data_debug_local
 
-#define	EnableTxInt()		{ DEBUG_UART_INT_TX = 1; }
-#define	DisableTxInt()		{ DEBUG_UART_INT_TX = 0; }
+/**
+ * Value of the SPBRG register (baud rate generator), supposing an 8-bit counter
+ * and no need for high-speed transmission.
+ * [value = 77]
+ */
+#define	SPBRG_VALUE			((SYS_FOSC / (DEBUG_UART_BAUD_RATE * 16)) - 1)
 
-#define	EnableRxInt()		{ DEBUG_UART_INT_RX = 1; }
-#define	DisableRxInt()		{ DEBUG_UART_INT_RX = 0; }
+#define	EnableTxInt()		{ DEBUG_UART_INT_TX = 1; }		/// Enables the TX interrupt
+#define	DisableTxInt()		{ DEBUG_UART_INT_TX = 0; }		/// Disables the RX interrupt
+
+#define	EnableRxInt()		{ DEBUG_UART_INT_RX = 1; }		/// Enables the TX interrupt
+#define	DisableRxInt()		{ DEBUG_UART_INT_RX = 0; }		/// Disables the RX interrupt
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -59,32 +65,31 @@ volatile unsigned char					debug_uartBufferFree;
 
 void Debug_Initialize( void )
 {
-	// Release the module
-	Debug_Release();
+	Debug_Release();			// Release the module
 	
-	// Open the UART port
-	OpenUSART(
-		USART_TX_INT_OFF |
-		USART_RX_INT_OFF |
-		USART_ASYNCH_MODE |
-		USART_EIGHT_BIT |
-		USART_CONT_RX |
-		USART_BRGH_HIGH,
-		(SYS_FOSC / (DEBUG_UART_BAUD_RATE * 16)) - 1
-	);
-	IPR1bits.TXIP = 0;	// Low-priority interrupts
+	// Configure the UART module
+	SPBRG = SPBRG_VALUE;		// Baud rate generator counter
+	SPBRGH = (SPBRG_VALUE >> 8);
+	
+	RCSTA = 0;					// Reset the receiver configuration
+	RCSTAbits.CREN = 1;			// Receive continuously
+	
+	TXSTA = 0;					// Reset the transmitter configuration
+	TXSTAbits.TXEN = 1;			// Enable the transmitter
+	
+	IPR1bits.TXIP = 0;			// Low-priority interrupts
 	IPR1bits.RCIP = 0;
 	
-	DisableTxInt();
-	DisableRxInt();
+	RCSTAbits.SPEN = 1;			// Enable the serial port
 }
 
 	
 void Debug_Release( void )
 {
-	// Disable interrupts and free the buffer
-	Debug_Truncate();
-	CloseUSART();
+	Debug_Truncate();			// Free the buffers
+	DisableTxInt();				// Disable interrupts
+	DisableRxInt();
+	RCSTAbits.SPEN = 0;			// Turn the UART off
 }
 
 
@@ -111,7 +116,7 @@ void Debug_PrintChar( char value )
 	DisableTxInt();
 	if ( debug_uartBufferFree == DEBUG_UART_BUFFER_SIZE && DEBUG_UART_FLAG_TX ) {
 		// SW & HW buffers are free, send directly to the USART
-		WriteUSART( value );
+		TXREG = value;
 	}
 	else {
 		// If the buffer is full, block until a character is sent
@@ -170,7 +175,7 @@ void Debug_Flush( void )
 	DisableTxInt();
 	while ( debug_uartBufferFree < DEBUG_UART_BUFFER_SIZE ) {
 		while ( !DEBUG_UART_FLAG_TX );
-		WriteUSART( debug_uartBufferData[ debug_uartBufferHead ] );
+		TXREG = debug_uartBufferData[ debug_uartBufferHead ];
 		++debug_uartBufferHead;
 		debug_uartBufferHead &= DEBUG_UART_BUFFER_MASK;
 		++debug_uartBufferFree;
@@ -188,7 +193,7 @@ void Debug_TxIntCallback( void )
 	if ( debug_uartBufferFree < DEBUG_UART_BUFFER_SIZE )
 	{
 		while ( !DEBUG_UART_FLAG_TX );		// Should always be true
-		WriteUSART( debug_uartBufferData[ debug_uartBufferHead ] );
+		TXREG = debug_uartBufferData[ debug_uartBufferHead ];
 		++debug_uartBufferHead;
 		debug_uartBufferHead &= DEBUG_UART_BUFFER_MASK;
 		++debug_uartBufferFree;
