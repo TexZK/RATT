@@ -25,7 +25,7 @@
  * and no need for high-speed transmission.
  * [value = 77]
  */
-#define	SPBRG_VALUE			((SYS_FOSC / (DEBUG_UART_BAUD_RATE * 16)) - 1)
+#define	SPBRG_VALUE			((SYS_FOSC / (DEBUG_BAUD_RATE * 16)) - 1)
 
 #define	EnableTxInt()		{ DEBUG_UART_INT_TX = 1; }		/// Enables the TX interrupt
 #define	DisableTxInt()		{ DEBUG_UART_INT_TX = 0; }		/// Disables the RX interrupt
@@ -38,10 +38,19 @@
 // LOCAL VARIABLES
 #pragma udata data_debug_local
 
-volatile char							debug_uartBufferData[ DEBUG_UART_BUFFER_SIZE ];
-volatile DEBUG_UART_BUFFER_INDEX_TYPE	debug_uartBufferHead;
-volatile DEBUG_UART_BUFFER_INDEX_TYPE	debug_uartBufferTail;
-volatile unsigned char					debug_uartBufferFree;
+volatile DEBUG_UART_BUFFER_INDEX_TYPE	debug_uartTxBufferHead;
+volatile DEBUG_UART_BUFFER_INDEX_TYPE	debug_uartTxBufferTail;
+volatile unsigned char					debug_uartTxBufferFree;
+
+volatile DEBUG_UART_BUFFER_INDEX_TYPE	debug_uartRxBufferHead;
+volatile DEBUG_UART_BUFFER_INDEX_TYPE	debug_uartRxBufferTail;
+volatile unsigned char					debug_uartRxBufferFree;
+
+#pragma udata data_debug_txbuf
+volatile char							debug_uartTxBufferData[ DEBUG_TX_BUFFER_SIZE ];
+
+#pragma udata data_debug_rxbuf
+volatile char							debug_uartRxBufferData[ DEBUG_RX_BUFFER_SIZE ];
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -114,25 +123,25 @@ void Debug_PrintRam( const far ram char * text )
 void Debug_PrintChar( char value )
 {
 	DisableTxInt();
-	if ( debug_uartBufferFree == DEBUG_UART_BUFFER_SIZE && DEBUG_UART_FLAG_TX ) {
+	if ( debug_uartTxBufferFree == DEBUG_TX_BUFFER_SIZE && DEBUG_UART_FLAG_TX ) {
 		// SW & HW buffers are free, send directly to the USART
 		TXREG = value;
 	}
 	else {
 		// If the buffer is full, block until a character is sent
-		if ( debug_uartBufferFree == 0 ) {
+		if ( debug_uartTxBufferFree == 0 ) {
 			while ( !DEBUG_UART_FLAG_TX );
-			++debug_uartBufferHead;
-			debug_uartBufferHead &= DEBUG_UART_BUFFER_MASK;
-			++debug_uartBufferFree;
+			++debug_uartTxBufferHead;
+			debug_uartTxBufferHead &= DEBUG_TX_BUFFER_MASK;
+			++debug_uartTxBufferFree;
 		}
 		
 		// Enqueue the character
-		debug_uartBufferData[ debug_uartBufferTail ] = value;
-		if ( ++debug_uartBufferTail == DEBUG_UART_BUFFER_SIZE ) {
-			debug_uartBufferTail = 0;
+		debug_uartTxBufferData[ debug_uartTxBufferTail ] = value;
+		if ( ++debug_uartTxBufferTail == DEBUG_TX_BUFFER_SIZE ) {
+			debug_uartTxBufferTail = 0;
 		}	
-		--debug_uartBufferFree;
+		--debug_uartTxBufferFree;
 		
 		// Process the next character
 		EnableTxInt();
@@ -149,40 +158,52 @@ void Debug_PrintByte( unsigned char value )
 }
 
 
-DEBUG_UART_BUFFER_INDEX_TYPE Debug_BufferUsed( void )
+DEBUG_UART_BUFFER_INDEX_TYPE Debug_TxBufferUsed( void )
 {
-	return DEBUG_UART_BUFFER_SIZE - debug_uartBufferFree;
+	return DEBUG_TX_BUFFER_SIZE - debug_uartTxBufferFree;
 }
 
 
-DEBUG_UART_BUFFER_INDEX_TYPE Debug_BufferFree( void )
+DEBUG_UART_BUFFER_INDEX_TYPE Debug_TxBufferFree( void )
 {
-	return debug_uartBufferFree;
+	return debug_uartTxBufferFree;
+}
+
+
+DEBUG_UART_BUFFER_INDEX_TYPE Debug_RxBufferUsed( void )
+{
+	return DEBUG_TX_BUFFER_SIZE - debug_uartRxBufferFree;
+}
+
+
+DEBUG_UART_BUFFER_INDEX_TYPE Debug_RxBufferFree( void )
+{
+	return debug_uartRxBufferFree;
 }
 
 
 void Debug_Truncate( void )
 {
 	DisableTxInt();
-	debug_uartBufferHead = 0;
-	debug_uartBufferTail = 0;
-	debug_uartBufferFree = DEBUG_UART_BUFFER_SIZE;
+	debug_uartTxBufferHead = 0;
+	debug_uartTxBufferTail = 0;
+	debug_uartTxBufferFree = DEBUG_TX_BUFFER_SIZE;
 }
 
 	
 void Debug_Flush( void )
 {
 	DisableTxInt();
-	while ( debug_uartBufferFree < DEBUG_UART_BUFFER_SIZE ) {
+	while ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 		while ( !DEBUG_UART_FLAG_TX );
-		TXREG = debug_uartBufferData[ debug_uartBufferHead ];
-		++debug_uartBufferHead;
-		debug_uartBufferHead &= DEBUG_UART_BUFFER_MASK;
-		++debug_uartBufferFree;
+		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
+		++debug_uartTxBufferHead;
+		debug_uartTxBufferHead &= DEBUG_TX_BUFFER_MASK;
+		++debug_uartTxBufferFree;
 	}
-	debug_uartBufferHead = 0;
-	debug_uartBufferTail = 0;
-	debug_uartBufferFree = DEBUG_UART_BUFFER_SIZE;
+	debug_uartTxBufferHead = 0;
+	debug_uartTxBufferTail = 0;
+	debug_uartTxBufferFree = DEBUG_TX_BUFFER_SIZE;
 }
 
 
@@ -190,16 +211,16 @@ void Debug_TxIntCallback( void )
 {
 	// Send the next character
 	DisableTxInt();
-	if ( debug_uartBufferFree < DEBUG_UART_BUFFER_SIZE )
+	if ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE )
 	{
 		while ( !DEBUG_UART_FLAG_TX );		// Should always be true
-		TXREG = debug_uartBufferData[ debug_uartBufferHead ];
-		++debug_uartBufferHead;
-		debug_uartBufferHead &= DEBUG_UART_BUFFER_MASK;
-		++debug_uartBufferFree;
+		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
+		++debug_uartTxBufferHead;
+		debug_uartTxBufferHead &= DEBUG_TX_BUFFER_MASK;
+		++debug_uartTxBufferFree;
 		
 		// Enable the interrupt if there are queued characters
-		if ( debug_uartBufferFree < DEBUG_UART_BUFFER_SIZE ) {
+		if ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 			EnableTxInt();
 		}	
 	}

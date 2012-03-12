@@ -18,10 +18,17 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL DEFINITIONS
 
-#define	DEBUG_UART_BAUD_RATE		115200				/// UART baud rate
-#define	DEBUG_UART_BUFFER_BITS		6
-#define	DEBUG_UART_BUFFER_SIZE		(1 << DEBUG_UART_BUFFER_BITS)
-#define	DEBUG_UART_BUFFER_MASK		(DEBUG_UART_BUFFER_SIZE - 1)
+#define	DEBUG_BAUD_RATE		115200				/// UART baud rate
+
+
+// Buffer definitions
+#define	DEBUG_TX_BUFFER_BITS		5
+#define	DEBUG_TX_BUFFER_SIZE		(1 << DEBUG_TX_BUFFER_BITS)
+#define	DEBUG_TX_BUFFER_MASK		(DEBUG_TX_BUFFER_SIZE - 1)
+
+#define	DEBUG_RX_BUFFER_BITS		5
+#define	DEBUG_RX_BUFFER_SIZE		(1 << DEBUG_RX_BUFFER_BITS)
+#define	DEBUG_RX_BUFFER_MASK		(DEBUG_RX_BUFFER_SIZE - 1)
 
 #if ( DEBUG_UART_BUFFER_BITS <= 7 )
 typedef unsigned char	DEBUG_UART_BUFFER_INDEX_TYPE;
@@ -29,11 +36,15 @@ typedef unsigned char	DEBUG_UART_BUFFER_INDEX_TYPE;
 typedef unsigned short	DEBUG_UART_BUFFER_INDEX_TYPE;
 #endif
 
+
+// Interrupt definitions
 #define	DEBUG_UART_INT_TX			PIE1bits.TXIE		/// TX interrupt switch
 #define	DEBUG_UART_INT_RX			PIE1bits.RCIE		/// RX interrupt switch
 #define	DEBUG_UART_FLAG_TX			PIR1bits.TXIF		/// TX interrupt flag
 #define	DEBUG_UART_FLAG_RX			PIR1bits.RCIF		/// RX interrupt flag
 
+
+// Pin definitions
 #define	DEBUG_TRIS_TX				TRISBbits.TRISB7	/// TX tristate
 #define	DEBUG_TRIS_RX				TRISBbits.TRISB5	/// RX tristate
 #define	DEBUG_PIN_TX				PORTBbits.RB7		/// TX pin
@@ -85,16 +96,30 @@ void Debug_PrintByte( unsigned char value );
 
 /**
  * @return
- *		The number of buffer bytes used.
+ *		The number of TX buffer bytes used.
  */
-DEBUG_UART_BUFFER_INDEX_TYPE Debug_BufferUsed( void );
+DEBUG_UART_BUFFER_INDEX_TYPE Debug_TxBufferUsed( void );
 
 
 /**
  * @return
- *		The number of buffer bytes free.
+ *		The number of TX buffer bytes free.
  */
-DEBUG_UART_BUFFER_INDEX_TYPE Debug_BufferFree( void );
+DEBUG_UART_BUFFER_INDEX_TYPE Debug_TxBufferFree( void );
+
+
+/**
+ * @return
+ *		The number of RX buffer bytes used.
+ */
+DEBUG_UART_BUFFER_INDEX_TYPE Debug_RxBufferUsed( void );
+
+
+/**
+ * @return
+ *		The number of RX buffer bytes free.
+ */
+DEBUG_UART_BUFFER_INDEX_TYPE Debug_RxBufferFree( void );
 
 
 /**
