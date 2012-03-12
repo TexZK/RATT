@@ -152,9 +152,9 @@ void Debug_PrintChar( char value )
 void Debug_PrintByte( unsigned char value )
 {
 	unsigned char c = value & 0x0F;
-	Debug_PrintChar( (c > 9) ? (c + 'A') : (c + '0') );
+	Debug_PrintChar( ((c > 9) ? 'A': '0') + c );
 	c = value >> 4;
-	Debug_PrintChar( (c > 9) ? (c + 'A') : (c + '0') );
+	Debug_PrintChar( ((c > 9) ? 'A': '0') + c );
 }
 
 

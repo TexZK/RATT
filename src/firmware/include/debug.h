@@ -72,14 +72,34 @@ void Debug_Release( void );
 
 /**
  * Prints a string from ROM.
+ *
+ * @param text
+ *		ROM pointer to the string to be printed
  */
 void Debug_PrintRom( const far rom char * text );
 
+/**
+ * Prints a string from ROM, with pointer casting.
+ * Useful to print string literals.
+ *
+ * @param text
+ *		ROM pointer to the string to be printed
+ */
+#define	Debug_PrintRom_( text )		Debug_PrintRom( (const far rom char *)(text) )
 
 /**
  * Prints a string from RAM.
  */
 void Debug_PrintRam( const far ram char * text );
+
+/**
+ * Prints a string from RAM, with pointer casting.
+ * Useful to print string literals.
+ *
+ * @param text
+ *		RAM pointer to the string to be printed
+ */
+#define	Debug_PrintRam_( text )		Debug_PrintRam( (const far ram char *)(text) )
 
 
 /**

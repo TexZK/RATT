@@ -377,24 +377,24 @@ RED_LED = LED_OFF;
 WaitButtonPress();
     INTCONbits.GIEH = 1;
     INTCONbits.GIEL = 1;
-    Debug_PrintRom( (const far rom char *)"=> RATT <=\nby TexZK\n\n" );
+    Debug_PrintRom_( "=> RATT <=\nby TexZK\n\n" );
 YELLOW_LED = LED_OFF;
 WaitButtonPress();
     Debug_Flush();
 GREEN_LED = LED_OFF;
     
     // Initialize USB module
-//    Debug_PrintRom( (const far rom char *)"Init USB\n" );
+//    Debug_PrintRom_( "Init USB\n" );
     Usb_UserInit();
     USBDeviceInit();
 //    Debug_Flush();
     
     // TODO: Initialize ADNS module
-//    Debug_PrintRom( (const far rom char *)"Init ADNS\n" );
+//    Debug_PrintRom_( "Init ADNS\n" );
 	Adns_Initialize();
 //    Debug_Flush();
     
-//    Debug_PrintRom( (const far rom char *)"\nInit OK!\n\n" );
+//    Debug_PrintRom_( "\nInit OK!\n\n" );
 //    Debug_Flush();
 }
 

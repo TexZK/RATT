@@ -13,6 +13,8 @@
 
 #include "Compiler.h"
 #include "app.h"
+#include "leds.h"
+#include "debug.h"
 #include "TimeDelay.h"
 #include "usb/usb_user.h"
 #include "adns2080.h"
@@ -148,8 +150,16 @@ void Adns_Initialize( void )
 	adns_x = 0;
 	adns_y = 0;
 	
-	// TODO: Reset the device
+	// Reset the device
 	Adns_ResetCommunication();
+	
+	// Check communication
+	Debug_PrintRom_( "ADNS connection... " );
+	if ( Adns_CheckCommunication() ) {
+		Debug_PrintRom_( "ok\n" );
+	} else {
+		Debug_PrintRom_( "FAIL\n" );
+	}
 	
 	// Enable MOTION interrupt
 	ADNS_INT_IF = 0;
@@ -186,6 +196,8 @@ void Adns_Service( void )
 		adns_x += (signed short)adns_deltaX;
 		adns_y += (signed short)adns_deltaY;
 		adns_status.dataReady = 1;
+		
+		YELLOW_LED = LED_ON;
 	}
 	
 	// Check if a HID packet can be sent
@@ -209,6 +221,8 @@ void Adns_Service( void )
 			adns_x = 0;
 			adns_y = 0;
 			Adns_EnableInterrupt();
+			
+			YELLOW_LED = LED_OFF;
 		}
 	}	
 }
@@ -223,26 +237,20 @@ void Adns_MotionCallback( void )
 
 unsigned char Adns_CheckCommunication( void )
 {
-#if 0	// TODO
-	if ( Adns_ReadBlocking( ADNS_REG_PRODUCT_ID ) != ADNS_DEF_PRODUCT_ID ) {
+	unsigned char value;
+	
+	if ( Adns_ReadBlocking( ADNS_REG_PROD_ID ) != ADNS_DEF_PROD_ID ) {
+		Adns_ReadSubsequentDelay();
 		return 0;
 	}
 	Adns_ReadSubsequentDelay();
-	
-	if ( Adns_ReadBlocking( ADNS_REG_REVISION_ID ) != ADNS_DEF_REVISION_ID ) {
+	value = ~Adns_ReadBlocking( ADNS_REG_REV_ID );
+	Adns_ReadSubsequentDelay();
+	if ( Adns_ReadBlocking( ADNS_REG_NOT_REV_ID ) != value ) {
+		Adns_ReadSubsequentDelay();
 		return 0;
 	}
 	Adns_ReadSubsequentDelay();
-	
-	if ( Adns_ReadBlocking( ADNS_REG_INV_PRODUCT_ID ) != ADNS_DEF_INV_PRODUCT_ID ) {
-		return 0;
-	}
-	Adns_ReadSubsequentDelay();
-	
-	if ( Adns_ReadBlocking( ADNS_REG_INV_REVISION_ID ) != ADNS_DEF_INV_REVISION_ID ) {
-		return 0;
-	}
-#endif
 	return 1;
 }
 
