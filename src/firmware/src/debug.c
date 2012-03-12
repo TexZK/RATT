@@ -20,12 +20,13 @@
 // LOCAL DEFINITIONS
 #pragma udata data_debug_local
 
-/**
- * Value of the SPBRG register (baud rate generator), supposing an 8-bit counter
- * and no need for high-speed transmission.
- * [value = 77]
- */
-#define	SPBRG_VALUE			((SYS_FOSC / (DEBUG_BAUD_RATE * 16)) - 1)
+// Baud rate generation
+#define	SPBRG_16BITS		0								/// Use a 16-bits counter for BRG
+#define	SPBRG_HISPEED		0								/// Use high-speed BRG
+#define	SPBRG_SCALE			(						\
+	(!SPBRG_16BITS && !SPBRG_HISPEED) ? 64 :		\
+	((SPBRG_16BITS != SPBRG_HISPEED) ? 16 : 4) )			/// Divider scale for BRG (automatically determined)
+#define	SPBRG_VALUE			((SYS_FOSC / (DEBUG_BAUD_RATE * SPBRG_SCALE)) - 1)	/// SPBRG value
 
 #define	EnableTxInt()		{ DEBUG_UART_INT_TX = 1; }		/// Enables the TX interrupt
 #define	DisableTxInt()		{ DEBUG_UART_INT_TX = 0; }		/// Disables the RX interrupt
@@ -77,14 +78,17 @@ void Debug_Initialize( void )
 	Debug_Release();			// Release the module
 	
 	// Configure the UART module
-	SPBRG = SPBRG_VALUE;		// Baud rate generator counter
-	SPBRGH = (SPBRG_VALUE >> 8);
-	
 	RCSTA = 0;					// Reset the receiver configuration
 	RCSTAbits.CREN = 1;			// Receive continuously
 	
 	TXSTA = 0;					// Reset the transmitter configuration
 	TXSTAbits.TXEN = 1;			// Enable the transmitter
+	
+	BAUDCON = 0;
+	TXSTAbits.BRGH = 0;			// No need for high-speed debug @ 38400 baud
+	BAUDCONbits.BRG16 = 0;		// Use a 8-bits counter
+	SPBRG = SPBRG_VALUE;		// Baud rate generator counter
+	SPBRGH = (SPBRG_VALUE >> 8);
 	
 	IPR1bits.TXIP = 0;			// Low-priority interrupts
 	IPR1bits.RCIP = 0;
@@ -131,8 +135,10 @@ void Debug_PrintChar( char value )
 		// If the buffer is full, block until a character is sent
 		if ( debug_uartTxBufferFree == 0 ) {
 			while ( !DEBUG_UART_FLAG_TX );
-			++debug_uartTxBufferHead;
-			debug_uartTxBufferHead &= DEBUG_TX_BUFFER_MASK;
+			TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
+			if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+				debug_uartTxBufferHead = 0;
+			}
 			++debug_uartTxBufferFree;
 		}
 		
@@ -197,8 +203,9 @@ void Debug_Flush( void )
 	while ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 		while ( !DEBUG_UART_FLAG_TX );
 		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-		++debug_uartTxBufferHead;
-		debug_uartTxBufferHead &= DEBUG_TX_BUFFER_MASK;
+		if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+			debug_uartTxBufferHead = 0;
+		}
 		++debug_uartTxBufferFree;
 	}
 	debug_uartTxBufferHead = 0;
@@ -215,8 +222,9 @@ void Debug_TxIntCallback( void )
 	{
 		while ( !DEBUG_UART_FLAG_TX );		// Should always be true
 		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-		++debug_uartTxBufferHead;
-		debug_uartTxBufferHead &= DEBUG_TX_BUFFER_MASK;
+		if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+			debug_uartTxBufferHead = 0;
+		}
 		++debug_uartTxBufferFree;
 		
 		// Enable the interrupt if there are queued characters

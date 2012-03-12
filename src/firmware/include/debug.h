@@ -18,7 +18,7 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL DEFINITIONS
 
-#define	DEBUG_BAUD_RATE		115200				/// UART baud rate
+#define	DEBUG_BAUD_RATE		38400//115200				/// UART baud rate
 
 
 // Buffer definitions

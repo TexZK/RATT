@@ -31,11 +31,16 @@
 #define	LEDS_PIN_YELLOW			PORTCbits.RC4		/// Yellow LED pin
 #define	LEDS_PIN_RED			PORTCbits.RC5		/// Red LED pin
 
+#define	LEDS_LAT_GREEN			LATCbits.LATC3		/// Green LED latch
+
+#define	LEDS_LAT_YELLOW			LATCbits.LATC4		/// Yellow LED latch
+#define	LEDS_LAT_RED			LATCbits.LATC5		/// Red LED latch
+
 
 // Shortcuts
-#define	GREEN_LED				LEDS_PIN_GREEN
-#define	YELLOW_LED				LEDS_PIN_YELLOW
-#define	RED_LED					LEDS_PIN_RED
+#define	GREEN_LED				LEDS_LAT_GREEN
+#define	YELLOW_LED				LEDS_LAT_YELLOW
+#define	RED_LED					LEDS_LAT_RED
 
 #define	LED_ON					0					/// Incoming current
 #define	LED_OFF					1					/// Pull-up
@@ -43,12 +48,10 @@
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
-#pragma udata data_leds_global
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL PROTOTYPES
-#pragma code code_leds_global
 
 /**
  * Initializes the LEDs module.
@@ -56,5 +59,20 @@
 void Leds_Initialize( void );
 
 
-#pragma code
+/**
+ * Turns LEDs as if they were bits:
+ * 	GREEN	= bit 0,
+ *	YELLOW	= bit 1,
+ *	RED		= bit 2
+ *
+ * @param value
+ *		3-bits value [RYG].
+ */
+#define	Leds_BinaryValue( value )	{	\
+	GREEN_LED = !((value) & 0b001);		\
+	YELLOW_LED = !((value) & 0b010);	\
+	RED_LED = !((value) & 0b100);		\
+}
+
+
 #endif	/* !__LEDS_H__ */

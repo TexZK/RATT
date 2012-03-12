@@ -99,7 +99,7 @@ unsigned char Adns_ReadSPI( void )
 	
 	SSPBUF = 0xFF;					// Keep MOSI high
 //	if ( !SSPCON1bits.WCOL ) {		// Check for no collision
-		while ( !PIR1bits.SSPIF );		// Wait until the value is sent
+		while ( !PIR1bits.SSPIF );	// Wait until the value is sent
 //	}
 	return SSPBUF;
 }

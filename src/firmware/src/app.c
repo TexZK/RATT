@@ -38,6 +38,7 @@
 #include "adns2080.h"
 #include "leds.h"
 #include "debug.h"
+#include "TimeDelay.h"
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -373,29 +374,25 @@ void InitializeSystem( void )
     
     // Initialize the debug module
     Debug_Initialize();
-RED_LED = LED_OFF;
-WaitButtonPress();
     INTCONbits.GIEH = 1;
     INTCONbits.GIEL = 1;
-    Debug_PrintRom_( "=> RATT <=\nby TexZK\n\n" );
-YELLOW_LED = LED_OFF;
-WaitButtonPress();
-    Debug_Flush();
-GREEN_LED = LED_OFF;
-    
+    Debug_PrintRom_( "=> RATT <=\r\nby TexZK\r\n\r\n" );
+    Debug_PrintRom_( "UART SPBRG = 0x" );
+    Debug_PrintByte( SPBRGH );
+    Debug_PrintByte( SPBRG );
+    Debug_PrintRom_( "\r\n\r\n" );
+
     // Initialize USB module
-//    Debug_PrintRom_( "Init USB\n" );
+    Debug_PrintRom_( "Init USB\r\n" );
     Usb_UserInit();
     USBDeviceInit();
-//    Debug_Flush();
     
     // TODO: Initialize ADNS module
-//    Debug_PrintRom_( "Init ADNS\n" );
-	Adns_Initialize();
-//    Debug_Flush();
+    Debug_PrintRom_( "Init ADNS\r\n" );
+//	Adns_Initialize();
     
-//    Debug_PrintRom_( "\nInit OK!\n\n" );
-//    Debug_Flush();
+    Debug_PrintRom_( "\nInit OK!\r\n\r\n" );
+    Debug_Flush();
 }
 
 
@@ -463,8 +460,35 @@ void main( void )
 
 void WaitButtonPress( void )
 {
-	while ( !BUTTON_PIN );		// Wait for previous release
-	while ( BUTTON_PIN );		// Wait for button press
+	unsigned short i;
+	do {									// Wait for previous release
+		for ( i = 0; i < 1000; ++i ) {		// Debounce previous release
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+		}
+	} while ( !BUTTON_PIN );
+	while ( BUTTON_PIN ) {					// Wait for button press
+		for ( i = 0; i < 1000; ++i ) {		// Debounce button press
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+			OneUsDelay();
+		}
+	}
 }
 
 
