@@ -16,8 +16,6 @@
 #include "usb/usb_user.h"
 #include "adns2080.h"
 
-#include <spi.h>	// FIXME: Hand-written code works better >.<
-
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL DEFINITIONS
@@ -49,10 +47,55 @@ signed short		adns_x;				/// Current X position.
 // LOCAL PROTOTYPES
 #pragma code code_adns_local
 
+/**
+ * Sends a byte over SPI module.
+ *
+ * @param value
+ *		Value to be sent.
+ */
+void Adns_WriteSPI( unsigned char value );
+
+
+/**
+ * Receives a byte from the SPI module.
+ *
+ * @return
+ *		Value been received.
+ */
+unsigned char Adns_ReadSPI( void );
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL FUNCTIONS
 #pragma code code_adns_local
+
+void Adns_WriteSPI( unsigned char value )
+{
+	unsigned char dummy;
+	
+	dummy = SSPBUF;					// Clear buffer state
+	SSPCON1bits.WCOL = 0;
+	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
+	
+	SSPBUF = value;					// Write the value to be sent
+	if ( !SSPCON1bits.WCOL ) {		// Check for no collision
+		while ( !PIR1bits.SSPIF );	// Wait until the value is sent
+	}
+}
+
+
+unsigned char Adns_ReadSPI( void )
+{
+	unsigned char dummy = SSPBUF;	// Clear buffer state
+	SSPCON1bits.WCOL = 0;
+	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
+	
+	SSPBUF = 0xFF;					// Keep MOSI high
+	if ( !SSPCON1bits.WCOL ) {		// Check for no collision
+		while ( !PIR1bits.SSPIF );		// Wait until the value is sent
+	}
+	return SSPBUF;
+}
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -62,19 +105,15 @@ signed short		adns_x;				/// Current X position.
 void Adns_Initialize( void )
 {
 	// Disable SPI and interrupts
-	DisableIntSPI;
-	SetPriorityIntSPI( 0 );		// Low priority, but unused
-	CloseSPI();
-	SPI_Clear_Intr_Status_Bit;
+	Adns_DisableInterrupt();	// Disable MOTION interrupt
+	PIE1bits.SSPIE = 0;			// Clear SPI interrupt
+	PIR1bits.SSPIF = 0;
+	IPR1bits.SSPIP = 0;
 	
-	// Reset variables
-	adns_status.motionInt = 0;
-	adns_status.dataReady = 0;
-	
-	adns_deltaX = 0;
-	adns_deltaY = 0;
-	adns_x = 0;
-	adns_y = 0;
+	SSPCON1bits.SSPEN = 0;		// Reset the SPI configuration
+	SSPSTAT = 0;
+	SSPCON1 = 0;
+	SSPCON2 = 0;
 	
 	// Setup pins
 	ADNS_PIN_MOSI = 0;
@@ -88,18 +127,30 @@ void Adns_Initialize( void )
 	ADNS_PIN_MOSI = 0;
 	ADNS_PIN_SCLK = 1;
 	
-	// Open SPI port
-	OpenSPI(
-		SPI_FOSC_64,			// 750kHz @ 48MHz
-		MODE_10,				// CKP=1, CKE=1
-		SMPMID					// Sample at half-period
-	);
+	// Configure the SPI module
+	SSPSTATbits.SMP = 0;		// Data valid at half clock period
+	SSPSTATbits.CKE = 1;		// Data transition at high->low clock edge
+	SSPCON1bits.CKP = 1;		// Idle clock state at high level
+	SSPCON1bits.SSPM0 = 0;		// Fosc/64 = 750 kHz @ 48 MHz
+	SSPCON1bits.SSPM1 = 1;
+	SSPCON1bits.SSPM2 = 0;
+	SSPCON1bits.SSPM3 = 0;
+	
+	SSPCON1bits.SSPEN = 1;		// Enable the SPI module
+
+	// Reset variables
+	adns_status.motionInt = 0;
+	adns_status.dataReady = 0;
+	
+	adns_deltaX = 0;
+	adns_deltaY = 0;
+	adns_x = 0;
+	adns_y = 0;
 	
 	// TODO: Reset the device
 	Adns_ResetCommunication();
 	
 	// Enable MOTION interrupt
-	Adns_DisableInterrupt();
 	ADNS_INT_IF = 0;
 	ADNS_INT_IP = 1;
 	ADNS_INT_EDGE = 1;
@@ -204,19 +255,19 @@ void Adns_ResetCommunication( void )
 void Adns_WriteBlocking( unsigned char address, unsigned char value )
 {
 	ADNS_TRIS_MISO = 0;
-	WriteSPI( address );
-	WriteSPI( value );
+	Adns_WriteSPI( address );
+	Adns_WriteSPI( value );
 }
 
 
 unsigned char Adns_ReadBlocking( unsigned char address )
 {
 	ADNS_TRIS_MISO = 0;
-	WriteSPI( address );
+	Adns_WriteSPI( address );
 	OneUsDelay();	// FIXME
 	ADNS_TRIS_MISO = 1;
 	Adns_AddressDataDelay();
-	return ReadSPI();
+	return Adns_ReadSPI();
 }
 
 
@@ -230,8 +281,8 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	OneUsDelay();	// FIXME
 	ADNS_TRIS_MISO = 1;
 	
-	result.deltaY = ReadSPI();
-	result.deltaX = ReadSPI();
+	result.deltaY = Adns_ReadSPI();
+	result.deltaX = Adns_ReadSPI();
 	
 	return result;
 }	
