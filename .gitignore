@@ -4,6 +4,7 @@
 
 # Compiler outputs
 *.mcs
+*.mcw
 *.err
 src/*/obj
 *.mptags

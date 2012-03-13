@@ -246,6 +246,7 @@ firmware design flexibility.
 #include "usb/usb.h"
 #include "bootloader.h"
 #include "app.h"
+#include "debug.h"
 
 #include "usb/usb_device_local.h"
 
@@ -415,6 +416,50 @@ static void USBStallHandler(void);
 /** Function Implementations *************************************************/
 /******************************************************************************/
 
+static void PrintUsbStateChange( void )
+{
+	Debug_Flush();						// Workaround: we should NOT write inside interrupts...
+	Debug_PrintConst_EventBegin();
+	Debug_PrintRom_( "USB_" );
+	switch ( USBDeviceState )
+	{
+		case DETACHED_STATE: {
+			Debug_PrintRom_( "detached" );
+			break;
+		}
+		case ATTACHED_STATE: {
+			Debug_PrintRom_( "attached" );
+			break;
+		}
+		case POWERED_STATE: {
+			Debug_PrintRom_( "powered" );
+			break;
+		}
+		case DEFAULT_STATE: {
+			Debug_PrintRom_( "default" );
+			break;
+		}
+		case ADR_PENDING_STATE: {
+			Debug_PrintRom_( "adr_pending" );
+			break;
+		}
+		case ADDRESS_STATE: {
+			Debug_PrintRom_( "addressed" );
+			break;
+		}
+		case CONFIGURED_STATE: {
+			Debug_PrintRom_( "configured" );
+			break;
+		}
+		default: {
+			Debug_PrintChar( '?' );
+			break;
+		}
+	}
+	Debug_PrintConst_EventEnd();
+}
+
+
 /******************************************************************************/
 /** Internal Macros *********************************************************/
 /******************************************************************************/
@@ -485,8 +530,8 @@ void USBDeviceInit(void)
        
     // Clears all USB interrupts          
     USBClearInterruptRegister(U1IR); 
-
-    //Clear all of the endpoint control registers
+	
+	//Clear all of the endpoint control registers
     U1EP0 = 0;
     DisableNonZeroEndpoints(USB_MAX_EP_NUMBER);
 
@@ -559,6 +604,7 @@ void USBDeviceInit(void)
 
     //Indicate that we are now in the detached state        
     USBDeviceState = DETACHED_STATE;
+    PrintUsbStateChange();
 }
 
 /**************************************************************************
@@ -713,6 +759,7 @@ void USBDeviceTasks(void)
 
          //Move to the detached state                  
          USBDeviceState = DETACHED_STATE;
+         PrintUsbStateChange();
 
          #ifdef  USB_SUPPORT_OTG    
              //Disable D+ Pullup
@@ -781,6 +828,7 @@ void USBDeviceTasks(void)
 
         //moved to the attached state
         USBDeviceState = ATTACHED_STATE;
+        PrintUsbStateChange();
 
         #ifdef  USB_SUPPORT_OTG
             U1OTGCON |= USB_OTG_DPLUS_ENABLE | USB_OTG_ENABLE;  
@@ -808,6 +856,7 @@ void USBDeviceTasks(void)
             USBResetIE = 1;             // Unmask RESET interrupt
             USBIdleIE = 1;             // Unmask IDLE interrupt
             USBDeviceState = POWERED_STATE;
+	        PrintUsbStateChange();
         }
     }
 
@@ -863,6 +912,7 @@ void USBDeviceTasks(void)
         USBUnmaskInterrupts();
 
         USBDeviceState = DEFAULT_STATE;
+        PrintUsbStateChange();
 
         #ifdef USB_SUPPORT_OTG
              //Disable HNP
@@ -1444,6 +1494,7 @@ void USBDeviceDetach(void)
 
          //Move to the detached state                  
          USBDeviceState = DETACHED_STATE;
+         PrintUsbStateChange();
 
          #ifdef  USB_SUPPORT_OTG    
              //Disable D+ Pullup
@@ -1556,6 +1607,7 @@ void USBDeviceAttach(void)
     
             //moved to the attached state
             USBDeviceState = ATTACHED_STATE;
+            PrintUsbStateChange();
     
             #ifdef  USB_SUPPORT_OTG
                 U1OTGCON = USB_OTG_DPLUS_ENABLE | USB_OTG_ENABLE;  
@@ -2177,6 +2229,7 @@ void USBStdSetCfgHandler(void)
     {
         //Go back to the addressed state
         USBDeviceState = ADDRESS_STATE;
+        PrintUsbStateChange();
     }
     else
     {
@@ -2186,7 +2239,8 @@ void USBStdSetCfgHandler(void)
         //Otherwise go to the configured state.  Update the state variable last,
         //after performing all of the set configuration related initialization
         //tasks.
-        USBDeviceState = CONFIGURED_STATE;		
+        USBDeviceState = CONFIGURED_STATE;
+        PrintUsbStateChange();
     }//end if(SetupPkt.bConfigurationValue == 0)
 }//end USBStdSetCfgHandler
 
@@ -2757,10 +2811,12 @@ static void USBCtrlTrfInHandler(void)
         if(U1ADDR != 0u)
         {
             USBDeviceState=ADDRESS_STATE;
+            PrintUsbStateChange();
         }
         else
         {
             USBDeviceState=DEFAULT_STATE;
+            PrintUsbStateChange();
         }
     }//end if
 
@@ -2839,6 +2895,7 @@ static void USBCheckStdRequest(void)
         case USB_REQUEST_SET_ADDRESS:
             inPipes[0].info.bits.busy = 1;            // This will generate a zero length packet
             USBDeviceState = ADR_PENDING_STATE;       // Update state only
+            PrintUsbStateChange();
             /* See USBCtrlTrfInHandler() for the next step */
             break;
         case USB_REQUEST_GET_DESCRIPTOR:

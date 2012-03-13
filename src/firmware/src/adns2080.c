@@ -24,6 +24,8 @@
 // LOCAL DEFINITIONS
 #pragma udata data_adns_local
 
+#define	PR2_VALUE	(SYS_FCY / (ADNS_SPI_FREQ * 2) - 1)		/// PR2 value for Timer 2 time base
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL VARIABLES
@@ -70,6 +72,12 @@ void Adns_WriteSPI( unsigned char value );
 unsigned char Adns_ReadSPI( void );
 
 
+/**
+ * Configures ADNS registers.
+ */
+void Adns_SetupConfiguration( void );
+
+
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL FUNCTIONS
 #pragma code code_adns_local
@@ -77,7 +85,6 @@ unsigned char Adns_ReadSPI( void );
 void Adns_WriteSPI( unsigned char value )
 {
 	volatile unsigned char dummy;
-	
 	dummy = SSPBUF;					// Clear buffer state
 	SSPCON1bits.WCOL = 0;
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
@@ -92,16 +99,41 @@ void Adns_WriteSPI( unsigned char value )
 unsigned char Adns_ReadSPI( void )
 {
 	volatile unsigned char dummy;
-	
 	dummy = SSPBUF;					// Clear buffer state
 	SSPCON1bits.WCOL = 0;
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
 	
 	SSPBUF = 0xFF;					// Keep MOSI high
-//	if ( !SSPCON1bits.WCOL ) {		// Check for no collision
-		while ( !PIR1bits.SSPIF );	// Wait until the value is sent
-//	}
+	while ( !PIR1bits.SSPIF );		// Wait until the value is sent
 	return SSPBUF;
+}
+
+
+void Adns_SetupConfiguration( void )
+{
+	ADNS_BITS_MOUSE_CTRL	mouse_ctrl;
+	ADNS_BITS_MOTION_CTRL	motion_ctrl;
+	ADNS_BITS_PERFORMANCE	performance;
+	
+	// Setup Mouse Control
+	mouse_ctrl.value = ADNS_DEF_MOUSE_CTRL;
+	mouse_ctrl.bits.BIT_REPORTING = 1;		// 12-bits reporting
+	Adns_WriteBlocking( ADNS_REG_MOUSE_CTRL, mouse_ctrl.value );
+	
+	// Setup Performance
+	performance.value = ADNS_DEF_PERFORMANCE;
+	performance.bits.FORCE = 0x04;			// Run 1
+	Adns_WriteBlocking( ADNS_REG_PERFORMANCE, performance.value );
+	
+	// Setup Motion Control
+	motion_ctrl.value = ADNS_DEF_MOTION_CTRL;
+	motion_ctrl.bits.MOT_A = 0;				// Active low
+	motion_ctrl.bits.MOT_S = 0;				// Level sensitive (not needed, but might be useful for debugging)
+	Adns_WriteBlocking( ADNS_REG_MOTION_CTRL, motion_ctrl.value );
+	
+	// Set Motion Burst index boundaries
+	Adns_WriteBlocking( ADNS_REG_BURST_READ_FIRST, ADNS_REG_DELTA_X );
+	Adns_WriteBlocking( ADNS_REG_BURST_READ_LAST, ADNS_REG_DELTA_XY_HIGH );
 }
 
 
@@ -112,38 +144,48 @@ unsigned char Adns_ReadSPI( void )
 void Adns_Initialize( void )
 {
 	// Disable SPI and interrupts
-	Adns_DisableInterrupt();	// Disable MOTION interrupt
-	PIE1bits.SSPIE = 0;			// Clear SPI interrupt
+	Adns_DisableInterrupt();		// Disable MOTION interrupt
+	PIE1bits.SSPIE = 0;				// Clear SPI interrupt
 	PIR1bits.SSPIF = 0;
 	IPR1bits.SSPIP = 0;
 	
-	SSPCON1bits.SSPEN = 0;		// Reset the SPI configuration
+	SSPCON1bits.SSPEN = 0;			// Reset the SPI configuration
 	SSPSTAT = 0;
 	SSPCON1 = 0;
 	SSPCON2 = 0;
 	
 	// Setup pins
-	ADNS_PIN_MOSI = 0;
-	ADNS_PIN_SCLK = 1;
+	ADNS_LAT_MOSI = 1;
+	ADNS_LAT_SCLK = 1;
 	
 	ADNS_TRIS_MISO = 1;
 	ADNS_TRIS_MOSI = 0;
 	ADNS_TRIS_SCLK = 0;
 	ADNS_TRIS_MOTION = 1;
 	
-	ADNS_PIN_MOSI = 0;
-	ADNS_PIN_SCLK = 1;
+	ADNS_LAT_MOSI = 1;
+	ADNS_LAT_SCLK = 1;
+	
+	// Print debug info
+	Debug_PrintConst_Initializing();
+	Debug_PrintRom_( "ADNS" );
+	Debug_PrintConst_Dots();
+	
+	// Setup Timer 2 time base
+	PIE1bits.TMR2IE = 0;			// Disable Timer 2 interrupts
+	PIR1bits.TMR2IF = 0;
+	T2CON = 0;						// No prescaler, no postscaler, timer disabled
+	PR2 = PR2_VALUE;				// Desired time base at TMR2/2
+	T2CONbits.TMR2ON = 1;			// Enable the Timer 2 time base
 	
 	// Configure the SPI module
-	SSPSTATbits.SMP = 0;		// Data valid at half clock period
-	SSPSTATbits.CKE = 1;		// Data transition at high->low clock edge
-	SSPCON1bits.CKP = 1;		// Idle clock state at high level
-	SSPCON1bits.SSPM0 = 0;		// Fosc/64 = 750 kHz @ 48 MHz
+	SSPSTAT = 0;					// Reset the MSSP status register
+	SSPSTATbits.SMP = 0;			// Data valid at half clock period
+	SSPSTATbits.CKE = 1;			// Data transition at high->low clock edge
+	SSPCON1bits.CKP = 1;			// Idle clock state at high level
+	SSPCON1bits.SSPM0 = 1;			// TMR2/2 as time base (SSPM = 0b0011)
 	SSPCON1bits.SSPM1 = 1;
-	SSPCON1bits.SSPM2 = 0;
-	SSPCON1bits.SSPM3 = 0;
-	
-	SSPCON1bits.SSPEN = 1;		// Enable the SPI module
+	SSPCON1bits.SSPEN = 1;			// Enable the SPI module
 
 	// Reset variables
 	adns_status.motionInt = 0;
@@ -158,22 +200,30 @@ void Adns_Initialize( void )
 	adns_hidData.deltaX = 0;
 	adns_hidData.deltaY = 0;
 	
+	Debug_PrintConst_Ok();
+	Debug_PrintConst_NewLine();
+	
 	// Reset the device
+	Debug_PrintConst_Checking();
+	Debug_PrintRom_( "ADNS connection" );
+	Debug_PrintConst_Dots();
 	Adns_ResetCommunication();
 	
 	// Check communication
-	Debug_PrintRom_( "ADNS connection... " );
 	if ( Adns_CheckCommunication() ) {
-		Debug_PrintRom_( "ok\n" );
+		Debug_PrintConst_Ok();
 	} else {
-		Debug_PrintRom_( "FAIL\n" );
+		Debug_PrintConst_Fail();
 	}
+	
+	// Configure the expected behavior
+	Adns_SetupConfiguration();
 	
 	// Enable MOTION interrupt
 	ADNS_INT_IF = 0;
 	ADNS_INT_IP = 1;
 	ADNS_INT_EDGE = 1;
-	Nop();
+	DelayMs( ADNS_DLY_MOT_RST_MAX_MS );		// Wait for valid motion detection
 	Adns_EnableInterrupt();
 }
 
@@ -192,9 +242,10 @@ void Adns_Service( void )
 		
 		Adns_DisableInterrupt();
 		adns_status.motionInt = 0;
-		YELLOW_LED = LED_ON;
 		Adns_ResetCommunication();
 		burst = Adns_BurstReadMotionDeltasBlocking();
+		YELLOW_LED = LED_ON;			// Yellow LED for cached HID packet
+		RED_LED = LED_OFF;
 		Adns_EnableInterrupt();
 		
 		adns_deltaY = burst.deltaY;
@@ -236,6 +287,7 @@ void Adns_MotionCallback( void )
 {
 	ADNS_INT_IF = 0;
 	adns_status.motionInt = 1;
+	RED_LED = LED_ON;					// Red LED for cached motion interrupt
 }	
 
 
@@ -267,20 +319,25 @@ void Adns_ResetCommunication( void )
 
 void Adns_WriteBlocking( unsigned char address, unsigned char value )
 {
-	ADNS_TRIS_MISO = 0;
-	Adns_WriteSPI( address );
-	Adns_WriteSPI( value );
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	Adns_WriteSPI( address );		// Write the register address
+	Adns_WriteSPI( value );			// Write the register value
 }
 
 
 unsigned char Adns_ReadBlocking( unsigned char address )
 {
-	ADNS_TRIS_MISO = 0;
-	Adns_WriteSPI( address );
-	OneUsDelay();	// FIXME
-	ADNS_TRIS_MISO = 1;
+	unsigned char value;
+	
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	Adns_WriteSPI( address );		// Write the register address
 	Adns_AddressDataDelay();
-	return Adns_ReadSPI();
+	
+	ADNS_TRIS_MOSI = 1;				// Set MOSI to HiZ
+	value = Adns_ReadSPI();			// Read the register value
+	
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	return value;
 }
 
 
@@ -289,18 +346,20 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	ADNS_BURST_MOTION_DELTAS result;
 	unsigned char	high;
 	
-	ADNS_TRIS_MISO = 0;
+	// Call a Motion Burst message chain
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
 	Adns_WriteSPI( ADNS_REG_MOTION_BURST );
 	Adns_AddressDataDelay();
-	OneUsDelay();	// FIXME
-	ADNS_TRIS_MISO = 1;
 	
-	result.deltaY = Adns_ReadSPI();
-	result.deltaX = Adns_ReadSPI();
-	high = Adns_ReadSPI();
+	// Read the chosen Motion Burst registers
+	ADNS_TRIS_MOSI = 1;				// Set MOSI to HiZ
+	result.deltaX = Adns_ReadSPI();	// DELTA_X
+	result.deltaY = Adns_ReadSPI();	// DELTA_Y
+	high = Adns_ReadSPI();			// DELTA_XY_HIGH
 	result.deltaY += high & 0x0F;	// Add upper 4 bits
 	result.deltaX += high >> 4;
 	
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
 	return result;
 }	
 
@@ -328,8 +387,8 @@ void Adns_AddressDataDelay( void )
 
 void Adns_ReadSubsequentDelay( void )
 {
-	Nop();
-	Nop();
+	Nop();		// Actually, this delay is already
+	Nop();		// spent by overhead instructions
 	Nop();
 	Nop();
 }

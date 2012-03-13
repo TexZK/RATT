@@ -23,7 +23,7 @@
 #define	ADNS_DPI						   1000				/// Resolution
 #define	ADNS_INCH_SEC					     30				/// Inches per second
 #define	ADNS_MAX_SPI_FREQ				1000000				/// Maximum SPI speed [Hz]
-#define	ADNS_SPI_FREQ					 750000				/// Actual SPI speed [Hz] (see SPI setup)
+#define	ADNS_SPI_FREQ					1000000				/// Actual SPI speed [Hz]
 
 // Delays and timeouts
 #define	ADNS_DLY_MOT_RST_MAX_MS			     50				/// t_MOT-RST
@@ -44,15 +44,20 @@
 #define	ADNS_DLY_SPI_BYTE_US			((8 * 1000000) / ADNS_SPI_FREQ)	/// Delay of a byte sent over SPI
 
 // Pin definitions
-#define	ADNS_PIN_MISO					PORTBbits.RB4		/// SPI MISO/SDO
-#define	ADNS_PIN_MOSI					PORTCbits.RC7		/// SPI MOSI/SDI
-#define	ADNS_PIN_SCLK					PORTBbits.RB6		/// SPI SCLK/SCK
-#define	ADNS_PIN_MOTION					PORTCbits.RC2		/// ADNS motion interrupt request
-
-#define	ADNS_TRIS_MISO					TRISBbits.TRISB4	/// SPI MISO/SDO
-#define	ADNS_TRIS_MOSI					TRISCbits.TRISC7	/// SPI MOSI/SDI
+#define	ADNS_TRIS_MISO					TRISBbits.TRISB4	/// SPI MISO/SDI
+#define	ADNS_TRIS_MOSI					TRISCbits.TRISC7	/// SPI MOSI/SDO
 #define	ADNS_TRIS_SCLK					TRISBbits.TRISB6	/// SPI SCLK/SCK
-#define	ADNS_TRIS_MOTION				TRISCbits.TRISC2	/// ADNS motion interrupt request
+#define	ADNS_TRIS_MOTION				TRISCbits.TRISC2	/// MOTION IRQ
+
+#define	ADNS_PIN_MISO					PORTBbits.RB4		/// SPI MISO/SDI
+#define	ADNS_PIN_MOSI					PORTCbits.RC7		/// SPI MOSI/SDO
+#define	ADNS_PIN_SCLK					PORTBbits.RB6		/// SPI SCLK/SCK
+#define	ADNS_PIN_MOTION					PORTCbits.RC2		/// MOTION IRQ
+
+#define	ADNS_LAT_MISO					LATBbits.LATB4		/// SPI MISO/SDI
+#define	ADNS_LAT_MOSI					LATCbits.LATC7		/// SPI MOSI/SDO
+#define	ADNS_LAT_SCLK					LATBbits.LATB6		/// SPI SCLK/SCK
+#define	ADNS_LAT_MOTION					LATCbits.LATC2		/// MOTION IRQ
 
 
 // Interrupt settings
@@ -128,60 +133,90 @@
 
 // Register bitfields
 
-typedef struct {
-	unsigned					: 7;
-	unsigned	MOTION_ST		: 1;
+typedef union {
+	struct {
+		unsigned					: 7;
+		unsigned	MOTION_ST		: 1;
+	} bits;
+	unsigned char value;
 } ANDS_BITS_MOTION_ST;
 
-typedef struct {
-	unsigned	S				: 4;
-	unsigned					: 4;
+typedef union {
+	struct {
+		unsigned	S				: 4;
+		unsigned					: 4;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_SHUT_HI;
 
-typedef struct {
-	unsigned	S				: 8;
+typedef union {
+	struct {
+		unsigned	S				: 8;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_SHUT_LO;
 
-typedef struct {
-	unsigned	PG				: 7;
-	unsigned	PG_VALID		: 1;
+typedef union {
+	struct {
+		unsigned	PG				: 7;
+		unsigned	PG_VALID		: 1;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_PIX_GRAB;
 
-typedef struct {
-	unsigned	DELTA_Y_HI		: 4;
-	unsigned	DELTA_X_HI		: 4;
+typedef union {
+	struct {
+		unsigned	DELTA_Y_HI		: 4;
+		unsigned	DELTA_X_HI		: 4;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_DELTA_XY_HIGH;
 
-typedef struct {
-	unsigned	RES_D			: 1;
-	unsigned	PD				: 1;
-	unsigned	RES				: 3;
-	unsigned	RES_EN			: 1;
-	unsigned					: 1;
-	unsigned	BIT_REPORTING	: 1;
+typedef union {
+	struct {
+		unsigned	RES_D			: 1;
+		unsigned	PD				: 1;
+		unsigned	RES				: 3;
+		unsigned	RES_EN			: 1;
+		unsigned					: 1;
+		unsigned	BIT_REPORTING	: 1;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_MOUSE_CTRL;
 
-typedef struct {
-	unsigned					: 4;
-	unsigned	FORCE			: 3;
-	unsigned					: 1;
+typedef union {
+	struct {
+		unsigned					: 4;
+		unsigned	FORCE			: 3;
+		unsigned					: 1;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_PERFORMANCE;
 
-typedef struct {
-	unsigned					: 3;
-	unsigned	LCOF			: 1;
-	unsigned					: 4;
+typedef union {
+	struct {
+		unsigned					: 3;
+		unsigned	LCOF			: 1;
+		unsigned					: 4;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_LED_CTRL;
 
-typedef struct {
-	unsigned					: 6;
-	unsigned	MOT_S			: 1;
-	unsigned	MOT_A			: 1;
+typedef union {
+	struct {
+		unsigned					: 6;
+		unsigned	MOT_S			: 1;
+		unsigned	MOT_A			: 1;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_MOTION_CTRL;
 
-typedef struct {
-	unsigned					: 6;
-	unsigned	RM				: 2;
+typedef union {
+	struct {
+		unsigned					: 6;
+		unsigned	RM				: 2;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_REST_MODE_CONFIG;
 
 

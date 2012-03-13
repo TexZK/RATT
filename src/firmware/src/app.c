@@ -326,16 +326,16 @@ void LowPriorityISR( void )
 	#endif
 	
 	// Process debug UART tasks
-	/*if ( DEBUG_UART_RX_INT ) {
-		if ( DEBUG_UART_RX_FLAG ) {
+	if ( DEBUG_UART_INT_RX ) {
+		if ( DEBUG_UART_FLAG_RX ) {
 			Debug_RxIntCallback();
 		}
 	}
-	if ( DEBUG_UART_TX_INT ) {
-		if ( DEBUG_UART_TX_FLAG ) {
+	if ( DEBUG_UART_INT_TX ) {
+		if ( DEBUG_UART_FLAG_TX ) {
 			Debug_TxIntCallback();
 		}
-	}*/
+	}
 }
 
 
@@ -368,31 +368,47 @@ void InitializeSystem( void )
     
     // Initialize the LEDs module
     Leds_Initialize();
-    GREEN_LED = LED_ON;
-    YELLOW_LED = LED_ON;
-    RED_LED = LED_ON;
+    YELLOW_LED = LED_ON;			// Yellow LED to show initialization
     
     // Initialize the debug module
-    Debug_Initialize();
-    INTCONbits.GIEH = 1;
-    INTCONbits.GIEL = 1;
-    Debug_PrintRom_( "=> RATT <=\r\nby TexZK\r\n\r\n" );
-    Debug_PrintRom_( "UART SPBRG = 0x" );
-    Debug_PrintByte( SPBRGH );
-    Debug_PrintByte( SPBRG );
-    Debug_PrintRom_( "\r\n\r\n" );
-
+    RED_LED = LED_ON;
+    Debug_Initialize();				// NOTE: Enables HP&LP interrupts!
+    RED_LED = LED_OFF;
+    
     // Initialize USB module
-    Debug_PrintRom_( "Init USB\r\n" );
+    RED_LED = LED_ON;
+    Debug_PrintConst_Initializing();
+    Debug_PrintRom_( "USB device" );
+    Debug_PrintConst_Dots();
     Usb_UserInit();
     USBDeviceInit();
+    Debug_PrintConst_Ok();
+    Debug_PrintConst_NewLine();
+    RED_LED = LED_OFF;
     
-    // TODO: Initialize ADNS module
-    Debug_PrintRom_( "Init ADNS\r\n" );
-//	Adns_Initialize();
+    // Initialize ADNS module
+    RED_LED = LED_ON;
+	Adns_Initialize();
+    RED_LED = LED_OFF;
     
-    Debug_PrintRom_( "\nInit OK!\r\n\r\n" );
+    Debug_PrintConst_NewLine();
+    Debug_PrintConst_NewLine();
+    Debug_PrintRom_( "=> DEVICE INITIALIZED <=" );
+    Debug_PrintConst_NewLine();
+    Debug_PrintConst_NewLine();
     Debug_Flush();
+    
+    GREEN_LED = LED_ON;				// Green LED for initialization completed
+    YELLOW_LED = LED_OFF;
+    RED_LED = LED_OFF;
+    
+    #ifdef USB_INTERRUPT
+    // Attach USB device
+    USBDeviceAttach();
+    Debug_PrintConst_NewLine();
+    Debug_PrintConst_NewLine();
+    Debug_Flush();
+    #endif
 }
 
 
@@ -429,10 +445,6 @@ void ProcessIO( void )
 void main( void )
 {   
     InitializeSystem();
-
-    #ifdef USB_INTERRUPT
-    USBDeviceAttach();
-    #endif
 
     while ( 1 ) {
         #ifdef USB_POLLING

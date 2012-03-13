@@ -166,4 +166,54 @@ void Debug_TxIntCallback( void );
 void Debug_RxIntCallback( void );
 
 
+// Common constant strings, to reduce the occupied ROM space
+
+/**
+ * Prints "\r\n".
+ */
+void Debug_PrintConst_NewLine( void );
+
+
+/**
+ * Prints "Initializing ".
+ */
+void Debug_PrintConst_Initializing( void );
+
+
+/**
+ * Prints "Checking ".
+ */
+void Debug_PrintConst_Checking( void );
+
+
+/**
+ * Prints "[!" (begins event info string).
+ */
+void Debug_PrintConst_EventBegin( void );
+
+
+/**
+ * Prints "]" (ends event info string).
+ */
+void Debug_PrintConst_EventEnd( void );
+
+
+/**
+ * Prints "... ".
+ */
+void Debug_PrintConst_Dots( void );
+
+
+/**
+ * Prints "ok".
+ */
+void Debug_PrintConst_Ok( void );
+
+
+/**
+ * Prints "FAIL".
+ */
+void Debug_PrintConst_Fail( void );
+
+
 #endif	/* !__DEBUG_H__ */
