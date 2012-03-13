@@ -23,7 +23,7 @@
 #define	ADNS_DPI						   1000				/// Resolution
 #define	ADNS_INCH_SEC					     30				/// Inches per second
 #define	ADNS_MAX_SPI_FREQ				1000000				/// Maximum SPI speed [Hz]
-#define	ADNS_SPI_FREQ					 750000				/// Actual SPI speed [Hz] (see SPI setup)
+#define	ADNS_SPI_FREQ					1000000				/// Actual SPI speed [Hz]
 
 // Delays and timeouts
 #define	ADNS_DLY_MOT_RST_MAX_MS			     50				/// t_MOT-RST

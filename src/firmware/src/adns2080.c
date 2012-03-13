@@ -112,12 +112,12 @@ unsigned char Adns_ReadSPI( void )
 void Adns_Initialize( void )
 {
 	// Disable SPI and interrupts
-	Adns_DisableInterrupt();	// Disable MOTION interrupt
-	PIE1bits.SSPIE = 0;			// Clear SPI interrupt
+	Adns_DisableInterrupt();		// Disable MOTION interrupt
+	PIE1bits.SSPIE = 0;				// Clear SPI interrupt
 	PIR1bits.SSPIF = 0;
 	IPR1bits.SSPIP = 0;
 	
-	SSPCON1bits.SSPEN = 0;		// Reset the SPI configuration
+	SSPCON1bits.SSPEN = 0;			// Reset the SPI configuration
 	SSPSTAT = 0;
 	SSPCON1 = 0;
 	SSPCON2 = 0;
@@ -134,16 +134,21 @@ void Adns_Initialize( void )
 	ADNS_PIN_MOSI = 0;
 	ADNS_PIN_SCLK = 1;
 	
-	// Configure the SPI module
-	SSPSTATbits.SMP = 0;		// Data valid at half clock period
-	SSPSTATbits.CKE = 1;		// Data transition at high->low clock edge
-	SSPCON1bits.CKP = 1;		// Idle clock state at high level
-	SSPCON1bits.SSPM0 = 0;		// Fosc/64 = 750 kHz @ 48 MHz
-	SSPCON1bits.SSPM1 = 1;
-	SSPCON1bits.SSPM2 = 0;
-	SSPCON1bits.SSPM3 = 0;
+	// Setup Timer 2 time base
+	PIE1bits.TMR2IE = 0;			// Disable Timer 2 interrupts
+	PIR1bits.TMR2IF = 0;
+	T2CON = 0;						// No prescaler, no postscaler, timer disabled
+	PR2 = (2 * SYS_FCY) / ADNS_SPI_FREQ;	// Desired time base at TMR2/2
+	T2CONbits.TMR2ON = 1;			// Enable the Timer 2 time base
 	
-	SSPCON1bits.SSPEN = 1;		// Enable the SPI module
+	// Configure the SPI module
+	SSPSTAT = 0;					// Reset the MSSP status register
+	SSPSTATbits.SMP = 0;			// Data valid at half clock period
+	SSPSTATbits.CKE = 1;			// Data transition at high->low clock edge
+	SSPCON1bits.CKP = 1;			// Idle clock state at high level
+	SSPCON1bits.SSPM0 = 1;			// TMR2/2 as time base (SSPM = 0b0011)
+	SSPCON1bits.SSPM1 = 1;
+	SSPCON1bits.SSPEN = 1;			// Enable the SPI module
 
 	// Reset variables
 	adns_status.motionInt = 0;
@@ -159,10 +164,10 @@ void Adns_Initialize( void )
 	adns_hidData.deltaY = 0;
 	
 	// Reset the device
+	Debug_PrintRom_( "ADNS connection... " );
 	Adns_ResetCommunication();
 	
 	// Check communication
-	Debug_PrintRom_( "ADNS connection... " );
 	if ( Adns_CheckCommunication() ) {
 		Debug_PrintRom_( "ok\n" );
 	} else {
