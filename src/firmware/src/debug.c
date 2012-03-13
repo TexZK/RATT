@@ -94,6 +94,23 @@ void Debug_Initialize( void )
 	IPR1bits.RCIP = 0;
 	
 	RCSTAbits.SPEN = 1;			// Enable the serial port
+	INTCONbits.GIEH = 1;		// Enable interrupts
+    INTCONbits.GIEL = 1;
+    
+	// Print a welcome message
+	Debug_PrintRom_( "=> MOUSE SENSOR HID CONTROLLER <=\r\n\r\n" );
+	
+	// Print some info
+    Debug_PrintConst_Initializing();
+    Debug_PrintRom_( "UART" );
+    Debug_PrintConst_Dots();
+    Debug_PrintConst_Ok();
+    Debug_PrintConst_NewLine();
+    Debug_PrintRom_( "UART SPBRG = 0x" );
+    Debug_PrintByte( SPBRGH );
+    Debug_PrintByte( SPBRG );
+    Debug_PrintConst_NewLine();
+    Debug_PrintConst_NewLine();
 }
 
 	
@@ -237,9 +254,60 @@ void Debug_TxIntCallback( void )
 
 void Debug_RxIntCallback( void )
 {
-	// Receiver not used
+	volatile unsigned char dummy;
+	dummy = RCREG;					// Just drop the byte
 }
 
+
+void Debug_PrintConst_NewLine( void )
+{
+	Debug_PrintChar( '\r' );
+	Debug_PrintChar( '\n' );
+}
+
+
+void Debug_PrintConst_Initializing( void )
+{
+	Debug_PrintRom_( "Initializing " );
+}
+
+
+void Debug_PrintConst_Checking( void )
+{
+	Debug_PrintRom_( "Checking " );
+}
+
+
+void Debug_PrintConst_EventBegin( void )
+{
+	Debug_PrintChar( '[' );
+	Debug_PrintChar( '!' );
+}
+
+
+void Debug_PrintConst_EventEnd( void )
+{
+	Debug_PrintChar( ']' );
+}
+
+
+void Debug_PrintConst_Dots( void )
+{
+	Debug_PrintRom_( "... " );
+}
+
+
+void Debug_PrintConst_Ok( void )
+{
+	Debug_PrintChar( 'o' );
+	Debug_PrintChar( 'k' );
+}
+
+
+void Debug_PrintConst_Fail( void )
+{
+	Debug_PrintRom_( "FAIL" );
+}
 
 
 // EOF

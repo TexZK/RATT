@@ -178,7 +178,7 @@ void Adns_Initialize( void )
 	ADNS_INT_IF = 0;
 	ADNS_INT_IP = 1;
 	ADNS_INT_EDGE = 1;
-	Nop();
+	DelayMs( ADNS_DLY_MOT_RST_MAX_MS );
 	Adns_EnableInterrupt();
 }
 
@@ -197,9 +197,10 @@ void Adns_Service( void )
 		
 		Adns_DisableInterrupt();
 		adns_status.motionInt = 0;
-		YELLOW_LED = LED_ON;
 		Adns_ResetCommunication();
 		burst = Adns_BurstReadMotionDeltasBlocking();
+		YELLOW_LED = LED_ON;			// Yellow LED for cached HID packet
+		RED_LED = LED_OFF;
 		Adns_EnableInterrupt();
 		
 		adns_deltaY = burst.deltaY;
@@ -241,6 +242,7 @@ void Adns_MotionCallback( void )
 {
 	ADNS_INT_IF = 0;
 	adns_status.motionInt = 1;
+	RED_LED = LED_ON;					// Red LED for cached motion interrupt
 }	
 
 
