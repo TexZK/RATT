@@ -418,6 +418,7 @@ static void USBStallHandler(void);
 
 static void PrintUsbStateChange( void )
 {
+	Debug_Flush();						// Workaround: we should NOT write inside interrupts...
 	Debug_PrintConst_EventBegin();
 	Debug_PrintRom_( "USB_" );
 	switch ( USBDeviceState )

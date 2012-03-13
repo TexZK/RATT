@@ -44,15 +44,20 @@
 #define	ADNS_DLY_SPI_BYTE_US			((8 * 1000000) / ADNS_SPI_FREQ)	/// Delay of a byte sent over SPI
 
 // Pin definitions
-#define	ADNS_PIN_MISO					PORTBbits.RB4		/// SPI MISO/SDO
-#define	ADNS_PIN_MOSI					PORTCbits.RC7		/// SPI MOSI/SDI
-#define	ADNS_PIN_SCLK					PORTBbits.RB6		/// SPI SCLK/SCK
-#define	ADNS_PIN_MOTION					PORTCbits.RC2		/// ADNS motion interrupt request
-
-#define	ADNS_TRIS_MISO					TRISBbits.TRISB4	/// SPI MISO/SDO
-#define	ADNS_TRIS_MOSI					TRISCbits.TRISC7	/// SPI MOSI/SDI
+#define	ADNS_TRIS_MISO					TRISBbits.TRISB4	/// SPI MISO/SDI
+#define	ADNS_TRIS_MOSI					TRISCbits.TRISC7	/// SPI MOSI/SDO
 #define	ADNS_TRIS_SCLK					TRISBbits.TRISB6	/// SPI SCLK/SCK
-#define	ADNS_TRIS_MOTION				TRISCbits.TRISC2	/// ADNS motion interrupt request
+#define	ADNS_TRIS_MOTION				TRISCbits.TRISC2	/// MOTION IRQ
+
+#define	ADNS_PIN_MISO					PORTBbits.RB4		/// SPI MISO/SDI
+#define	ADNS_PIN_MOSI					PORTCbits.RC7		/// SPI MOSI/SDO
+#define	ADNS_PIN_SCLK					PORTBbits.RB6		/// SPI SCLK/SCK
+#define	ADNS_PIN_MOTION					PORTCbits.RC2		/// MOTION IRQ
+
+#define	ADNS_LAT_MISO					LATBbits.LATB4		/// SPI MISO/SDI
+#define	ADNS_LAT_MOSI					LATCbits.LATC7		/// SPI MOSI/SDO
+#define	ADNS_LAT_SCLK					LATBbits.LATB6		/// SPI SCLK/SCK
+#define	ADNS_LAT_MOTION					LATCbits.LATC2		/// MOTION IRQ
 
 
 // Interrupt settings

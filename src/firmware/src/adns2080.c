@@ -24,6 +24,8 @@
 // LOCAL DEFINITIONS
 #pragma udata data_adns_local
 
+#define	PR2_VALUE	(SYS_FCY / (ADNS_SPI_FREQ * 2) - 1)		/// PR2 value for Timer 2 time base
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL VARIABLES
@@ -77,7 +79,6 @@ unsigned char Adns_ReadSPI( void );
 void Adns_WriteSPI( unsigned char value )
 {
 	volatile unsigned char dummy;
-	
 	dummy = SSPBUF;					// Clear buffer state
 	SSPCON1bits.WCOL = 0;
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
@@ -92,15 +93,12 @@ void Adns_WriteSPI( unsigned char value )
 unsigned char Adns_ReadSPI( void )
 {
 	volatile unsigned char dummy;
-	
 	dummy = SSPBUF;					// Clear buffer state
 	SSPCON1bits.WCOL = 0;
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
 	
 	SSPBUF = 0xFF;					// Keep MOSI high
-//	if ( !SSPCON1bits.WCOL ) {		// Check for no collision
-		while ( !PIR1bits.SSPIF );	// Wait until the value is sent
-//	}
+	while ( !PIR1bits.SSPIF );	// Wait until the value is sent
 	return SSPBUF;
 }
 
@@ -123,22 +121,27 @@ void Adns_Initialize( void )
 	SSPCON2 = 0;
 	
 	// Setup pins
-	ADNS_PIN_MOSI = 0;
-	ADNS_PIN_SCLK = 1;
+	ADNS_LAT_MOSI = 1;
+	ADNS_LAT_SCLK = 1;
 	
 	ADNS_TRIS_MISO = 1;
 	ADNS_TRIS_MOSI = 0;
 	ADNS_TRIS_SCLK = 0;
 	ADNS_TRIS_MOTION = 1;
 	
-	ADNS_PIN_MOSI = 0;
-	ADNS_PIN_SCLK = 1;
+	ADNS_LAT_MOSI = 1;
+	ADNS_LAT_SCLK = 1;
+	
+	// Print debug info
+	Debug_PrintConst_Initializing();
+	Debug_PrintRom_( "ADNS" );
+	Debug_PrintConst_Dots();
 	
 	// Setup Timer 2 time base
 	PIE1bits.TMR2IE = 0;			// Disable Timer 2 interrupts
 	PIR1bits.TMR2IF = 0;
 	T2CON = 0;						// No prescaler, no postscaler, timer disabled
-	PR2 = (2 * SYS_FCY) / ADNS_SPI_FREQ;	// Desired time base at TMR2/2
+	PR2 = PR2_VALUE;				// Desired time base at TMR2/2
 	T2CONbits.TMR2ON = 1;			// Enable the Timer 2 time base
 	
 	// Configure the SPI module
@@ -163,15 +166,20 @@ void Adns_Initialize( void )
 	adns_hidData.deltaX = 0;
 	adns_hidData.deltaY = 0;
 	
+	Debug_PrintConst_Ok();
+	Debug_PrintConst_NewLine();
+	
 	// Reset the device
-	Debug_PrintRom_( "ADNS connection... " );
+	Debug_PrintConst_Checking();
+	Debug_PrintRom_( "ADNS connection" );
+	Debug_PrintConst_Dots();
 	Adns_ResetCommunication();
 	
 	// Check communication
 	if ( Adns_CheckCommunication() ) {
-		Debug_PrintRom_( "ok\n" );
+		Debug_PrintConst_Ok();
 	} else {
-		Debug_PrintRom_( "FAIL\n" );
+		Debug_PrintConst_Fail();
 	}
 	
 	// Enable MOTION interrupt
@@ -274,20 +282,37 @@ void Adns_ResetCommunication( void )
 
 void Adns_WriteBlocking( unsigned char address, unsigned char value )
 {
-	ADNS_TRIS_MISO = 0;
-	Adns_WriteSPI( address );
-	Adns_WriteSPI( value );
+	ADNS_LAT_MOSI = 0;				// Preload a low value (actually not needed)
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	Adns_WriteSPI( address );		// Write the register address
+	Adns_WriteSPI( value );			// Write the register value
 }
 
 
 unsigned char Adns_ReadBlocking( unsigned char address )
 {
-	ADNS_TRIS_MISO = 0;
+	unsigned char value;
+	
+	// Write the register address
+	ADNS_LAT_MOSI = 0;				// Preload a low value (actually not needed)
+	ADNS_TRIS_MOSI = 0;				// Set MISO as output
 	Adns_WriteSPI( address );
-	OneUsDelay();	// FIXME
-	ADNS_TRIS_MISO = 1;
 	Adns_AddressDataDelay();
-	return Adns_ReadSPI();
+	
+	// Read the register value
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	ADNS_LAT_MOSI = 1;				// Load a high value
+	SSPCON1bits.SSPEN = 0;			// Disable the SPI module, to drive MOSI high
+	Nop();							// Small precharge delay for parasitic capacitance
+	Nop();							// ~90% @ 100pF
+	ADNS_TRIS_MOSI = 1;				// Set MOSI as input
+	SSPCON1bits.SSPEN = 1;			// Enable the SPI module again
+	value = Adns_ReadSPI();
+	Adns_ReadSubsequentDelay();
+	
+	ADNS_LAT_MOSI = 0;				// Preload a low value (actually not needed)
+	ADNS_TRIS_MOSI = 0;				// Set MISO as output
+	return value;
 }
 
 
@@ -296,15 +321,25 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	ADNS_BURST_MOTION_DELTAS result;
 	unsigned char	high;
 	
-	ADNS_TRIS_MISO = 0;
+	// Call a Motion Burst message chain
+	ADNS_LAT_MOSI = 0;				// Preload a low value (actually not needed)
+	ADNS_TRIS_MOSI = 0;				// Set MISO as output
 	Adns_WriteSPI( ADNS_REG_MOTION_BURST );
 	Adns_AddressDataDelay();
-	OneUsDelay();	// FIXME
-	ADNS_TRIS_MISO = 1;
 	
-	result.deltaY = Adns_ReadSPI();
-	result.deltaX = Adns_ReadSPI();
-	high = Adns_ReadSPI();
+	// Prepare for input messages
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	ADNS_LAT_MOSI = 1;				// Load a high value
+	SSPCON1bits.SSPEN = 0;			// Disable the SPI module, to drive MOSI high
+	Nop();							// Small precharge delay for parasitic capacitance
+	Nop();							// ~90% @ 100pF
+	ADNS_TRIS_MOSI = 1;				// Set MOSI as input
+	SSPCON1bits.SSPEN = 1;			// Enable the SPI module again
+	
+	// Read the chosen Motion Burst registers
+	result.deltaY = Adns_ReadSPI();	// DELTA_Y
+	result.deltaX = Adns_ReadSPI();	// DELTA_X
+	high = Adns_ReadSPI();			// DELTA_XY_HIGH
 	result.deltaY += high & 0x0F;	// Add upper 4 bits
 	result.deltaX += high >> 4;
 	

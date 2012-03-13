@@ -383,11 +383,12 @@ void InitializeSystem( void )
     Usb_UserInit();
     USBDeviceInit();
     Debug_PrintConst_Ok();
+    Debug_PrintConst_NewLine();
     RED_LED = LED_OFF;
     
-    // TODO: Initialize ADNS module
+    // Initialize ADNS module
     RED_LED = LED_ON;
-//	Adns_Initialize();
+	Adns_Initialize();
     RED_LED = LED_OFF;
     
     Debug_PrintConst_NewLine();
