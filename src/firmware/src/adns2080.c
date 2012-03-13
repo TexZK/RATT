@@ -72,6 +72,12 @@ void Adns_WriteSPI( unsigned char value );
 unsigned char Adns_ReadSPI( void );
 
 
+/**
+ * Configures ADNS registers.
+ */
+void Adns_SetupConfiguration( void );
+
+
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL FUNCTIONS
 #pragma code code_adns_local
@@ -98,8 +104,36 @@ unsigned char Adns_ReadSPI( void )
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
 	
 	SSPBUF = 0xFF;					// Keep MOSI high
-	while ( !PIR1bits.SSPIF );	// Wait until the value is sent
+	while ( !PIR1bits.SSPIF );		// Wait until the value is sent
 	return SSPBUF;
+}
+
+
+void Adns_SetupConfiguration( void )
+{
+	ADNS_BITS_MOUSE_CTRL	mouse_ctrl;
+	ADNS_BITS_MOTION_CTRL	motion_ctrl;
+	ADNS_BITS_PERFORMANCE	performance;
+	
+	// Setup Mouse Control
+	mouse_ctrl.value = ADNS_DEF_MOUSE_CTRL;
+	mouse_ctrl.bits.BIT_REPORTING = 1;		// 12-bits reporting
+	Adns_WriteBlocking( ADNS_REG_MOUSE_CTRL, mouse_ctrl.value );
+	
+	// Setup Performance
+	performance.value = ADNS_DEF_PERFORMANCE;
+	performance.bits.FORCE = 0x04;			// Run 1
+	Adns_WriteBlocking( ADNS_REG_PERFORMANCE, performance.value );
+	
+	// Setup Motion Control
+	motion_ctrl.value = ADNS_DEF_MOTION_CTRL;
+	motion_ctrl.bits.MOT_A = 0;				// Active low
+	motion_ctrl.bits.MOT_S = 0;				// Level sensitive (not needed, but might be useful for debugging)
+	Adns_WriteBlocking( ADNS_REG_MOTION_CTRL, motion_ctrl.value );
+	
+	// Set Motion Burst index boundaries
+	Adns_WriteBlocking( ADNS_REG_BURST_READ_FIRST, ADNS_REG_DELTA_X );
+	Adns_WriteBlocking( ADNS_REG_BURST_READ_LAST, ADNS_REG_DELTA_XY_HIGH );
 }
 
 
@@ -182,11 +216,14 @@ void Adns_Initialize( void )
 		Debug_PrintConst_Fail();
 	}
 	
+	// Configure the expected behavior
+	Adns_SetupConfiguration();
+	
 	// Enable MOTION interrupt
 	ADNS_INT_IF = 0;
 	ADNS_INT_IP = 1;
 	ADNS_INT_EDGE = 1;
-	DelayMs( ADNS_DLY_MOT_RST_MAX_MS );
+	DelayMs( ADNS_DLY_MOT_RST_MAX_MS );		// Wait for valid motion detection
 	Adns_EnableInterrupt();
 }
 
@@ -282,7 +319,6 @@ void Adns_ResetCommunication( void )
 
 void Adns_WriteBlocking( unsigned char address, unsigned char value )
 {
-	ADNS_LAT_MOSI = 0;				// Preload a low value (actually not needed)
 	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
 	Adns_WriteSPI( address );		// Write the register address
 	Adns_WriteSPI( value );			// Write the register value
@@ -293,25 +329,14 @@ unsigned char Adns_ReadBlocking( unsigned char address )
 {
 	unsigned char value;
 	
-	// Write the register address
-	ADNS_LAT_MOSI = 0;				// Preload a low value (actually not needed)
-	ADNS_TRIS_MOSI = 0;				// Set MISO as output
-	Adns_WriteSPI( address );
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	Adns_WriteSPI( address );		// Write the register address
 	Adns_AddressDataDelay();
 	
-	// Read the register value
-	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
-	ADNS_LAT_MOSI = 1;				// Load a high value
-	SSPCON1bits.SSPEN = 0;			// Disable the SPI module, to drive MOSI high
-	Nop();							// Small precharge delay for parasitic capacitance
-	Nop();							// ~90% @ 100pF
-	ADNS_TRIS_MOSI = 1;				// Set MOSI as input
-	SSPCON1bits.SSPEN = 1;			// Enable the SPI module again
-	value = Adns_ReadSPI();
-	Adns_ReadSubsequentDelay();
+	ADNS_TRIS_MOSI = 1;				// Set MOSI to HiZ
+	value = Adns_ReadSPI();			// Read the register value
 	
-	ADNS_LAT_MOSI = 0;				// Preload a low value (actually not needed)
-	ADNS_TRIS_MOSI = 0;				// Set MISO as output
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
 	return value;
 }
 
@@ -322,27 +347,19 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	unsigned char	high;
 	
 	// Call a Motion Burst message chain
-	ADNS_LAT_MOSI = 0;				// Preload a low value (actually not needed)
-	ADNS_TRIS_MOSI = 0;				// Set MISO as output
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
 	Adns_WriteSPI( ADNS_REG_MOTION_BURST );
 	Adns_AddressDataDelay();
 	
-	// Prepare for input messages
-	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
-	ADNS_LAT_MOSI = 1;				// Load a high value
-	SSPCON1bits.SSPEN = 0;			// Disable the SPI module, to drive MOSI high
-	Nop();							// Small precharge delay for parasitic capacitance
-	Nop();							// ~90% @ 100pF
-	ADNS_TRIS_MOSI = 1;				// Set MOSI as input
-	SSPCON1bits.SSPEN = 1;			// Enable the SPI module again
-	
 	// Read the chosen Motion Burst registers
-	result.deltaY = Adns_ReadSPI();	// DELTA_Y
+	ADNS_TRIS_MOSI = 1;				// Set MOSI to HiZ
 	result.deltaX = Adns_ReadSPI();	// DELTA_X
+	result.deltaY = Adns_ReadSPI();	// DELTA_Y
 	high = Adns_ReadSPI();			// DELTA_XY_HIGH
 	result.deltaY += high & 0x0F;	// Add upper 4 bits
 	result.deltaX += high >> 4;
 	
+	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
 	return result;
 }	
 
@@ -370,8 +387,8 @@ void Adns_AddressDataDelay( void )
 
 void Adns_ReadSubsequentDelay( void )
 {
-	Nop();
-	Nop();
+	Nop();		// Actually, this delay is already
+	Nop();		// spent by overhead instructions
 	Nop();
 	Nop();
 }

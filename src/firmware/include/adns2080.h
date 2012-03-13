@@ -133,60 +133,90 @@
 
 // Register bitfields
 
-typedef struct {
-	unsigned					: 7;
-	unsigned	MOTION_ST		: 1;
+typedef union {
+	struct {
+		unsigned					: 7;
+		unsigned	MOTION_ST		: 1;
+	} bits;
+	unsigned char value;
 } ANDS_BITS_MOTION_ST;
 
-typedef struct {
-	unsigned	S				: 4;
-	unsigned					: 4;
+typedef union {
+	struct {
+		unsigned	S				: 4;
+		unsigned					: 4;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_SHUT_HI;
 
-typedef struct {
-	unsigned	S				: 8;
+typedef union {
+	struct {
+		unsigned	S				: 8;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_SHUT_LO;
 
-typedef struct {
-	unsigned	PG				: 7;
-	unsigned	PG_VALID		: 1;
+typedef union {
+	struct {
+		unsigned	PG				: 7;
+		unsigned	PG_VALID		: 1;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_PIX_GRAB;
 
-typedef struct {
-	unsigned	DELTA_Y_HI		: 4;
-	unsigned	DELTA_X_HI		: 4;
+typedef union {
+	struct {
+		unsigned	DELTA_Y_HI		: 4;
+		unsigned	DELTA_X_HI		: 4;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_DELTA_XY_HIGH;
 
-typedef struct {
-	unsigned	RES_D			: 1;
-	unsigned	PD				: 1;
-	unsigned	RES				: 3;
-	unsigned	RES_EN			: 1;
-	unsigned					: 1;
-	unsigned	BIT_REPORTING	: 1;
+typedef union {
+	struct {
+		unsigned	RES_D			: 1;
+		unsigned	PD				: 1;
+		unsigned	RES				: 3;
+		unsigned	RES_EN			: 1;
+		unsigned					: 1;
+		unsigned	BIT_REPORTING	: 1;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_MOUSE_CTRL;
 
-typedef struct {
-	unsigned					: 4;
-	unsigned	FORCE			: 3;
-	unsigned					: 1;
+typedef union {
+	struct {
+		unsigned					: 4;
+		unsigned	FORCE			: 3;
+		unsigned					: 1;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_PERFORMANCE;
 
-typedef struct {
-	unsigned					: 3;
-	unsigned	LCOF			: 1;
-	unsigned					: 4;
+typedef union {
+	struct {
+		unsigned					: 3;
+		unsigned	LCOF			: 1;
+		unsigned					: 4;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_LED_CTRL;
 
-typedef struct {
-	unsigned					: 6;
-	unsigned	MOT_S			: 1;
-	unsigned	MOT_A			: 1;
+typedef union {
+	struct {
+		unsigned					: 6;
+		unsigned	MOT_S			: 1;
+		unsigned	MOT_A			: 1;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_MOTION_CTRL;
 
-typedef struct {
-	unsigned					: 6;
-	unsigned	RM				: 2;
+typedef union {
+	struct {
+		unsigned					: 6;
+		unsigned	RM				: 2;
+	} bits;
+	unsigned char value;
 } ADNS_BITS_REST_MODE_CONFIG;
 
 
