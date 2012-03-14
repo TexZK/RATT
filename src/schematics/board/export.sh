@@ -10,9 +10,11 @@ else
 	eagle_folder=$HOME/eagle			# Linux (default)
 fi
 
-source=$eagle_folder/$project_folder
-target=$this_folder
+source=$this_folder
+target=$eagle_folder/$project_folder
+files=$(ls -1 "$this_folder" | grep -v \.sh$)
 
-files=$(ls -1 "$source" | grep -v '.*\..#.')
-echo "$files" | xargs -i cp -Rv "$source/{}" "$target"
+rm -rf "$target"
+mkdir -p "$target"
+echo "$files" | xargs -i cp -Rv {} "$target"
 

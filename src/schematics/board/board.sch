@@ -15861,7 +15861,7 @@ Source: www.kingbright.com</description>
 <part name="+3V1" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="C1" library="rcl" deviceset="C-US" device="025-025X050" value="100n"/>
-<part name="C2" library="rcl" deviceset="CPOL-US" device="E2-5" value="22u"/>
+<part name="C2" library="rcl" deviceset="CPOL-US" device="E2-5" value="2u2"/>
 <part name="C3" library="rcl" deviceset="CPOL-US" device="E2-5" value="10u"/>
 <part name="Q1" library="crystal" deviceset="CRYSTAL" device="HC49S" value="12MHz"/>
 <part name="SUPPLY1" library="supply2" deviceset="GND" device=""/>
@@ -15875,7 +15875,7 @@ Source: www.kingbright.com</description>
 <part name="+3V3" library="supply1" deviceset="+3V3" device=""/>
 <part name="C4" library="rcl" deviceset="C-US" device="025-025X050" value="15p"/>
 <part name="C5" library="rcl" deviceset="C-US" device="025-025X050" value="15p"/>
-<part name="R1" library="rcl" deviceset="R-US_" device="0207/10" value="100"/>
+<part name="R1" library="rcl" deviceset="R-US_" device="0207/10" value="150"/>
 <part name="R2" library="rcl" deviceset="R-US_" device="0204/5" value="10k"/>
 <part name="R3" library="rcl" deviceset="R-US_" device="0204/5" value="10k"/>
 <part name="+3V4" library="supply1" deviceset="+3V3" device=""/>
@@ -15890,11 +15890,11 @@ Source: www.kingbright.com</description>
 <part name="R6" library="rcl" deviceset="R-US_" device="0204/5" value="470"/>
 <part name="P4" library="pinhead" deviceset="PINHD-1X2" device=""/>
 <part name="GND6" library="supply1" deviceset="GND" device=""/>
-<part name="R7" library="rcl" deviceset="R-US_" device="0204/5" value="47k"/>
-<part name="R8" library="rcl" deviceset="R-US_" device="0204/5" value="47k"/>
+<part name="R7" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
+<part name="R8" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V7" library="supply1" deviceset="+3V3" device=""/>
-<part name="R9" library="rcl" deviceset="R-US_" device="0204/5" value="47k"/>
+<part name="R9" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
 </parts>
 <sheets>
 <sheet>
@@ -15906,6 +15906,8 @@ Source: www.kingbright.com</description>
 <text x="187.96" y="20.32" size="1.778" layer="97" rot="R90">Encoder port</text>
 <text x="187.96" y="-7.62" size="1.778" layer="97" rot="R90">Auxiliary input</text>
 <text x="187.96" y="53.34" size="1.778" layer="97" rot="R90">Sensor port</text>
+<text x="15.24" y="88.9" size="1.778" layer="97">Power stage</text>
+<text x="91.44" y="88.9" size="1.778" layer="97">LEDs</text>
 </plain>
 <instances>
 <instance part="U1" gate="G$1" x="22.86" y="71.12" smashed="yes">
@@ -16200,7 +16202,7 @@ Source: www.kingbright.com</description>
 <net name="TX" class="0">
 <segment>
 <wire x1="17.78" y1="-22.86" x2="0" y2="-22.86" width="0.1524" layer="91"/>
-<label x="-7.62" y="-20.32" size="1.778" layer="95"/>
+<label x="-7.62" y="-22.86" size="1.778" layer="95"/>
 <pinref part="P2" gate="A" pin="1"/>
 <pinref part="U2" gate="A" pin="RB7/TX/CK"/>
 <wire x1="0" y1="-22.86" x2="-15.24" y2="-22.86" width="0.1524" layer="91"/>
@@ -16215,7 +16217,7 @@ Source: www.kingbright.com</description>
 <net name="RX" class="0">
 <segment>
 <wire x1="15.24" y1="-25.4" x2="7.62" y2="-25.4" width="0.1524" layer="91"/>
-<label x="-7.62" y="-22.86" size="1.778" layer="95"/>
+<label x="-7.62" y="-25.4" size="1.778" layer="95"/>
 <pinref part="P2" gate="A" pin="2"/>
 <pinref part="U2" gate="A" pin="RB5/AN11/RX/DT"/>
 <wire x1="7.62" y1="-25.4" x2="-15.24" y2="-25.4" width="0.1524" layer="91"/>

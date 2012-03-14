@@ -14015,9 +14015,9 @@ Source: www.kingbright.com</description>
 <part name="+3V2" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V3" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND4" library="supply1" deviceset="GND" device=""/>
-<part name="R2" library="rcl" deviceset="R-US_" device="0207/7" value="1M"/>
-<part name="R3" library="rcl" deviceset="R-US_" device="0207/7" value="1M"/>
-<part name="R4" library="rcl" deviceset="R-US_" device="0207/7" value="1M"/>
+<part name="R2" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
+<part name="R3" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
+<part name="R4" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
 </parts>
 <sheets>
 <sheet>
