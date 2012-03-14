@@ -136,12 +136,12 @@ Layer=1
 
 [Win_4]
 Type="Control Panel"
-Loc="23 149 622 548"
+Loc="100 100 699 499"
 State=1
 Number=0
 
 [Desktop]
-Screen="1280 1024"
+Screen="1280 800"
 Window="Win_1"
 Window="Win_2"
 Window="Win_3"
