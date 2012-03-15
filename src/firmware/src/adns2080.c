@@ -116,7 +116,14 @@ unsigned char Adns_ReadSPI( void )
 	SSPCON1bits.WCOL = 0;
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
 	
+#ifdef USE_WORKAROUND_DS80411E_2_1_OPT2
+	T2CONbits.TMR2ON = 0;			// Disable the Timer 2 time base
+	TMR2 = 0;						// Clear the Timer 2 counter
+#endif
 	SSPBUF = 0xFF;					// Keep MOSI high
+#ifdef USE_WORKAROUND_DS80411E_2_1_OPT2
+	T2CONbits.TMR2ON = 1;			// Enable the Timer 2 time base again
+#endif
 	while ( !PIR1bits.SSPIF );		// Wait until the value is sent
 	return SSPBUF;
 }
@@ -210,6 +217,7 @@ void Adns_Initialize( void )
 	adns_hidData.deltaX = 0;
 	adns_hidData.deltaY = 0;
 	
+	Adns_PowerUpDelay();
 	Debug_PrintConst_Ok();
 	Debug_PrintConst_NewLine();
 	
@@ -217,7 +225,6 @@ void Adns_Initialize( void )
 	Debug_PrintConst_Checking();
 	Debug_PrintRom_( "ADNS connection" );
 	Debug_PrintConst_Dots();
-	Adns_PowerUpDelay();
 	Adns_WriteBlocking( ADNS_REG_RESET, ADNS_DEF_RESET );
 	Adns_ResetCommunication();
 	
@@ -349,7 +356,7 @@ unsigned char Adns_ReadBlocking( unsigned char address )
 	Adns_AddressDataDelay();
 	value = Adns_ReadSPI();			// Read the register value
 	
-	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	Adns_ReadSubsequentDelay();		// Used as t_HOLD-READ
 	return value;
 }
 
