@@ -163,9 +163,6 @@ void Adns_Initialize( void )
 	ADNS_TRIS_SCLK = 0;
 	ADNS_TRIS_MOTION = 1;
 	
-	ADNS_LAT_MOSI = 1;
-	ADNS_LAT_SCLK = 1;
-	
 	// Print debug info
 	Debug_PrintConst_Initializing();
 	Debug_PrintRom_( "ADNS" );
@@ -207,24 +204,25 @@ void Adns_Initialize( void )
 	Debug_PrintConst_Checking();
 	Debug_PrintRom_( "ADNS connection" );
 	Debug_PrintConst_Dots();
+	Adns_PowerUpDelay();
 	Adns_ResetCommunication();
 	
 	// Check communication
 	if ( Adns_CheckCommunication() ) {
 		Debug_PrintConst_Ok();
+		
+		// Configure the expected behavior
+		Adns_SetupConfiguration();
+		
+		// Enable MOTION interrupt
+		ADNS_INT_IF = 0;
+		ADNS_INT_IP = 1;
+		ADNS_INT_EDGE = 1;
+		DelayMs( ADNS_DLY_MOT_RST_MAX_MS );		// Wait for valid motion detection
+		Adns_EnableInterrupt();
 	} else {
 		Debug_PrintConst_Fail();
 	}
-	
-	// Configure the expected behavior
-	Adns_SetupConfiguration();
-	
-	// Enable MOTION interrupt
-	ADNS_INT_IF = 0;
-	ADNS_INT_IP = 1;
-	ADNS_INT_EDGE = 1;
-	DelayMs( ADNS_DLY_MOT_RST_MAX_MS );		// Wait for valid motion detection
-	Adns_EnableInterrupt();
 }
 
 
