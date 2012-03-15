@@ -115,6 +115,7 @@ void Debug_Initialize( void )
     Debug_PrintHex( SPBRG );
     Debug_PrintConst_NewLine();
     
+    Debug_PrintConst_Dots();
     Debug_PrintConst_Ok();
     Debug_PrintConst_NewLine();
 }
@@ -159,7 +160,7 @@ void Debug_PrintChar( char value )
 		if ( debug_uartTxBufferFree == 0 ) {
 			while ( !DEBUG_UART_FLAG_TX );
 			TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-			if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+			if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
 				debug_uartTxBufferHead = 0;
 			}
 			++debug_uartTxBufferFree;
@@ -167,7 +168,7 @@ void Debug_PrintChar( char value )
 		
 		// Enqueue the character
 		debug_uartTxBufferData[ debug_uartTxBufferTail ] = value;
-		if ( ++debug_uartTxBufferTail == DEBUG_TX_BUFFER_SIZE ) {
+		if ( ++debug_uartTxBufferTail >= DEBUG_TX_BUFFER_SIZE ) {
 			debug_uartTxBufferTail = 0;
 		}	
 		--debug_uartTxBufferFree;
@@ -226,7 +227,7 @@ void Debug_Flush( void )
 	while ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 		while ( !DEBUG_UART_FLAG_TX );
 		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-		if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+		if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
 			debug_uartTxBufferHead = 0;
 		}
 		++debug_uartTxBufferFree;
@@ -245,7 +246,7 @@ void Debug_TxIntCallback( void )
 	{
 		while ( !DEBUG_UART_FLAG_TX );		// Should always be true
 		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-		if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+		if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
 			debug_uartTxBufferHead = 0;
 		}
 		++debug_uartTxBufferFree;
