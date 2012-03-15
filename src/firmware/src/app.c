@@ -218,6 +218,8 @@ void InitializeSystem( void )
     TRISA = ~0;						// All inputs
     TRISB = ~0;
     TRISC = ~0;
+    ANSEL = 0x00;					// All digital
+    ANSELH = 0x01;					// Only RC6/AN8 is analog
     
     // Initialize the LEDs module
     Leds_Initialize();
