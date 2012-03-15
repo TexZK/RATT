@@ -332,7 +332,7 @@ void Adns_ResetCommunication( void )
 void Adns_WriteBlocking( unsigned char address, unsigned char value )
 {
 	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
-	Adns_WriteSPI( address );		// Write the register address
+	Adns_WriteSPI( address | ADNS_WRITE_OR_MASK );	// Write the register address
 	Adns_WriteSPI( value );			// Write the register value
 }
 
@@ -342,7 +342,7 @@ unsigned char Adns_ReadBlocking( unsigned char address )
 	unsigned char value;
 	
 	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
-	Adns_WriteSPI( address );		// Write the register address
+	Adns_WriteSPI( address | ADNS_READ_OR_MASK );	// Write the register address
 	Adns_ReadSubsequentDelay();		// Used as t_HOLD-SDIO
 	
 	ADNS_TRIS_MOSI = 1;				// Set MOSI to HiZ
@@ -361,7 +361,7 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	
 	// Call a Motion Burst message chain
 	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
-	Adns_WriteSPI( ADNS_REG_MOTION_BURST );
+	Adns_WriteSPI( ADNS_REG_MOTION_BURST | ADNS_READ_OR_MASK );
 	Adns_AddressDataDelay();
 	
 	// Read the chosen Motion Burst registers

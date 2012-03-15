@@ -131,6 +131,12 @@
 #define	ADNS_DEF_MOTION_BURST			0x00
 
 
+// Communication bits
+
+#define	ADNS_WRITE_OR_MASK				0x80		/// Value to be OR-ed with the register address, when writing to it
+#define	ADNS_READ_OR_MASK				0x00		/// Value to be OR-ed with the register address, when reading from it
+
+
 // Register bitfields
 
 typedef union {
