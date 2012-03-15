@@ -121,7 +121,7 @@
 #define	ADNS_DEF_REST2_DOWNSHIFT		0x2F
 #define	ADNS_DEF_REST3_PERIOD			0x31
 #define	ADNS_DEF_PERFORMANCE			0x00
-#define	ADNS_DEF_RESET					0x00
+#define	ADNS_DEF_RESET					0x5A		/// Write 0x5A to reset
 #define	ADNS_DEF_NOT_REV_ID				0xFF
 #define	ADNS_DEF_LED_CTRL				0x00
 #define	ADNS_DEF_MOTION_CTRL			0x40
@@ -129,6 +129,12 @@
 #define	ADNS_DEF_BURST_READ_LAST		0x09
 #define	ADNS_DEF_REST_MODE_CONFIG		0x00
 #define	ADNS_DEF_MOTION_BURST			0x00
+
+
+// Communication bits
+
+#define	ADNS_WRITE_OR_MASK				0x80		/// Value to be OR-ed with the register address, when writing to it
+#define	ADNS_READ_OR_MASK				0x00		/// Value to be OR-ed with the register address, when reading from it
 
 
 // Register bitfields
