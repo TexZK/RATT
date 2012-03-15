@@ -24,6 +24,12 @@
 // LOCAL DEFINITIONS
 #pragma udata data_adns_local
 
+/**
+ * The proprtype device is affected by bug 2.1 described in "PIC18(L)F1XK50
+ * Silicon Errata and Data Sheet Clarification" (document #DS80411E).
+ */
+#define	USE_WORKAROUND_DS80411E_2_1_OPT2
+
 #define	PR2_VALUE	(SYS_FCY / (ADNS_SPI_FREQ * 2) - 1)		/// PR2 value for Timer 2 time base
 
 
@@ -89,7 +95,14 @@ void Adns_WriteSPI( unsigned char value )
 	SSPCON1bits.WCOL = 0;
 	PIR1bits.SSPIF = 0;				// Clear the interrupt flag
 	
+#ifdef USE_WORKAROUND_DS80411E_2_1_OPT2
+	T2CONbits.TMR2ON = 0;			// Disable the Timer 2 time base
+	TMR2 = 0;						// Clear the Timer 2 counter
+#endif
 	SSPBUF = value;					// Write the value to be sent
+#ifdef USE_WORKAROUND_DS80411E_2_1_OPT2
+	T2CONbits.TMR2ON = 1;			// Enable the Timer 2 time base again
+#endif
 	if ( !SSPCON1bits.WCOL ) {		// Check for no collision
 		while ( !PIR1bits.SSPIF );	// Wait until the value is sent
 	}
@@ -178,8 +191,8 @@ void Adns_Initialize( void )
 	// Configure the SPI module
 	SSPSTAT = 0;					// Reset the MSSP status register
 	SSPSTATbits.SMP = 0;			// Data valid at half clock period
-	SSPSTATbits.CKE = 1;			// Data transition at high->low clock edge
 	SSPCON1bits.CKP = 1;			// Idle clock state at high level
+	SSPSTATbits.CKE = 0;			// Data transition at high->low clock edge
 	SSPCON1bits.SSPM0 = 1;			// TMR2/2 as time base (SSPM = 0b0011)
 	SSPCON1bits.SSPM1 = 1;
 	SSPCON1bits.SSPEN = 1;			// Enable the SPI module
@@ -205,6 +218,7 @@ void Adns_Initialize( void )
 	Debug_PrintRom_( "ADNS connection" );
 	Debug_PrintConst_Dots();
 	Adns_PowerUpDelay();
+	Adns_WriteBlocking( ADNS_REG_RESET, ADNS_DEF_RESET );
 	Adns_ResetCommunication();
 	
 	// Check communication
@@ -329,9 +343,10 @@ unsigned char Adns_ReadBlocking( unsigned char address )
 	
 	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
 	Adns_WriteSPI( address );		// Write the register address
-	Adns_AddressDataDelay();
+	Adns_ReadSubsequentDelay();		// Used as t_HOLD-SDIO
 	
 	ADNS_TRIS_MOSI = 1;				// Set MOSI to HiZ
+	Adns_AddressDataDelay();
 	value = Adns_ReadSPI();			// Read the register value
 	
 	ADNS_TRIS_MOSI = 0;				// Set MOSI as output

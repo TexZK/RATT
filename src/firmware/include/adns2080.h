@@ -121,7 +121,7 @@
 #define	ADNS_DEF_REST2_DOWNSHIFT		0x2F
 #define	ADNS_DEF_REST3_PERIOD			0x31
 #define	ADNS_DEF_PERFORMANCE			0x00
-#define	ADNS_DEF_RESET					0x00
+#define	ADNS_DEF_RESET					0x5A		/// Write 0x5A to reset
 #define	ADNS_DEF_NOT_REV_ID				0xFF
 #define	ADNS_DEF_LED_CTRL				0x00
 #define	ADNS_DEF_MOTION_CTRL			0x40
