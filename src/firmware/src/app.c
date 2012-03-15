@@ -218,6 +218,8 @@ void InitializeSystem( void )
     TRISA = ~0;						// All inputs
     TRISB = ~0;
     TRISC = ~0;
+    ANSEL = 0x00;					// All digital
+    ANSELH = 0x01;					// Only RC6/AN8 is analog
     
     // Initialize the LEDs module
     Leds_Initialize();
@@ -270,15 +272,19 @@ void InitializeSystem( void )
  * both USB and non-USB tasks.
  */
 void ProcessIO( void )
-{   
-	// TODO: Handle ADNS
+{
+	// Flush the debug console, to speed-up further messages
+	Debug_Flush();
 	
 	// User Application USB tasks
     if ( USBDeviceState < CONFIGURED_STATE || USBSuspendControl == 1 ) {
 		return;
 	}
     
-    // Check if data was received from the host
+    // Handle ADNS tasks
+	Adns_Service();
+	
+	// Check if data was received from the host
     if ( Usb_RxReady() ) {
 		// TODO: Process ReceivedDataBuffer[*]
         
@@ -325,34 +331,11 @@ void main( void )
 
 void WaitButtonPress( void )
 {
-	unsigned short i;
-	do {									// Wait for previous release
-		for ( i = 0; i < 1000; ++i ) {		// Debounce previous release
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-		}
-	} while ( !BUTTON_PIN );
-	while ( BUTTON_PIN ) {					// Wait for button press
-		for ( i = 0; i < 1000; ++i ) {		// Debounce button press
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-			OneUsDelay();
-		}
+	do {
+		DelayMs( 10 );			// Debounce previous release
+	} while ( !BUTTON_PIN );	// Wait for previous release
+	while ( BUTTON_PIN ) {		// Wait for button press
+		DelayMs( 10 );			// Debounce button press
 	}
 }
 

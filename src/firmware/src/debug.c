@@ -98,18 +98,25 @@ void Debug_Initialize( void )
     INTCONbits.GIEL = 1;
     
 	// Print a welcome message
-	Debug_PrintRom_( "=> MOUSE SENSOR HID CONTROLLER <=\r\n\r\n" );
+	Debug_PrintRom_( "=> MOUSE SENSOR HID CONTROLLER <=" );
+    Debug_PrintConst_NewLine();
+    Debug_PrintConst_NewLine();
 	
 	// Print some info
     Debug_PrintConst_Initializing();
     Debug_PrintRom_( "UART" );
     Debug_PrintConst_Dots();
+    Debug_PrintConst_NewLine();
+    
+    Debug_PrintRom_( "\tSPBRG" );
+    Debug_PrintConst_Eq();
+    Debug_PrintConst_0x();
+    Debug_PrintHex( SPBRGH );
+    Debug_PrintHex( SPBRG );
+    Debug_PrintConst_NewLine();
+    
+    Debug_PrintConst_Dots();
     Debug_PrintConst_Ok();
-    Debug_PrintConst_NewLine();
-    Debug_PrintRom_( "UART SPBRG = 0x" );
-    Debug_PrintByte( SPBRGH );
-    Debug_PrintByte( SPBRG );
-    Debug_PrintConst_NewLine();
     Debug_PrintConst_NewLine();
 }
 
@@ -153,7 +160,7 @@ void Debug_PrintChar( char value )
 		if ( debug_uartTxBufferFree == 0 ) {
 			while ( !DEBUG_UART_FLAG_TX );
 			TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-			if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+			if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
 				debug_uartTxBufferHead = 0;
 			}
 			++debug_uartTxBufferFree;
@@ -161,7 +168,7 @@ void Debug_PrintChar( char value )
 		
 		// Enqueue the character
 		debug_uartTxBufferData[ debug_uartTxBufferTail ] = value;
-		if ( ++debug_uartTxBufferTail == DEBUG_TX_BUFFER_SIZE ) {
+		if ( ++debug_uartTxBufferTail >= DEBUG_TX_BUFFER_SIZE ) {
 			debug_uartTxBufferTail = 0;
 		}	
 		--debug_uartTxBufferFree;
@@ -172,12 +179,12 @@ void Debug_PrintChar( char value )
 }
 
 
-void Debug_PrintByte( unsigned char value )
+void Debug_PrintHex( unsigned char value )
 {
-	unsigned char c = value & 0x0F;
-	Debug_PrintChar( ((c > 9) ? 'A': '0') + c );
-	c = value >> 4;
-	Debug_PrintChar( ((c > 9) ? 'A': '0') + c );
+	unsigned char c = (value >> 4) & 0x0F;
+	Debug_PrintChar( c + ((c >= 10) ? ('A' - 10) : '0') );
+	c = value & 0x0F;
+	Debug_PrintChar( c + ((c >= 10) ? ('A' - 10) : '0') );
 }
 
 
@@ -220,7 +227,7 @@ void Debug_Flush( void )
 	while ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 		while ( !DEBUG_UART_FLAG_TX );
 		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-		if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+		if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
 			debug_uartTxBufferHead = 0;
 		}
 		++debug_uartTxBufferFree;
@@ -239,7 +246,7 @@ void Debug_TxIntCallback( void )
 	{
 		while ( !DEBUG_UART_FLAG_TX );		// Should always be true
 		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-		if ( ++debug_uartTxBufferHead == DEBUG_TX_BUFFER_SIZE ) {
+		if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
 			debug_uartTxBufferHead = 0;
 		}
 		++debug_uartTxBufferFree;
@@ -281,7 +288,7 @@ void Debug_PrintConst_Checking( void )
 void Debug_PrintConst_EventBegin( void )
 {
 	Debug_PrintChar( '[' );
-	Debug_PrintChar( '!' );
+	Debug_PrintChar( '@' );
 }
 
 
@@ -293,7 +300,10 @@ void Debug_PrintConst_EventEnd( void )
 
 void Debug_PrintConst_Dots( void )
 {
-	Debug_PrintRom_( "... " );
+	Debug_PrintChar( '.' );
+	Debug_PrintChar( '.' );
+	Debug_PrintChar( '.' );
+	Debug_PrintChar( ' ' );
 }
 
 
@@ -306,8 +316,27 @@ void Debug_PrintConst_Ok( void )
 
 void Debug_PrintConst_Fail( void )
 {
-	Debug_PrintRom_( "FAIL" );
+	Debug_PrintChar( 'F' );
+	Debug_PrintChar( 'A' );
+	Debug_PrintChar( 'I' );
+	Debug_PrintChar( 'L' );
 }
+
+
+void Debug_PrintConst_Eq( void )
+{
+	Debug_PrintChar( ' ' );
+	Debug_PrintChar( '=' );
+	Debug_PrintChar( ' ' );
+}
+
+
+void Debug_PrintConst_0x( void )
+{
+	Debug_PrintChar( '0' );
+	Debug_PrintChar( 'x' );
+}
+
 
 
 // EOF

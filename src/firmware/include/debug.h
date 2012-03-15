@@ -111,7 +111,7 @@ void Debug_PrintChar( char value );
 /**
  * Prints a HEX byte.
  */
-void Debug_PrintByte( unsigned char value );
+void Debug_PrintHex( unsigned char value );
 
 
 /**
@@ -187,7 +187,7 @@ void Debug_PrintConst_Checking( void );
 
 
 /**
- * Prints "[!" (begins event info string).
+ * Prints "[@" (begins event info string).
  */
 void Debug_PrintConst_EventBegin( void );
 
@@ -214,6 +214,18 @@ void Debug_PrintConst_Ok( void );
  * Prints "FAIL".
  */
 void Debug_PrintConst_Fail( void );
+
+
+/**
+ * Prints " = ".
+ */
+void Debug_PrintConst_Eq( void );
+
+
+/**
+ * Prints "0x".
+ */
+void Debug_PrintConst_0x( void );
 
 
 #endif	/* !__DEBUG_H__ */
