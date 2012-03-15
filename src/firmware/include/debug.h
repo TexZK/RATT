@@ -217,6 +217,12 @@ void Debug_PrintConst_Fail( void );
 
 
 /**
+ * Prints " = ".
+ */
+void Debug_PrintConst_Eq( void );
+
+
+/**
  * Prints "0x".
  */
 void Debug_PrintConst_0x( void );
