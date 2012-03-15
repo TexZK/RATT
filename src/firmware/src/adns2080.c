@@ -356,7 +356,7 @@ unsigned char Adns_ReadBlocking( unsigned char address )
 	Adns_AddressDataDelay();
 	value = Adns_ReadSPI();			// Read the register value
 	
-	ADNS_TRIS_MOSI = 0;				// Set MOSI as output
+	Adns_ReadSubsequentDelay();		// Used as t_HOLD-READ
 	return value;
 }
 
