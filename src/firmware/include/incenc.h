@@ -82,7 +82,7 @@ signed short IncEnc_GetDelta( void );
 
 
 /**
- * Signal A interrupt callback.
+ * Input changed interrupt callback.
  */
 void IncEnc_CallbackA( void );
 
