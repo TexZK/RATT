@@ -328,8 +328,7 @@ void Adns_Initialize( void )
 		
 		// Enable MOTION interrupt
 		ADNS_INT_IF = 0;
-		ADNS_INT_IP = 1;
-		ADNS_INT_EDGE = 1;
+		ADNS_INT_EDGE = ADNS_INT_EDGE_VALUE;
 		Adns_EnableInterrupt();
 	}
 }
