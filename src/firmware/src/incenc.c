@@ -50,6 +50,8 @@ void IncEnc_Initialize( void )
 {
 	// Disable peripherals
 	IncEnc_DisableInterrupts();			// Disable interrupts
+	PIR2bits.C1IF = 0;
+	PIR2bits.C2IF = 0;
 	CM1CON0bits.C1ON = 0;				// Disable Comparator 1
 	CM2CON0bits.C2ON = 0;				// Disable Comparator 2
 	
@@ -60,10 +62,17 @@ void IncEnc_Initialize( void )
 	INCENC_TRIS_B = 1;
 	
 	// TODO: Setup Comparator 1
+	CM1CON0 = 0;
+	
 	
 	// TODO: Setup Comparator 2
+	CM2CON0 = 0;
+	CM2CON1 = 0;
+	// FIXME: MOTION<->ENC_B on the Eagle schematic
+	// FIXME: MOTION interrupt in adns2080.h/c moved to INT0
 	
 	// TODO: Enable interrupts
+	IncEnc_EnableInterrupts();
 }
 
 

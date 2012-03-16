@@ -165,15 +165,25 @@ void Low_ISR( void )
 
 #pragma interrupt HighPriorityISR
 void HighPriorityISR( void )
-{
+{	
+	// Check for incremental encoder motion
+	if ( INCENC_INT_IE_A ) {
+		if ( INCENC_INT_IF_A ) {
+			IncEnc_CallbackA();
+		}
+	}
+	if ( INCENC_INT_IE_B ) {
+		if ( INCENC_INT_IF_B ) {
+			IncEnc_CallbackB();
+		}
+	}
+	
 	// Check if the motion sensor has detected motion
 	if ( ADNS_INT_IE ) {
 		if ( ADNS_INT_IF ) {
 			Adns_MotionCallback();
 		}
 	}
-	
-	// TODO: Check for incremental encoder motion
 }
 
 #pragma interruptlow LowPriorityISR

@@ -20,18 +20,25 @@
 
 // Pins configuration
 #define	INCENC_TRIS_A			TRISCbits.TRISC1	/// Signal A tristate
-#define	INCENC_TRIS_B			TRISCbits.TRISC0	/// Signal B tristate
+#define	INCENC_TRIS_B			TRISCbits.TRISC2	/// Signal B tristate
 
 #define	INCENC_PIN_A			PORTCbits.RC1		/// Signal A pin
-#define	INCENC_PIN_B			PORTCbits.RC0		/// Signal B pin
+#define	INCENC_PIN_B			PORTCbits.RC2		/// Signal B pin
 
 #define	INCENC_LAT_A			LATCbits.LATC1		/// Signal A latch
-#define	INCENC_LAT_B			LATCbits.LATC0		/// Signal B latch
+#define	INCENC_LAT_B			LATCbits.LATC2		/// Signal B latch
 
 #define	INCENC_ANS_A			ANSELbits.ANS5		/// Signal A analog selection bit
-#define	INCENC_ANS_B			ANSELbits.ANS4		/// Signal B analog selection bit
+#define	INCENC_ANS_B			ANSELbits.ANS6		/// Signal B analog selection bit
 #define	INCENC_ANSBM_A			(1 << 5)			/// Signal A analog selection bit
-#define	INCENC_ANSBM_B			(1 << 4)			/// Signal B analog selection bit
+#define	INCENC_ANSBM_B			(1 << 6)			/// Signal B analog selection bit
+
+// Interrupt settings
+#define	INCENC_INT_IE_A			PIE2bits.C1IE		/// Signal A interrupt switch
+#define	INCENC_INT_IE_B			PIE2bits.C2IE		/// Signal B interrupt switch
+
+#define	INCENC_INT_IF_A			PIR2bits.C1IF		/// Signal A interrupt switch
+#define	INCENC_INT_IF_B			PIR2bits.C2IF		/// Signal B interrupt switch
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
