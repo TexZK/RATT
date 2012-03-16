@@ -30,15 +30,19 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
-#include "app.h"
-#include "bootloader.h"
+#include "Compiler.h"
+#include "TimeDelay.h"
+
 #include "usb/usb.h"
 #include "usb/usb_function_hid.h"
 #include "usb/usb_user.h"
+
+#include "app.h"
+#include "bootloader.h"
 #include "adns2080.h"
 #include "leds.h"
 #include "debug.h"
-#include "TimeDelay.h"
+#include "incenc.h"
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -168,6 +172,8 @@ void HighPriorityISR( void )
 			Adns_MotionCallback();
 		}
 	}
+	
+	// TODO: Check for incremental encoder motion
 }
 
 #pragma interruptlow LowPriorityISR
@@ -214,12 +220,14 @@ void InitializeSystem( void )
     PIR2 = 0;
     RCONbits.IPEN = 1;				// Use interrupt priority
     
-    // Setup pins
-    TRISA = ~0;						// All inputs
+    // All pins as inputs
+    TRISA = ~0;
     TRISB = ~0;
     TRISC = ~0;
-    ANSEL = 0x00;					// All digital
-    ANSELH = 0x01;					// Only RC6/AN8 is analog
+    
+    // Configure analog pins
+    ANSEL = INCENC_ANSBM_A | INCENC_ANSBM_B;
+    ANSELH = AUXIN_ANSHBM;
     
     // Initialize the LEDs module
     Leds_Initialize();
@@ -244,6 +252,11 @@ void InitializeSystem( void )
     // Initialize ADNS module
     RED_LED = LED_ON;
 	Adns_Initialize();
+    RED_LED = LED_OFF;
+    
+    // Initialize the incremental encoder module
+    RED_LED = LED_ON;
+    IncEnc_Initialize();
     RED_LED = LED_OFF;
     
     Debug_PrintConst_NewLine();
@@ -280,6 +293,8 @@ void ProcessIO( void )
     if ( USBDeviceState < CONFIGURED_STATE || USBSuspendControl == 1 ) {
 		return;
 	}
+    
+    // TODO: Handle incremental encoder tasks
     
     // Handle ADNS tasks
 	Adns_Service();
