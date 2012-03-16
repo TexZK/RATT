@@ -59,13 +59,19 @@ signed short IncEnc_GetDelta( void );
 /**
  * Enables incremental encoder interrupts.
  */
-void IncEnc_EnableInterrupts( void );
+#define	IncEnc_EnableInterrupts() {		\
+	PIE2bits.C1IE = 1;					\
+	PIE2bits.C2IE = 1;					\
+}
 
 
 /**
  * Disables incremental encoder interrupts.
  */
-void IncEnc_DisableInterrupts( void );
+#define	IncEnc_DisableInterrupts() {	\
+	PIE2bits.C1IE = 0;					\
+	PIE2bits.C2IE = 0;					\
+}
 
 
 /**

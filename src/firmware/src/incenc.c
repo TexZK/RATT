@@ -73,18 +73,6 @@ signed short IncEnc_GetDelta( void )
 }
 
 
-void IncEnc_EnableInterrupts( void )
-{
-	// TODO
-}
-
-
-void IncEnc_DisableInterrupts( void )
-{
-	// TODO
-}
-
-
 void IncEnc_CallbackA( void )
 {
 	// TODO
