@@ -84,13 +84,7 @@ signed short IncEnc_GetDelta( void );
 /**
  * Input changed interrupt callback.
  */
-void IncEnc_CallbackA( void );
-
-
-/**
- * Signal B interrupt callback.
- */
-void IncEnc_CallbackB( void );
+void IncEnc_ChangeCallback( void );
 
 
 #endif	/* !__INCENC_H__ */

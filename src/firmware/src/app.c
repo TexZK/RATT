@@ -167,14 +167,15 @@ void Low_ISR( void )
 void HighPriorityISR( void )
 {	
 	// Check for incremental encoder motion
+	// Note: Mutually exclusive thanks to the Gray code
 	if ( INCENC_INT_IE_A ) {
 		if ( INCENC_INT_IF_A ) {
-			IncEnc_CallbackA();
+			IncEnc_ChangeCallback();
 		}
 	}
 	if ( INCENC_INT_IE_B ) {
 		if ( INCENC_INT_IF_B ) {
-			IncEnc_CallbackB();
+			IncEnc_ChangeCallback();
 		}
 	}
 	
@@ -213,10 +214,7 @@ void LowPriorityISR( void )
 #pragma code code_app_local
 
 /**
- * InitializeSystem is a centralize initialization routine. All required USB
- * initialization routines are called from here.
- *
- * User application initialization routine should also be called from here.
+ * Centralized initialization routine.
  */
 void InitializeSystem( void )
 {

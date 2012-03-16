@@ -24,11 +24,11 @@
 // LOCAL VARIABLES
 #pragma udata data_incenc_local
 
-signed short	incenc_delta;			/// Delta accumulator
+volatile signed short	incenc_delta;		/// Delta accumulator
 
 #pragma udata access data_incenc_local_acs
 
-unsigned char	incenc_lastConfig;		/// Last configuration been read
+near unsigned char		incenc_state;		/// Incremental state ([3:2] = current inputs, [1:0] = last inputs)
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -92,7 +92,7 @@ void IncEnc_Initialize( void )
 	CM2CON0bits.C2ON = 1;				// Enable Comparator 2
 	
 	// Reset variables
-	incenc_lastConfig = 0;
+	incenc_state = 0;
 	incenc_delta = 0;
 	
 	// Enable interrupts
@@ -102,19 +102,43 @@ void IncEnc_Initialize( void )
 
 signed short IncEnc_GetDelta( void )
 {
-	// TODO
+	signed short value;
+	IncEnc_DisableInterrupts();
+	value = incenc_delta;
+	incenc_delta = 0;
+	IncEnc_EnableInterrupts();
+	return value;
 }
 
 
-void IncEnc_CallbackA( void )
+void IncEnc_ChangeCallback( void )
 {
-	// TODO
-}
-
-
-void IncEnc_CallbackB( void )
-{
-	// TODO
+	// Sample the current state
+	incenc_state = (incenc_state >> 2) & 0b0011;	// Old state in bits 1:0
+	incenc_state |= (CM2CON1 >> 4) & 0b1100;		// Current state in bits 3:2
+	
+	/* (A;B)
+	 * Clockwise pattern:
+	 *  00 -> 01 -> 11 -> 10 -> 00
+	 * Counter-clockwise pattern:
+	 *  00 -> 10 -> 11 -> 01 -> 00
+	 */
+	switch ( incenc_state ) {
+		case 0b0001:
+		case 0b0111:
+		case 0b1110:
+		case 0b1000: {
+			++incenc_delta;
+			break;
+		}
+		case 0b0010:
+		case 0b1011:
+		case 0b1101:
+		case 0b0100: {
+			--incenc_delta;
+			break;
+		}
+	}
 }
 
 
