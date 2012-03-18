@@ -11,8 +11,6 @@
 // HEADERS
 
 #include "Compiler.h"
-#include "GenericTypeDefs.h"
-
 #include "leds.h"
 
 

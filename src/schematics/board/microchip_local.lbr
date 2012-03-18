@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="0.05" unitdist="inch" unit="inch" style="lines" multiple="1" display="yes" altdistance="0.025" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
@@ -67,7 +67,7 @@
 <text x="-2.54" y="3.175" size="1.27" layer="21">&gt;NAME</text>
 <text x="-2.54" y="-3.175" size="1.27" layer="21">&gt;VALUE</text>
 </package>
-<package name="DIP-20">
+<package name="DIL20">
 <pad name="1" x="-3.81" y="11.43" drill="0.6" diameter="1.016" shape="long" first="yes"/>
 <pad name="2" x="-3.81" y="8.89" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="3" x="-3.81" y="6.35" drill="0.6" diameter="1.016" shape="long"/>
@@ -89,7 +89,7 @@
 <pad name="19" x="3.81" y="8.89" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="20" x="3.81" y="11.43" drill="0.6" diameter="1.016" shape="long"/>
 <text x="-2.54" y="13.97" size="1.27" layer="25">&gt;NAME</text>
-<text x="0.635" y="-12.7" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+<text x="0.635" y="-11.43" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
 <wire x1="-3.302" y1="13.335" x2="3.302" y2="13.335" width="0.127" layer="21"/>
 <wire x1="3.302" y1="13.335" x2="3.302" y2="-13.335" width="0.127" layer="21"/>
 <wire x1="3.302" y1="-13.335" x2="-3.302" y2="-13.335" width="0.127" layer="21"/>
@@ -176,8 +176,9 @@
 <wire x1="-3.302" y1="-10.668" x2="-3.302" y2="-12.192" width="0" layer="21"/>
 <wire x1="-4.064" y1="-10.668" x2="-3.302" y2="-10.668" width="0" layer="21"/>
 <wire x1="-4.064" y1="-12.192" x2="-3.302" y2="-12.192" width="0" layer="21"/>
+<wire x1="1.27" y1="13.335" x2="-1.27" y2="13.335" width="0.127" layer="51" curve="-180"/>
 </package>
-<package name="DIP-8">
+<package name="DIL8">
 <pad name="1" x="-3.81" y="3.81" drill="0.6" diameter="1.016" shape="long" first="yes"/>
 <pad name="2" x="-3.81" y="1.27" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="3" x="-3.81" y="-1.27" drill="0.6" diameter="1.016" shape="long"/>
@@ -187,8 +188,9 @@
 <pad name="7" x="3.81" y="1.27" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="8" x="3.81" y="3.81" drill="0.6" diameter="1.016" shape="long"/>
 <text x="-2.54" y="6.35" size="1.27" layer="25">&gt;NAME</text>
-<text x="0.635" y="-5.08" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
-<wire x1="-3.302" y1="5.715" x2="3.302" y2="5.715" width="0.127" layer="21"/>
+<wire x1="-3.302" y1="5.715" x2="-1.27" y2="5.715" width="0.127" layer="21"/>
+<wire x1="-1.27" y1="5.715" x2="1.27" y2="5.715" width="0.127" layer="21"/>
+<wire x1="1.27" y1="5.715" x2="3.302" y2="5.715" width="0.127" layer="21"/>
 <wire x1="3.302" y1="5.715" x2="3.302" y2="-5.715" width="0.127" layer="21"/>
 <wire x1="3.302" y1="-5.715" x2="-3.302" y2="-5.715" width="0.127" layer="21"/>
 <wire x1="-3.302" y1="-5.715" x2="-3.302" y2="5.715" width="0.127" layer="21"/>
@@ -226,8 +228,9 @@
 <wire x1="4.064" y1="4.572" x2="4.064" y2="3.048" width="0" layer="21"/>
 <wire x1="3.302" y1="4.572" x2="4.064" y2="4.572" width="0" layer="21"/>
 <wire x1="3.302" y1="3.048" x2="4.064" y2="3.048" width="0" layer="21"/>
+<wire x1="1.27" y1="5.715" x2="-1.27" y2="5.715" width="0.127" layer="51" curve="-180"/>
 </package>
-<package name="DIP-14">
+<package name="DIL14">
 <pad name="1" x="-3.81" y="7.62" drill="0.6" diameter="1.016" shape="long" first="yes"/>
 <pad name="2" x="-3.81" y="5.08" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="3" x="-3.81" y="2.54" drill="0.6" diameter="1.016" shape="long"/>
@@ -243,7 +246,7 @@
 <pad name="13" x="3.81" y="5.08" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="14" x="3.81" y="7.62" drill="0.6" diameter="1.016" shape="long"/>
 <text x="-2.54" y="10.16" size="1.27" layer="25">&gt;NAME</text>
-<text x="0.635" y="-8.89" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+<text x="0.635" y="-7.62" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
 <wire x1="-3.302" y1="9.525" x2="3.302" y2="9.525" width="0.127" layer="21"/>
 <wire x1="3.302" y1="9.525" x2="3.302" y2="-9.525" width="0.127" layer="21"/>
 <wire x1="3.302" y1="-9.525" x2="-3.302" y2="-9.525" width="0.127" layer="21"/>
@@ -304,6 +307,7 @@
 <wire x1="4.064" y1="8.382" x2="4.064" y2="6.858" width="0" layer="21"/>
 <wire x1="3.302" y1="8.382" x2="4.064" y2="8.382" width="0" layer="21"/>
 <wire x1="3.302" y1="6.858" x2="4.064" y2="6.858" width="0" layer="21"/>
+<wire x1="1.27" y1="9.525" x2="-1.27" y2="9.525" width="0.127" layer="51" curve="-180"/>
 </package>
 </packages>
 <symbols>
@@ -373,7 +377,7 @@
 <gate name="P" symbol="PWRN" x="-63.5" y="0"/>
 </gates>
 <devices>
-<device name="" package="DIP-20">
+<device name="" package="DIL20">
 <connects>
 <connect gate="A" pin="RA0/D+/PGD" pad="19"/>
 <connect gate="A" pin="RA1/D-/PGC" pad="18"/>
@@ -428,7 +432,7 @@
 <gate name="P" symbol="PWRN" x="30.48" y="0"/>
 </gates>
 <devices>
-<device name="-I/P" package="DIP-14">
+<device name="-I/P" package="DIL14">
 <connects>
 <connect gate="A" pin="+IN" pad="3"/>
 <connect gate="A" pin="-IN" pad="2"/>

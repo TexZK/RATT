@@ -285,7 +285,6 @@ void Adns_PowerUpDelay( void );
 
 /**
  * Service which handles all the device management and communication.
- * Usually called only in response to SPI interrupts.
  */
 void Adns_Service( void );
 

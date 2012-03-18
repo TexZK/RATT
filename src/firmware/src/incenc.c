@@ -8,6 +8,12 @@
  */
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
+// CONFIGURATION
+
+//#define	DONT_USE_DEBUG_CONSOLE
+
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
 #include "Compiler.h"
@@ -97,6 +103,26 @@ void IncEnc_Initialize( void )
 	
 	// Enable interrupts
 	IncEnc_EnableInterrupts();
+}
+
+
+void IncEnc_Service( void )
+{
+	static signed short last = 0;
+	IncEnc_DisableInterrupts();
+	if ( incenc_delta != last ) {
+		signed short delta = incenc_delta - last;
+		last = incenc_delta;
+		IncEnc_EnableInterrupts();
+		
+		// Print a debug event
+		Debug_PrintConst_EventBegin();
+		Debug_PrintChar( 'e' );
+		Debug_PrintS16( delta );
+		Debug_PrintConst_EventEnd();
+	} else {
+		IncEnc_EnableInterrupts();
+	}
 }
 
 

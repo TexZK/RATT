@@ -49,9 +49,59 @@ void App_Initialize( void );
 
 
 /**
+ * Enables interrupts, globally.
+ */
+#define App_EnableGlobalInterrupts() {	\
+	INTCONbits.GIEH = 1;				\
+	INTCONbits.GIEL = 1;				\
+}
+
+
+/**
+ * Disables interrupts, globally.
+ */
+#define App_DisableGlobalInterrupts() {	\
+	INTCONbits.GIEL = 0;				\
+	INTCONbits.GIEH = 0;				\
+}
+
+
+/**
+ * Enables high priority interrupts.
+ */
+#define App_EnableHighInterrupts() {	\
+	INTCONbits.GIEH = 1;				\
+}
+
+
+/**
+ * Disables high priority interrupts.
+ */
+#define App_DisableHighInterrupts() {	\
+	INTCONbits.GIEH = 0;				\
+}
+
+
+/**
+ * Enables low priority interrupts.
+ */
+#define App_EnableLowInterrupts() {		\
+	INTCONbits.GIEL = 1;				\
+}
+
+
+/**
+ * Disables low priority interrupts.
+ */
+#define App_DisableLowInterrupts() {	\
+	INTCONbits.GIEL = 0;				\
+}
+
+
+/**
  * Wait for button press, after being released.
  */
-void WaitButtonPress( void );
+void App_WaitButtonPress( void );
 
 
 /**

@@ -8,6 +8,9 @@ FILES c018i.o
 FILES clib.lib
 FILES p18lf14k50.lib
 
+FILES TimeDelay.o		// Include non-C18-optimized delay routines
+
+
 // Bootloader
 CODEPAGE   NAME=vectors    START=0x0            END=0x29           PROTECTED
 CODEPAGE   NAME=bootloader   START=0x2A           END=0xFFF		   PROTECTED
