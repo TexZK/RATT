@@ -56,112 +56,6 @@
 </layers>
 <schematic xreflabel="%F%N/%S.%C%R" xrefpart="/%S.%C%R">
 <libraries>
-<library name="avago_extended">
-<description>Library extension for some useful Avago products.</description>
-<packages>
-<package name="DIP8-OPTICAL">
-<wire x1="-4.572" y1="4.699" x2="4.545" y2="4.699" width="0.127" layer="21"/>
-<wire x1="4.545" y1="4.699" x2="4.545" y2="-4.699" width="0.127" layer="21"/>
-<wire x1="4.545" y1="-4.699" x2="-4.572" y2="-4.699" width="0.127" layer="21"/>
-<wire x1="-4.572" y1="-4.699" x2="-4.572" y2="4.699" width="0.127" layer="21"/>
-<pad name="2" x="6.4" y="-0.5" drill="0.8"/>
-<pad name="7" x="-6.4" y="-1.5" drill="0.8"/>
-<pad name="6" x="-6.4" y="0.5" drill="0.8"/>
-<pad name="5" x="-6.4" y="2.5" drill="0.8"/>
-<pad name="8" x="-6.4" y="-3.5" drill="0.8"/>
-<pad name="1" x="6.4" y="-2.5" drill="0.8" shape="square"/>
-<pad name="3" x="6.4" y="1.5" drill="0.8"/>
-<pad name="4" x="6.4" y="3.5" drill="0.8"/>
-<circle x="2.6" y="2.9" radius="0.9" width="0.127" layer="51"/>
-<circle x="3" y="-3.7" radius="0.35" width="0.1" layer="21"/>
-<circle x="3" y="-2.6" radius="0.35" width="0.1" layer="51"/>
-<circle x="0" y="0" radius="0.6" width="0.1" layer="51"/>
-<wire x1="2.75" y1="3.5" x2="2.5" y2="3.5" width="0.075" layer="51"/>
-<wire x1="2.5" y1="3.5" x2="2.1" y2="2.4" width="0.075" layer="51"/>
-<wire x1="2.1" y1="2.4" x2="2.3" y2="2.4" width="0.075" layer="51"/>
-<wire x1="2.3" y1="2.4" x2="2.8" y2="2.65" width="0.075" layer="51"/>
-<wire x1="2.8" y1="2.65" x2="2.9" y2="2.4" width="0.075" layer="51"/>
-<wire x1="2.9" y1="2.4" x2="3.1" y2="2.4" width="0.075" layer="51"/>
-<wire x1="3.1" y1="2.4" x2="2.95" y2="2.85" width="0.075" layer="51"/>
-<wire x1="2.95" y1="2.85" x2="2.75" y2="2.85" width="0.075" layer="51"/>
-<wire x1="2.75" y1="2.85" x2="2.4" y2="2.7" width="0.075" layer="51"/>
-<wire x1="2.4" y1="2.7" x2="2.6" y2="3.2" width="0.075" layer="51"/>
-<wire x1="2.6" y1="3.2" x2="2.65" y2="3.2" width="0.075" layer="51"/>
-<wire x1="2.65" y1="3.2" x2="2.7" y2="3" width="0.075" layer="51"/>
-<wire x1="2.7" y1="3" x2="2.9" y2="3" width="0.075" layer="51"/>
-<wire x1="2.9" y1="3" x2="2.75" y2="3.5" width="0.075" layer="51"/>
-<wire x1="-4.6" y1="2" x2="-6.4" y2="2" width="0.127" layer="21"/>
-<wire x1="-6.4" y1="2" x2="-6.4" y2="3" width="0.127" layer="21"/>
-<wire x1="-6.4" y1="3" x2="-4.6" y2="3" width="0.127" layer="21"/>
-<wire x1="-4.6" y1="1" x2="-6.4" y2="1" width="0.127" layer="21"/>
-<wire x1="-6.4" y1="1" x2="-6.4" y2="0" width="0.127" layer="21"/>
-<wire x1="-6.4" y1="0" x2="-4.6" y2="0" width="0.127" layer="21"/>
-<wire x1="-4.6" y1="-1" x2="-6.4" y2="-1" width="0.127" layer="21"/>
-<wire x1="-6.4" y1="-1" x2="-6.4" y2="-2" width="0.127" layer="21"/>
-<wire x1="-6.4" y1="-2" x2="-4.6" y2="-2" width="0.127" layer="21"/>
-<wire x1="-4.6" y1="-3" x2="-6.4" y2="-3" width="0.127" layer="21"/>
-<wire x1="-6.4" y1="-3" x2="-6.4" y2="-4" width="0.127" layer="21"/>
-<wire x1="-6.4" y1="-4" x2="-4.6" y2="-4" width="0.127" layer="21"/>
-<wire x1="6.4" y1="3" x2="4.6" y2="3" width="0.127" layer="21"/>
-<wire x1="4.6" y1="4" x2="6.4" y2="4" width="0.127" layer="21"/>
-<wire x1="6.4" y1="2" x2="4.6" y2="2" width="0.127" layer="21"/>
-<wire x1="4.6" y1="1" x2="6.4" y2="1" width="0.127" layer="21"/>
-<wire x1="6.4" y1="0" x2="4.6" y2="0" width="0.127" layer="21"/>
-<wire x1="4.6" y1="-1" x2="6.4" y2="-1" width="0.127" layer="21"/>
-<wire x1="6.4" y1="-2" x2="4.6" y2="-2" width="0.127" layer="21"/>
-<wire x1="4.6" y1="-3" x2="6.4" y2="-3" width="0.127" layer="21"/>
-<wire x1="6.4" y1="4" x2="6.4" y2="3" width="0.127" layer="21"/>
-<wire x1="6.4" y1="2" x2="6.4" y2="1" width="0.127" layer="21"/>
-<wire x1="6.4" y1="0" x2="6.4" y2="-1" width="0.127" layer="21"/>
-<wire x1="6.4" y1="-2" x2="6.4" y2="-3" width="0.127" layer="21"/>
-<circle x="3" y="-3.7" radius="0.35" width="0.1" layer="51"/>
-<text x="-3.81" y="5.08" size="1.27" layer="21">&gt;NAME</text>
-<text x="-5.715" y="-6.35" size="1.27" layer="21">&gt;VALUE</text>
-</package>
-</packages>
-<symbols>
-<symbol name="ADNS-2080">
-<wire x1="-17.78" y1="7.62" x2="-17.78" y2="-10.16" width="0.254" layer="94"/>
-<wire x1="-17.78" y1="-10.16" x2="17.78" y2="-10.16" width="0.254" layer="94"/>
-<wire x1="17.78" y1="-10.16" x2="17.78" y2="7.62" width="0.254" layer="94"/>
-<wire x1="17.78" y1="7.62" x2="-17.78" y2="7.62" width="0.254" layer="94"/>
-<pin name="SDIO" x="-22.86" y="2.54" length="middle" direction="hiz"/>
-<pin name="SCLK" x="-22.86" y="0" length="middle" direction="in"/>
-<pin name="MOTION" x="22.86" y="-5.08" length="middle" direction="out" rot="R180"/>
-<pin name="XY_LED" x="22.86" y="2.54" length="middle" direction="pas" rot="R180"/>
-<pin name="VDDIO" x="0" y="12.7" length="middle" direction="pas" rot="R270"/>
-<pin name="VDDA" x="-5.08" y="12.7" length="middle" direction="pas" rot="R270"/>
-<pin name="GND" x="0" y="-15.24" length="middle" direction="pas" rot="R90"/>
-<pin name="VDD" x="5.08" y="12.7" length="middle" direction="pas" rot="R270"/>
-<text x="-17.526" y="8.382" size="1.778" layer="95">&gt;NAME</text>
-<text x="-17.78" y="-12.7" size="1.778" layer="96">&gt;VALUE</text>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="ADNS-2080" prefix="U">
-<gates>
-<gate name="G$1" symbol="ADNS-2080" x="0" y="0"/>
-</gates>
-<devices>
-<device name="" package="DIP8-OPTICAL">
-<connects>
-<connect gate="G$1" pin="GND" pad="6"/>
-<connect gate="G$1" pin="MOTION" pad="3"/>
-<connect gate="G$1" pin="SCLK" pad="5"/>
-<connect gate="G$1" pin="SDIO" pad="1"/>
-<connect gate="G$1" pin="VDD" pad="7"/>
-<connect gate="G$1" pin="VDDA" pad="8"/>
-<connect gate="G$1" pin="VDDIO" pad="4"/>
-<connect gate="G$1" pin="XY_LED" pad="2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 <library name="pinhead">
 <description>&lt;b&gt;Pin Header Connectors&lt;/b&gt;&lt;p&gt;
 &lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
@@ -13991,6 +13885,112 @@ Source: www.kingbright.com</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="avago_local">
+<description>Library extension for some useful Avago products.</description>
+<packages>
+<package name="DIP8-OPTICAL">
+<wire x1="-4.572" y1="4.699" x2="4.545" y2="4.699" width="0.127" layer="21"/>
+<wire x1="4.545" y1="4.699" x2="4.545" y2="-4.699" width="0.127" layer="21"/>
+<wire x1="4.545" y1="-4.699" x2="-4.572" y2="-4.699" width="0.127" layer="21"/>
+<wire x1="-4.572" y1="-4.699" x2="-4.572" y2="4.699" width="0.127" layer="21"/>
+<pad name="2" x="6.4" y="-0.5" drill="0.8"/>
+<pad name="7" x="-6.4" y="-1.5" drill="0.8"/>
+<pad name="6" x="-6.4" y="0.5" drill="0.8"/>
+<pad name="5" x="-6.4" y="2.5" drill="0.8"/>
+<pad name="8" x="-6.4" y="-3.5" drill="0.8"/>
+<pad name="1" x="6.4" y="-2.5" drill="0.8" shape="square"/>
+<pad name="3" x="6.4" y="1.5" drill="0.8"/>
+<pad name="4" x="6.4" y="3.5" drill="0.8"/>
+<circle x="2.6" y="2.9" radius="0.9" width="0.127" layer="51"/>
+<circle x="3" y="-3.7" radius="0.35" width="0.1" layer="21"/>
+<circle x="3" y="-2.6" radius="0.35" width="0.1" layer="51"/>
+<circle x="0" y="0" radius="0.6" width="0.1" layer="51"/>
+<wire x1="2.75" y1="3.5" x2="2.5" y2="3.5" width="0.075" layer="51"/>
+<wire x1="2.5" y1="3.5" x2="2.1" y2="2.4" width="0.075" layer="51"/>
+<wire x1="2.1" y1="2.4" x2="2.3" y2="2.4" width="0.075" layer="51"/>
+<wire x1="2.3" y1="2.4" x2="2.8" y2="2.65" width="0.075" layer="51"/>
+<wire x1="2.8" y1="2.65" x2="2.9" y2="2.4" width="0.075" layer="51"/>
+<wire x1="2.9" y1="2.4" x2="3.1" y2="2.4" width="0.075" layer="51"/>
+<wire x1="3.1" y1="2.4" x2="2.95" y2="2.85" width="0.075" layer="51"/>
+<wire x1="2.95" y1="2.85" x2="2.75" y2="2.85" width="0.075" layer="51"/>
+<wire x1="2.75" y1="2.85" x2="2.4" y2="2.7" width="0.075" layer="51"/>
+<wire x1="2.4" y1="2.7" x2="2.6" y2="3.2" width="0.075" layer="51"/>
+<wire x1="2.6" y1="3.2" x2="2.65" y2="3.2" width="0.075" layer="51"/>
+<wire x1="2.65" y1="3.2" x2="2.7" y2="3" width="0.075" layer="51"/>
+<wire x1="2.7" y1="3" x2="2.9" y2="3" width="0.075" layer="51"/>
+<wire x1="2.9" y1="3" x2="2.75" y2="3.5" width="0.075" layer="51"/>
+<wire x1="-4.6" y1="2" x2="-6.4" y2="2" width="0.127" layer="21"/>
+<wire x1="-6.4" y1="2" x2="-6.4" y2="3" width="0.127" layer="21"/>
+<wire x1="-6.4" y1="3" x2="-4.6" y2="3" width="0.127" layer="21"/>
+<wire x1="-4.6" y1="1" x2="-6.4" y2="1" width="0.127" layer="21"/>
+<wire x1="-6.4" y1="1" x2="-6.4" y2="0" width="0.127" layer="21"/>
+<wire x1="-6.4" y1="0" x2="-4.6" y2="0" width="0.127" layer="21"/>
+<wire x1="-4.6" y1="-1" x2="-6.4" y2="-1" width="0.127" layer="21"/>
+<wire x1="-6.4" y1="-1" x2="-6.4" y2="-2" width="0.127" layer="21"/>
+<wire x1="-6.4" y1="-2" x2="-4.6" y2="-2" width="0.127" layer="21"/>
+<wire x1="-4.6" y1="-3" x2="-6.4" y2="-3" width="0.127" layer="21"/>
+<wire x1="-6.4" y1="-3" x2="-6.4" y2="-4" width="0.127" layer="21"/>
+<wire x1="-6.4" y1="-4" x2="-4.6" y2="-4" width="0.127" layer="21"/>
+<wire x1="6.4" y1="3" x2="4.6" y2="3" width="0.127" layer="21"/>
+<wire x1="4.6" y1="4" x2="6.4" y2="4" width="0.127" layer="21"/>
+<wire x1="6.4" y1="2" x2="4.6" y2="2" width="0.127" layer="21"/>
+<wire x1="4.6" y1="1" x2="6.4" y2="1" width="0.127" layer="21"/>
+<wire x1="6.4" y1="0" x2="4.6" y2="0" width="0.127" layer="21"/>
+<wire x1="4.6" y1="-1" x2="6.4" y2="-1" width="0.127" layer="21"/>
+<wire x1="6.4" y1="-2" x2="4.6" y2="-2" width="0.127" layer="21"/>
+<wire x1="4.6" y1="-3" x2="6.4" y2="-3" width="0.127" layer="21"/>
+<wire x1="6.4" y1="4" x2="6.4" y2="3" width="0.127" layer="21"/>
+<wire x1="6.4" y1="2" x2="6.4" y2="1" width="0.127" layer="21"/>
+<wire x1="6.4" y1="0" x2="6.4" y2="-1" width="0.127" layer="21"/>
+<wire x1="6.4" y1="-2" x2="6.4" y2="-3" width="0.127" layer="21"/>
+<circle x="3" y="-3.7" radius="0.35" width="0.1" layer="51"/>
+<text x="-3.81" y="5.08" size="1.27" layer="21">&gt;NAME</text>
+<text x="-5.715" y="-6.35" size="1.27" layer="21">&gt;VALUE</text>
+</package>
+</packages>
+<symbols>
+<symbol name="ADNS-2080">
+<wire x1="-17.78" y1="7.62" x2="-17.78" y2="-10.16" width="0.254" layer="94"/>
+<wire x1="-17.78" y1="-10.16" x2="17.78" y2="-10.16" width="0.254" layer="94"/>
+<wire x1="17.78" y1="-10.16" x2="17.78" y2="7.62" width="0.254" layer="94"/>
+<wire x1="17.78" y1="7.62" x2="-17.78" y2="7.62" width="0.254" layer="94"/>
+<pin name="SDIO" x="-22.86" y="2.54" length="middle" direction="hiz"/>
+<pin name="SCLK" x="-22.86" y="0" length="middle" direction="in"/>
+<pin name="MOTION" x="22.86" y="-5.08" length="middle" direction="out" rot="R180"/>
+<pin name="XY_LED" x="22.86" y="2.54" length="middle" direction="pas" rot="R180"/>
+<pin name="VDDIO" x="0" y="12.7" length="middle" direction="pas" rot="R270"/>
+<pin name="VDDA" x="-5.08" y="12.7" length="middle" direction="pas" rot="R270"/>
+<pin name="GND" x="0" y="-15.24" length="middle" direction="pas" rot="R90"/>
+<pin name="VDD" x="5.08" y="12.7" length="middle" direction="pas" rot="R270"/>
+<text x="-17.526" y="8.382" size="1.778" layer="95">&gt;NAME</text>
+<text x="-17.78" y="-12.7" size="1.778" layer="96">&gt;VALUE</text>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="ADNS-2080" prefix="U">
+<gates>
+<gate name="G$1" symbol="ADNS-2080" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="DIP8-OPTICAL">
+<connects>
+<connect gate="G$1" pin="GND" pad="6"/>
+<connect gate="G$1" pin="MOTION" pad="3"/>
+<connect gate="G$1" pin="SCLK" pad="5"/>
+<connect gate="G$1" pin="SDIO" pad="1"/>
+<connect gate="G$1" pin="VDD" pad="7"/>
+<connect gate="G$1" pin="VDDA" pad="8"/>
+<connect gate="G$1" pin="VDDIO" pad="4"/>
+<connect gate="G$1" pin="XY_LED" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -14001,7 +14001,6 @@ Source: www.kingbright.com</description>
 </class>
 </classes>
 <parts>
-<part name="U1" library="avago_extended" deviceset="ADNS-2080" device=""/>
 <part name="JP1" library="pinhead" deviceset="PINHD-1X5" device=""/>
 <part name="R1" library="rcl" deviceset="R-US_" device="0207/7" value="68"/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
@@ -14018,13 +14017,13 @@ Source: www.kingbright.com</description>
 <part name="R2" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
 <part name="R3" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
 <part name="R4" library="rcl" deviceset="R-US_" device="0204/5" value="100k"/>
+<part name="U1" library="avago_local" deviceset="ADNS-2080" device=""/>
 </parts>
 <sheets>
 <sheet>
 <plain>
 </plain>
 <instances>
-<instance part="U1" gate="G$1" x="71.12" y="58.42"/>
 <instance part="JP1" gate="A" x="-10.16" y="63.5" rot="MR0"/>
 <instance part="R1" gate="G$1" x="99.06" y="78.74" rot="R90"/>
 <instance part="GND1" gate="1" x="71.12" y="38.1"/>
@@ -14041,6 +14040,7 @@ Source: www.kingbright.com</description>
 <instance part="R2" gate="G$1" x="27.94" y="71.12" rot="R90"/>
 <instance part="R3" gate="G$1" x="20.32" y="71.12" rot="R90"/>
 <instance part="R4" gate="G$1" x="12.7" y="71.12" rot="R90"/>
+<instance part="U1" gate="G$1" x="71.12" y="58.42"/>
 </instances>
 <busses>
 </busses>
@@ -14048,7 +14048,6 @@ Source: www.kingbright.com</description>
 <net name="+3V3" class="0">
 <segment>
 <pinref part="+3V1" gate="G$1" pin="+3V3"/>
-<pinref part="U1" gate="G$1" pin="VDDIO"/>
 <wire x1="71.12" y1="91.44" x2="71.12" y2="88.9" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="+"/>
 <wire x1="71.12" y1="88.9" x2="71.12" y2="71.12" width="0.1524" layer="91"/>
@@ -14057,11 +14056,12 @@ Source: www.kingbright.com</description>
 <pinref part="C3" gate="G$1" pin="1"/>
 <wire x1="55.88" y1="88.9" x2="71.12" y2="88.9" width="0.1524" layer="91"/>
 <wire x1="55.88" y1="86.36" x2="55.88" y2="88.9" width="0.1524" layer="91"/>
-<pinref part="U1" gate="G$1" pin="VDDA"/>
 <wire x1="66.04" y1="71.12" x2="71.12" y2="71.12" width="0.1524" layer="91"/>
 <junction x="71.12" y="88.9"/>
 <junction x="55.88" y="88.9"/>
+<pinref part="U1" gate="G$1" pin="VDDIO"/>
 <junction x="71.12" y="71.12"/>
+<pinref part="U1" gate="G$1" pin="VDDA"/>
 </segment>
 <segment>
 <pinref part="+3V2" gate="G$1" pin="+3V3"/>
@@ -14090,11 +14090,11 @@ Source: www.kingbright.com</description>
 </net>
 <net name="N$2" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="VDD"/>
 <wire x1="76.2" y1="71.12" x2="76.2" y2="88.9" width="0.1524" layer="91"/>
 <wire x1="76.2" y1="88.9" x2="83.82" y2="88.9" width="0.1524" layer="91"/>
 <pinref part="C2" gate="G$1" pin="+"/>
 <wire x1="83.82" y1="88.9" x2="83.82" y2="86.36" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="VDD"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -14114,9 +14114,9 @@ Source: www.kingbright.com</description>
 <wire x1="83.82" y1="76.2" x2="83.82" y2="78.74" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U1" gate="G$1" pin="GND"/>
 <pinref part="GND1" gate="1" pin="GND"/>
 <wire x1="71.12" y1="43.18" x2="71.12" y2="40.64" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="JP1" gate="A" pin="1"/>
@@ -14137,13 +14137,12 @@ Source: www.kingbright.com</description>
 <segment>
 <pinref part="LED1" gate="G$1" pin="C"/>
 <wire x1="99.06" y1="63.5" x2="99.06" y2="60.96" width="0.1524" layer="91"/>
-<pinref part="U1" gate="G$1" pin="XY_LED"/>
 <wire x1="99.06" y1="60.96" x2="93.98" y2="60.96" width="0.1524" layer="91"/>
+<pinref part="U1" gate="G$1" pin="XY_LED"/>
 </segment>
 </net>
 <net name="MOTION" class="0">
 <segment>
-<pinref part="U1" gate="G$1" pin="MOTION"/>
 <wire x1="93.98" y1="53.34" x2="109.22" y2="53.34" width="0.1524" layer="91"/>
 <label x="96.52" y="53.34" size="1.778" layer="95"/>
 <pinref part="JP1" gate="A" pin="3"/>
@@ -14156,32 +14155,33 @@ Source: www.kingbright.com</description>
 <pinref part="R4" gate="G$1" pin="1"/>
 <wire x1="12.7" y1="66.04" x2="12.7" y2="63.5" width="0.1524" layer="91"/>
 <junction x="12.7" y="63.5"/>
+<pinref part="U1" gate="G$1" pin="MOTION"/>
 </segment>
 </net>
 <net name="SDIO" class="0">
 <segment>
 <pinref part="JP1" gate="A" pin="4"/>
 <label x="0" y="60.96" size="1.778" layer="95"/>
-<pinref part="U1" gate="G$1" pin="SDIO"/>
 <wire x1="-7.62" y1="60.96" x2="20.32" y2="60.96" width="0.1524" layer="91"/>
 <label x="38.1" y="60.96" size="1.778" layer="95"/>
 <pinref part="R3" gate="G$1" pin="1"/>
 <wire x1="20.32" y1="60.96" x2="48.26" y2="60.96" width="0.1524" layer="91"/>
 <wire x1="20.32" y1="66.04" x2="20.32" y2="60.96" width="0.1524" layer="91"/>
 <junction x="20.32" y="60.96"/>
+<pinref part="U1" gate="G$1" pin="SDIO"/>
 </segment>
 </net>
 <net name="SCLK" class="0">
 <segment>
 <pinref part="JP1" gate="A" pin="5"/>
 <label x="0" y="58.42" size="1.778" layer="95"/>
-<pinref part="U1" gate="G$1" pin="SCLK"/>
 <wire x1="48.26" y1="58.42" x2="27.94" y2="58.42" width="0.1524" layer="91"/>
 <label x="38.1" y="58.42" size="1.778" layer="95"/>
 <pinref part="R2" gate="G$1" pin="1"/>
 <wire x1="27.94" y1="58.42" x2="-7.62" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="27.94" y1="66.04" x2="27.94" y2="58.42" width="0.1524" layer="91"/>
 <junction x="27.94" y="58.42"/>
+<pinref part="U1" gate="G$1" pin="SCLK"/>
 </segment>
 </net>
 </nets>

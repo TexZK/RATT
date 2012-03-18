@@ -20,8 +20,8 @@
 // GLOBAL DEFINITIONS
 
 // System properties
-#define	ADNS_DPI						   1000				/// Resolution
-#define	ADNS_INCH_SEC					     30				/// Inches per second
+#define	ADNS_DPI						   1250				/// Resolution
+#define	ADNS_MAX_INCH_SEC				     30				/// Maximum inches per second
 #define	ADNS_MAX_SPI_FREQ				1000000				/// Maximum SPI speed [Hz]
 #define	ADNS_SPI_FREQ					1000000				/// Actual SPI speed [Hz]
 
@@ -61,42 +61,42 @@
 
 
 // Interrupt settings
-#define	ADNS_INT_IE						INTCON3bits.INT2IE	/// Interrupt enable
-#define	ADNS_INT_IF						INTCON3bits.INT2IF	/// Interrupt flag
-#define	ADNS_INT_IP						INTCON3bits.INT2IP	/// Interrupt priority (1 = high, 0 = low)
-#define	ADNS_INT_EDGE					INTCON2bits.INTEDG2	/// Interrupt edge (1 = rising, 0 = falling)
+#define	ADNS_INT_IE						INTCONbits.INT0IE	/// Interrupt enable
+#define	ADNS_INT_IF						INTCONbits.INT0IF	/// Interrupt flag
+#define	ADNS_INT_EDGE					INTCON2bits.INTEDG0	/// Interrupt edge register
+#define	ADNS_INT_EDGE_VALUE				0					/// Interrupt edge register (1 = rising, 0 = falling)
 
 
 // Register addresses (see datasheet for description)
-#define	ADNS_REG_PROD_ID				0x00		/// Product ID
-#define	ADNS_REG_REV_ID					0x01		/// Revision ID
-#define	ADNS_REG_MOTION_ST				0x02		/// Motion Status 
-#define	ADNS_REG_DELTA_X				0x03		/// Lower byte of Delta_X 
-#define	ADNS_REG_DELTA_Y				0x04		/// Lower byte of Delta_Y
-#define	ADNS_REG_SQUAL					0x05		/// Squal Quality
-#define	ADNS_REG_SHUT_HI				0x06		/// Shutter Open Time (Upper 8-bit) 
-#define	ADNS_REG_SHUT_LO				0x07		/// Shutter Open Time (Lower 8-bit)
-#define	ADNS_REG_PIX_MAX				0x08		/// Maximum Pixel Value
-#define	ADNS_REG_PIX_ACCUM				0x09		/// Average Pixel Value
-#define	ADNS_REG_PIX_MIN				0x0A		/// Minimum Pixel Value
-#define	ADNS_REG_PIX_GRAB				0x0B		/// Pixel Grabber
-#define	ADNS_REG_DELTA_XY_HIGH			0x0C		/// Upper 4 bits of Delta X and Y displacement 
-#define	ADNS_REG_MOUSE_CTRL				0x0D		/// Mouse Control
-#define	ADNS_REG_RUN_DOWNSHIFT			0x0E		/// Run to Rest1 Time 
-#define	ADNS_REG_REST1_PERIOD			0x0F		/// Rest1 Period
-#define	ADNS_REG_REST1_DOWNSHIFT		0x10		/// Rest1 to Rest2 Time
-#define	ADNS_REG_REST2_PERIOD			0x11		/// Rest2 Period
-#define	ADNS_REG_REST2_DOWNSHIFT		0x12		/// Rest2 to Rest3 Time
-#define	ADNS_REG_REST3_PERIOD			0x13		/// Rest3 Period
-#define	ADNS_REG_PERFORMANCE			0x22		/// Performance
-#define	ADNS_REG_RESET					0x3A		/// Reset
-#define	ADNS_REG_NOT_REV_ID				0x3F		/// Inverted Revision ID
-#define	ADNS_REG_LED_CTRL				0x40		/// LED Control
-#define	ADNS_REG_MOTION_CTRL			0x41		/// Motion Control
-#define	ADNS_REG_BURST_READ_FIRST		0x42		/// Burst Read Starting Register 
-#define	ADNS_REG_BURST_READ_LAST		0x44		/// Burst Read Ending Register
-#define	ADNS_REG_REST_MODE_CONFIG		0x45		/// Rest Mode Coni  guration
-#define	ADNS_REG_MOTION_BURST			0x63		/// Burst Read
+#define	ADNS_REG_PROD_ID				0x00				/// Product ID
+#define	ADNS_REG_REV_ID					0x01				/// Revision ID
+#define	ADNS_REG_MOTION_ST				0x02				/// Motion Status 
+#define	ADNS_REG_DELTA_X				0x03				/// Lower byte of Delta_X 
+#define	ADNS_REG_DELTA_Y				0x04				/// Lower byte of Delta_Y
+#define	ADNS_REG_SQUAL					0x05				/// Squal Quality
+#define	ADNS_REG_SHUT_HI				0x06				/// Shutter Open Time (Upper 8-bit) 
+#define	ADNS_REG_SHUT_LO				0x07				/// Shutter Open Time (Lower 8-bit)
+#define	ADNS_REG_PIX_MAX				0x08				/// Maximum Pixel Value
+#define	ADNS_REG_PIX_ACCUM				0x09				/// Average Pixel Value
+#define	ADNS_REG_PIX_MIN				0x0A				/// Minimum Pixel Value
+#define	ADNS_REG_PIX_GRAB				0x0B				/// Pixel Grabber
+#define	ADNS_REG_DELTA_XY_HIGH			0x0C				/// Upper 4 bits of Delta X and Y displacement 
+#define	ADNS_REG_MOUSE_CTRL				0x0D				/// Mouse Control
+#define	ADNS_REG_RUN_DOWNSHIFT			0x0E				/// Run to Rest1 Time 
+#define	ADNS_REG_REST1_PERIOD			0x0F				/// Rest1 Period
+#define	ADNS_REG_REST1_DOWNSHIFT		0x10				/// Rest1 to Rest2 Time
+#define	ADNS_REG_REST2_PERIOD			0x11				/// Rest2 Period
+#define	ADNS_REG_REST2_DOWNSHIFT		0x12				/// Rest2 to Rest3 Time
+#define	ADNS_REG_REST3_PERIOD			0x13				/// Rest3 Period
+#define	ADNS_REG_PERFORMANCE			0x22				/// Performance
+#define	ADNS_REG_RESET					0x3A				/// Reset
+#define	ADNS_REG_NOT_REV_ID				0x3F				/// Inverted Revision ID
+#define	ADNS_REG_LED_CTRL				0x40				/// LED Control
+#define	ADNS_REG_MOTION_CTRL			0x41				/// Motion Control
+#define	ADNS_REG_BURST_READ_FIRST		0x42				/// Burst Read Starting Register 
+#define	ADNS_REG_BURST_READ_LAST		0x44				/// Burst Read Ending Register
+#define	ADNS_REG_REST_MODE_CONFIG		0x45				/// Rest Mode Coni  guration
+#define	ADNS_REG_MOTION_BURST			0x63				/// Burst Read
 
 
 // Register default values (see datasheet)

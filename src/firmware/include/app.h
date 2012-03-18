@@ -26,6 +26,14 @@
 #define	BUTTON_TRIS				TRISAbits.TRISA3	/// User button tristate (always = 1)
 #define	BUTTON_PIN				PORTAbits.RA3		/// User button pin, active low
 
+// Auxiliary input pin
+#define	AUXIN_TRIS				TRISCbits.TRISC6	/// Aux input tristate
+#define	AUXIN_PIN				PORTCbits.RC6		/// Aux input pin
+#define	AUXIN_LAT				LATCbits.LATC6		/// Aux input latch
+#define	AUXIN_ANS				ANSELHbits.ANS8		/// Aux input analog selection bit
+#define	AUXIN_ANS_VALUE			1					/// Aux input analog selection value (1 = analog, 0 = digital)
+#define	AUXIN_ANSHBM			0b00000001			/// Aux input analog selection bitmask
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
