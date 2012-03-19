@@ -13,6 +13,10 @@
 
 #include "Compiler.h"
 #include "app.h"
+
+#ifdef	DONT_USE_DEBUG_CONSOLE		// Always delcare prototypes and macros
+#undef	DONT_USE_DEBUG_CONSOLE
+#endif
 #include "debug.h"
 
 
@@ -88,7 +92,7 @@ void Debug_Initialize( void )
 	TXSTAbits.BRGH = 0;			// No need for high-speed debug @ 38400 baud
 	BAUDCONbits.BRG16 = 0;		// Use a 8-bits counter
 	SPBRG = SPBRG_VALUE;		// Baud rate generator counter
-	SPBRGH = (SPBRG_VALUE >> 8);
+	SPBRGH = SPBRG_VALUE >> 8;
 	
 	IPR1bits.TXIP = 0;			// Low-priority interrupts
 	IPR1bits.RCIP = 0;
@@ -151,29 +155,40 @@ void Debug_PrintRam( const far ram char * text )
 void Debug_PrintChar( char value )
 {
 	DisableTxInt();
+	App_DisableGlobalInterrupts();
 	if ( debug_uartTxBufferFree == DEBUG_TX_BUFFER_SIZE && DEBUG_UART_FLAG_TX ) {
-		// SW & HW buffers are free, send directly to the USART
-		TXREG = value;
+		TXREG = value;		// SW & HW buffers are free, send directly to the USART
+		App_EnableGlobalInterrupts();
 	}
 	else {
-		// If the buffer is full, block until a character is sent
-		if ( debug_uartTxBufferFree == 0 ) {
-			while ( !DEBUG_UART_FLAG_TX );
-			TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-			if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
-				debug_uartTxBufferHead = 0;
+		// Check if buffer is full
+		while ( debug_uartTxBufferFree == 0 ) {
+			do {
+				App_EnableGlobalInterrupts();		// Let interrupts print their text
+				if ( debug_uartTxBufferFree != DEBUG_TX_BUFFER_SIZE ) {
+					EnableTxInt();
+				}
+				App_DisableGlobalInterrupts();
+				DisableTxInt();
+			} while ( !DEBUG_UART_FLAG_TX );		// Block until a character is sent (mandatory!)
+			if ( debug_uartTxBufferFree != 0 ) {
+				TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
+				if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
+					debug_uartTxBufferHead = 0;
+				}
+				++debug_uartTxBufferFree;
 			}
-			++debug_uartTxBufferFree;
 		}
 		
 		// Enqueue the character
+		--debug_uartTxBufferFree;
 		debug_uartTxBufferData[ debug_uartTxBufferTail ] = value;
 		if ( ++debug_uartTxBufferTail >= DEBUG_TX_BUFFER_SIZE ) {
 			debug_uartTxBufferTail = 0;
-		}	
-		--debug_uartTxBufferFree;
+		}
+		App_EnableGlobalInterrupts();
 		
-		// Process the next character
+		// Process the next character(s)
 		EnableTxInt();
 	}
 }
@@ -185,6 +200,67 @@ void Debug_PrintHex( unsigned char value )
 	Debug_PrintChar( c + ((c >= 10) ? ('A' - 10) : '0') );
 	c = value & 0x0F;
 	Debug_PrintChar( c + ((c >= 10) ? ('A' - 10) : '0') );
+}
+
+
+void Debug_PrintU8( unsigned char value )
+{
+	unsigned char quotient;
+	if ( value >= 100 ) {
+		for ( quotient = 0; value >= 100; value -= 100, ++quotient );
+		Debug_PrintChar( quotient + '0' );
+	}
+	if ( value >= 10 ) {
+		for ( quotient = 0; value >= 10; value -= 10, ++quotient );
+		Debug_PrintChar( quotient + '0' );
+	}
+	Debug_PrintChar( value + '0' );
+}
+
+
+void Debug_PrintU16( unsigned short value )
+{
+	unsigned short quotient;
+	if ( value >= 10000 ) {
+		for ( quotient = 0; value >= 10000; value -= 10000, ++quotient );
+		Debug_PrintChar( quotient + '0' );
+	}
+	if ( value >= 1000 ) {
+		for ( quotient = 0; value >= 1000; value -= 1000, ++quotient );
+		Debug_PrintChar( quotient + '0' );
+	}
+	Debug_PrintU8( value );
+}
+
+
+void Debug_PrintS8( signed char value )
+{
+	unsigned char quotient;
+	if ( value == -128 ) {
+		Debug_PrintChar( '-' );
+		Debug_PrintChar( '1' );
+		Debug_PrintChar( '2' );
+		Debug_PrintChar( '8' );
+		return;
+	}
+	else if ( value < 0 ) {
+		value = -value;
+		Debug_PrintChar( '-' );
+	}
+	Debug_PrintU8( (unsigned char)value );
+}
+
+
+void Debug_PrintS16( signed short value ) {
+	if ( value == -32768 ) {
+		Debug_PrintRom_( "-32768" );
+		return;
+	}
+	else if ( value < 0 ) {
+		value = -value;
+		Debug_PrintChar( '-' );
+	}
+	Debug_PrintU16( (unsigned short)value );
 }
 
 

@@ -9,6 +9,12 @@
  */
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
+// CONFIGURATION
+
+#define	DONT_USE_DEBUG_CONSOLE
+
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
 #include "Compiler.h"
@@ -416,7 +422,7 @@ unsigned char Adns_CheckCommunication( void )
 	Debug_PrintChar( '\t' );
 	Debug_PrintConst_Checking();
 	Debug_PrintRom_( "PROD_ID" );
-	Debug_PrintConst_Dots();
+	Debug_PrintConst_Eq();
 	value = Adns_ReadBlocking( ADNS_REG_PROD_ID );
 	Adns_ReadSubsequentDelay();
 	Debug_PrintConst_0x();
@@ -433,7 +439,7 @@ unsigned char Adns_CheckCommunication( void )
 	Debug_PrintChar( '\t' );
 	Debug_PrintConst_Checking();
 	Debug_PrintRom_( "REV_ID" );
-	Debug_PrintConst_Dots();
+	Debug_PrintConst_Eq();
 	value = Adns_ReadBlocking( ADNS_REG_REV_ID );
 	Adns_ReadSubsequentDelay();
 	Debug_PrintConst_0x();
@@ -450,7 +456,7 @@ unsigned char Adns_CheckCommunication( void )
 	Debug_PrintChar( '\t' );
 	Debug_PrintConst_Checking();
 	Debug_PrintRom_( "NOT_REV_ID" );
-	Debug_PrintConst_Dots();
+	Debug_PrintConst_Eq();
 	inverted = Adns_ReadBlocking( ADNS_REG_NOT_REV_ID );
 	Adns_ReadSubsequentDelay();
 	Debug_PrintConst_0x();

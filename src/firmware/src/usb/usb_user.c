@@ -5,11 +5,18 @@
  *
  */
 
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
+// CONFIGURATION
+
+#define	DONT_USE_DEBUG_CONSOLE
+
+
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
-#include "app.h"
 #include "usb/usb_user.h"
+#include "app.h"
+#include "debug.h"
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -356,8 +363,19 @@ void USBCBSendResume( void )
 
 void Usb_UserInit( void )
 {
+	Debug_PrintConst_Initializing();
+    Debug_PrintRom_( "USB" );
+    Debug_PrintConst_Dots();
+    
+    // Reset variables
 	usb_outHandle = 0;
 	usb_inHandle = 0;
+	
+	// Initialize USB module
+    USBDeviceInit();
+    
+    Debug_PrintConst_Ok();
+    Debug_PrintConst_NewLine();
 }
 
 
