@@ -90,6 +90,10 @@
 // GLOBAL VARIABLES
 #pragma udata data_app_global
 
+#pragma udata access data_app_global_acs
+
+near volatile APP_STATUS		app_status;
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL PROTOTYPES
@@ -169,7 +173,9 @@ void Low_ISR( void )
 
 #pragma interrupt HighPriorityISR
 void HighPriorityISR( void )
-{	
+{
+	app_status.bits.inHighIrq = 1;
+	
 	// Check for incremental encoder motion
 	// Note: Mutually exclusive thanks to the Gray code
 	if ( INCENC_INT_IE_A ) {
@@ -189,11 +195,15 @@ void HighPriorityISR( void )
 			Adns_MotionCallback();
 		}
 	}
+	
+	app_status.bits.inHighIrq = 0;
 }
 
 #pragma interruptlow LowPriorityISR
 void LowPriorityISR( void )
 {
+	app_status.bits.inLowIrq = 1;
+	
 	// Process transmitted debug console data
 	if ( DEBUG_UART_INT_TX ) {
 		if ( DEBUG_UART_FLAG_TX ) {
@@ -212,6 +222,8 @@ void LowPriorityISR( void )
 			Debug_RxIntCallback();
 		}
 	}
+	
+	app_status.bits.inLowIrq = 0;
 }
 
 
@@ -244,6 +256,7 @@ void InitializeSystem( void )
     ANSELH = AUXIN_ANSHBM;
     
     // Initialize modules
+    app_status.value = 0;
     Leds_Initialize();				// Initialize the LEDs module
     YELLOW_LED = LED_ON;			// Yellow LED to show initialization
     Debug_Initialize();				// Initialize the debug module; NOTE: enables HP&LP interrupts!
@@ -254,7 +267,7 @@ void InitializeSystem( void )
     Debug_PrintConst_NewLine();
     Debug_PrintConst_NewLine();
     Debug_PrintConst_Dots();
-    Debug_PrintRom_( "INIT" );
+    Debug_PrintRom_( "INIT " );
     Debug_PrintConst_Ok();
     Debug_PrintConst_NewLine();
     Debug_PrintConst_NewLine();
@@ -335,6 +348,28 @@ void main( void )
     	
     	ProcessIO();        
     }
+}
+
+
+void App_Lock( void )
+{
+	if ( !app_status.bits.inHighIrq ) {
+		if ( !app_status.bits.inLowIrq ) {
+			App_DisableLowInterrupts();
+		}
+		App_DisableHighInterrupts();
+	}
+}
+
+
+void App_Unlock( void )
+{
+	if ( !app_status.bits.inHighIrq ) {
+		App_EnableHighInterrupts();
+		if ( !app_status.bits.inLowIrq ) {
+			App_EnableLowInterrupts();
+		}
+	}
 }
 
 

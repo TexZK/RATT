@@ -35,8 +35,22 @@
 #define	AUXIN_ANSHBM			0b00000001			/// Aux input analog selection bitmask
 
 
+// Structures
+
+typedef	union {
+	struct {
+		unsigned	inLowIrq	: 1;				/// Serving a low interrupt request
+		unsigned	inHighIrq	: 1;				/// Serving a high interrupt request
+		unsigned				: 6;
+	} bits;
+	unsigned char value;
+} APP_STATUS;										/// Application status
+
+
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
+
+extern near volatile APP_STATUS	app_status;				/// Application status
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -96,6 +110,18 @@ void App_Initialize( void );
 #define App_DisableLowInterrupts() {	\
 	INTCONbits.GIEL = 0;				\
 }
+
+
+/**
+ * Disables interrupts at higher priority than the caller.
+ */
+void App_Lock( void );
+
+
+/**
+ * Enables interrupts at higher priority than the caller.
+ */
+void App_Unlock( void );
 
 
 /**

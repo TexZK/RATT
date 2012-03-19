@@ -159,41 +159,30 @@ void Debug_PrintRam( const far ram char * text )
 void Debug_PrintChar( char value )
 {
 	DisableTxInt();
-	App_DisableGlobalInterrupts();
-	
+	App_Lock();
 	if ( debug_uartTxBufferFree == DEBUG_TX_BUFFER_SIZE && DEBUG_UART_FLAG_TX ) {
 		// SW & HW buffers are free, send directly to the USART
 		TXREG = value;
-		App_EnableGlobalInterrupts();
 	}
 	else {
 		// Check if buffer is full
-		while ( debug_uartTxBufferFree == 0 ) {
-			do {
-				// Let interrupts print nested text
-				EnableTxInt();
-				App_EnableGlobalInterrupts();
-				App_DisableGlobalInterrupts();
-				DisableTxInt();
-			} while ( !DEBUG_UART_FLAG_TX );		// Block until a character is sent (mandatory!)
-		}
-		
-		if ( debug_uartTxBufferFree == DEBUG_TX_BUFFER_SIZE ) {
-			// SW & HW buffers are free (lucky guy at this point!), send directly to the USART
-			TXREG = value;
-			App_EnableGlobalInterrupts();
-		}
-		else {
-			// Enqueue the new character
-			--debug_uartTxBufferFree;
-			debug_uartTxBufferData[ debug_uartTxBufferTail ] = value;
-			if ( ++debug_uartTxBufferTail >= DEBUG_TX_BUFFER_SIZE ) {
-				debug_uartTxBufferTail = 0;
+		if ( debug_uartTxBufferFree == 0 ) {
+			while ( !DEBUG_UART_FLAG_TX );		// Block until a character is sent (mandatory!)
+			TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
+			if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
+				debug_uartTxBufferHead = 0;
 			}
-			EnableTxInt();							// Further data to process
-			App_EnableGlobalInterrupts();
+			++debug_uartTxBufferFree;
 		}
+		// Enqueue the new character
+		--debug_uartTxBufferFree;
+		debug_uartTxBufferData[ debug_uartTxBufferTail ] = value;
+		if ( ++debug_uartTxBufferTail >= DEBUG_TX_BUFFER_SIZE ) {
+			debug_uartTxBufferTail = 0;
+		}
+		EnableTxInt();		// Further data to process
 	}
+	App_Unlock();
 }
 
 
@@ -304,15 +293,18 @@ DEBUG_UART_BUFFER_INDEX_TYPE Debug_RxBufferFree( void )
 void Debug_Truncate( void )
 {
 	DisableTxInt();
+	App_Lock();
 	debug_uartTxBufferHead = 0;
 	debug_uartTxBufferTail = 0;
 	debug_uartTxBufferFree = DEBUG_TX_BUFFER_SIZE;
+	App_Unlock();
 }
 
 	
 void Debug_Flush( void )
 {
 	DisableTxInt();
+	App_Lock();
 	while ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 		while ( !DEBUG_UART_FLAG_TX );
 		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
@@ -320,10 +312,13 @@ void Debug_Flush( void )
 			debug_uartTxBufferHead = 0;
 		}
 		++debug_uartTxBufferFree;
+		App_Unlock();
+		App_Lock();
 	}
 	debug_uartTxBufferHead = 0;
 	debug_uartTxBufferTail = 0;
 	debug_uartTxBufferFree = DEBUG_TX_BUFFER_SIZE;
+	App_Unlock();
 }
 
 
@@ -331,8 +326,8 @@ void Debug_TxIntCallback( void )
 {
 	// Send the next character
 	DisableTxInt();
-	if ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE )
-	{
+	App_Lock();
+	if ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 		while ( !DEBUG_UART_FLAG_TX );		// Should always be true
 		TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
 		if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
@@ -343,8 +338,9 @@ void Debug_TxIntCallback( void )
 		// Enable the interrupt if there are queued characters
 		if ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 			EnableTxInt();
-		}	
+		}
 	}
+	App_Unlock();
 }
 
 
@@ -358,7 +354,7 @@ void Debug_RxIntCallback( void )
 #ifdef	USE_DEBUG_PRINTCONST_PLACEHOLDER
 void Debug_PrintPlaceholder( void )
 {
-	Debug_PrintChar( '§' );
+	Debug_PrintChar( '#' );
 }
 #endif
 

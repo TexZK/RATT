@@ -14,6 +14,8 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // CONFIGURATION
 
+#if 1
+
 // Strings
 #define	USE_DEBUG_PRINT_ROM
 #define	USE_DEBUG_PRINT_RAM
@@ -21,7 +23,7 @@
 // Integral values
 #define	USE_DEBUG_PRINT_HEX
 #define	USE_DEBUG_PRINT_U8
-#define	USE_DEBUG_PRINT_S8				// Requires U8
+#define	USE_DEBUG_PRINT_S8					// Requires U8
 #define	USE_DEBUG_PRINT_U16					// Requires U8
 #define	USE_DEBUG_PRINT_S16					// Requires U16, U8
 
@@ -40,6 +42,7 @@
 // Use placeholder when not printing the actual value
 #define	USE_DEBUG_PRINTCONST_PLACEHOLDER
 
+#endif
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
@@ -56,7 +59,7 @@
 #define	DEBUG_TX_BUFFER_SIZE		(1 << DEBUG_TX_BUFFER_BITS)
 #define	DEBUG_TX_BUFFER_MASK		(DEBUG_TX_BUFFER_SIZE - 1)
 
-#define	DEBUG_RX_BUFFER_BITS		5
+#define	DEBUG_RX_BUFFER_BITS		1
 #define	DEBUG_RX_BUFFER_SIZE		(1 << DEBUG_RX_BUFFER_BITS)
 #define	DEBUG_RX_BUFFER_MASK		(DEBUG_RX_BUFFER_SIZE - 1)
 
@@ -270,7 +273,7 @@ void Debug_RxIntCallback( void );
 // Common constant strings, to reduce the occupied ROM space
 
 /**
- * Prints '§'.
+ * Prints '#'.
  */
 #ifdef	USE_DEBUG_PRINTCONST_PLACEHOLDER
 void Debug_PrintPlaceholder( void );

@@ -75,7 +75,7 @@ void IncEnc_Initialize( void )
 	INCENC_ANS_B = 1;
 	INCENC_TRIS_A = 1;					// Set as inputs
 	INCENC_TRIS_B = 1;
-	
+
 	// Setup Vdd/2 voltage reference through internal DAC
 	REFCON1 = 0;						// Vdd-Vss range, internal
 	REFCON2 = 16;						// 50% amplitude
@@ -104,7 +104,9 @@ void IncEnc_Initialize( void )
 	incenc_delta = 0;
 	
 	// Enable interrupts
-	IncEnc_EnableInterrupts();
+	PIR2bits.C1IF = 0;
+	PIR2bits.C2IF = 0;
+//	IncEnc_EnableInterrupts();//FIXME
 }
 
 
@@ -115,7 +117,7 @@ void IncEnc_Service( void )
 	if ( incenc_delta != last ) {
 		signed short delta = incenc_delta - last;
 		last = incenc_delta;
-		IncEnc_EnableInterrupts();
+//		IncEnc_EnableInterrupts();//FIXME
 		
 		// Print a debug event
 		Debug_PrintConst_EventBegin();
@@ -123,7 +125,7 @@ void IncEnc_Service( void )
 		Debug_PrintS16( delta );
 		Debug_PrintConst_EventEnd();
 	} else {
-		IncEnc_EnableInterrupts();
+//		IncEnc_EnableInterrupts();//FIXME
 	}
 }
 
@@ -134,13 +136,17 @@ signed short IncEnc_GetDelta( void )
 	IncEnc_DisableInterrupts();
 	value = incenc_delta;
 	incenc_delta = 0;
-	IncEnc_EnableInterrupts();
+//	IncEnc_EnableInterrupts();//FIXME
 	return value;
 }
 
 
 void IncEnc_ChangeCallback( void )
 {
+	// Clear interrupt flags (mutually exclusive, we can clear both)
+	PIR2bits.C1IF = 0;
+	PIR2bits.C2IF = 0;
+	
 	// Sample the current state
 	incenc_state = (incenc_state >> 2) & 0b0011;	// Old state in bits 1:0
 	incenc_state |= (CM2CON1 >> 4) & 0b1100;		// Current state in bits 3:2
