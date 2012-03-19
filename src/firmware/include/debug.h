@@ -12,6 +12,33 @@
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
+// CONFIGURATION
+
+// Strings
+#define	USE_DEBUG_PRINT_ROM
+#define	USE_DEBUG_PRINT_RAM
+
+// Integral values
+#define	USE_DEBUG_PRINT_HEX
+//#define	USE_DEBUG_PRINT_U8
+//#define	USE_DEBUG_PRINT_S8
+//#define	USE_DEBUG_PRINT_U16
+//#define	USE_DEBUG_PRINT_S16
+
+// Constants in ROM
+#define	USE_DEBUG_PRINTCONST_NEWLINE
+#define	USE_DEBUG_PRINTCONST_INITIALIZING
+#define	USE_DEBUG_PRINTCONST_CHECKING
+#define	USE_DEBUG_PRINTCONST_EVENTBEGIN
+#define	USE_DEBUG_PRINTCONST_EVENTEND
+#define	USE_DEBUG_PRINTCONST_DOTS
+#define	USE_DEBUG_PRINTCONST_OK
+#define	USE_DEBUG_PRINTCONST_FAIL
+#define	USE_DEBUG_PRINTCONST_EQ
+#define	USE_DEBUG_PRINTCONST_0X
+
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
 
@@ -77,7 +104,12 @@ void Debug_Release( void );
  * @param text
  *		ROM pointer to the string to be printed
  */
+#ifdef	USE_DEBUG_PRINT_ROM
 void Debug_PrintRom( const far rom char * text );
+#else
+#define	Debug_PrintRom( text )			Debug_PrintPlaceholder()
+#endif
+
 
 /**
  * Prints a string from ROM, with pointer casting.
@@ -86,12 +118,18 @@ void Debug_PrintRom( const far rom char * text );
  * @param text
  *		ROM pointer to the string to be printed
  */
-#define	Debug_PrintRom_( text )		Debug_PrintRom( (const far rom char *)(text) )
+#define	Debug_PrintRom_( text )			Debug_PrintRom( (const far rom char *)(text) )
+
 
 /**
  * Prints a string from RAM.
  */
+#ifdef	USE_DEBUG_PRINT_RAM
 void Debug_PrintRam( const far ram char * text );
+#else
+#define	Debug_PrintRam( text )			Debug_PrintPlaceholder()
+#endif
+
 
 /**
  * Prints a string from RAM, with pointer casting.
@@ -100,7 +138,7 @@ void Debug_PrintRam( const far ram char * text );
  * @param text
  *		RAM pointer to the string to be printed
  */
-#define	Debug_PrintRam_( text )		Debug_PrintRam( (const far ram char *)(text) )
+#define	Debug_PrintRam_( text )			Debug_PrintRam( (const far ram char *)(text) )
 
 
 /**
@@ -115,7 +153,11 @@ void Debug_PrintChar( char value );
  * @param value
  *		Value to print.
  */
+#ifdef	USE_DEBUG_PRINT_HEX
 void Debug_PrintHex( unsigned char value );
+#else
+#define	Debug_PrintHex( value )			Debug_PrintPlaceholder()
+#endif
 
 
 /**
@@ -124,7 +166,11 @@ void Debug_PrintHex( unsigned char value );
  * @param value
  *		Value to print.
  */
+#ifdef	USE_DEBUG_PRINT_U8
 void Debug_PrintU8( unsigned char value );
+#else
+#define	Debug_PrintU8( value )			Debug_PrintPlaceholder()
+#endif
 
 
 /**
@@ -133,7 +179,11 @@ void Debug_PrintU8( unsigned char value );
  * @param value
  *		Value to print.
  */
+#ifdef	USE_DEBUG_PRINT_U16
 void Debug_PrintU16( unsigned short value );
+#else
+#define	Debug_PrintU16( value )			Debug_PrintPlaceholder()
+#endif
 
 
 /**
@@ -142,7 +192,11 @@ void Debug_PrintU16( unsigned short value );
  * @param value
  *		Value to print.
  */
+#ifdef	USE_DEBUG_PRINT_S8
 void Debug_PrintS8( signed char value );
+#else
+#define	Debug_PrintS8( value )			Debug_PrintPlaceholder()
+#endif
 
 
 /**
@@ -151,7 +205,11 @@ void Debug_PrintS8( signed char value );
  * @param value
  *		Value to print.
  */
+#ifdef	USE_DEBUG_PRINT_S16
 void Debug_PrintS16( signed short value );
+#else
+#define	Debug_PrintS16( value )			Debug_PrintPlaceholder()
+#endif
 
 
 /**
@@ -209,68 +267,115 @@ void Debug_RxIntCallback( void );
 // Common constant strings, to reduce the occupied ROM space
 
 /**
+ * Prints '§'.
+ */
+void Debug_PrintPlaceholder( void );
+
+
+/**
  * Prints "\r\n".
  */
+#ifdef	USE_DEBUG_PRINTCONST_NEWLINE
 void Debug_PrintConst_NewLine( void );
+#else
+#define	Debug_PrintConst_NewLine()			Debug_PrintPlaceholder()
+#endif
+
 
 
 /**
  * Prints "Initializing ".
  */
+#ifdef	USE_DEBUG_PRINTCONST_INITIALIZING
 void Debug_PrintConst_Initializing( void );
+#else
+#define	Debug_PrintConst_Initializing()		Debug_PrintPlaceholder()
+#endif
 
 
 /**
  * Prints "Checking ".
  */
+#ifdef	USE_DEBUG_PRINTCONST_CHECKING
 void Debug_PrintConst_Checking( void );
+#else
+#define	Debug_PrintConst_Checking()			Debug_PrintPlaceholder()
+#endif
 
 
 /**
  * Prints "[@" (begins event info string).
  */
+#ifdef	USE_DEBUG_PRINTCONST_EVENTBEGIN
 void Debug_PrintConst_EventBegin( void );
+#else
+#define	Debug_PrintConst_EventBegin()		Debug_PrintPlaceholder()
+#endif
 
 
 /**
  * Prints "]" (ends event info string).
  */
+#ifdef	USE_DEBUG_PRINTCONST_EVENTEND
 void Debug_PrintConst_EventEnd( void );
+#else
+#define	Debug_PrintConst_EventEnd()			Debug_PrintPlaceholder()
+#endif
 
 
 /**
  * Prints "... ".
  */
+#ifdef	USE_DEBUG_PRINTCONST_DOTS
 void Debug_PrintConst_Dots( void );
+#else
+#define	Debug_PrintConst_Dots()				Debug_PrintPlaceholder()
+#endif
 
 
 /**
  * Prints "ok".
  */
+#ifdef	USE_DEBUG_PRINTCONST_OK
 void Debug_PrintConst_Ok( void );
+#else
+#define	Debug_PrintConst_Ok()				Debug_PrintPlaceholder()
+#endif
 
 
 /**
  * Prints "FAIL".
  */
+#ifdef	USE_DEBUG_PRINTCONST_FAIL
 void Debug_PrintConst_Fail( void );
+#else
+#define	Debug_PrintConst_Fail()				Debug_PrintPlaceholder()
+#endif
 
 
 /**
  * Prints " = ".
  */
+#ifdef	USE_DEBUG_PRINTCONST_EQ
 void Debug_PrintConst_Eq( void );
+#else
+#define	Debug_PrintConst_Eq()				Debug_PrintPlaceholder()
+#endif
 
 
 /**
  * Prints "0x".
  */
+#ifdef	USE_DEBUG_PRINTCONST_0X
 void Debug_PrintConst_0x( void );
+#else
+#define	Debug_PrintConst_0x()				Debug_PrintPlaceholder()
+#endif
 
 
 #else	/* DONT_USE_DEBUG_CONSOLE */
 
-// Replace with empty symbols
+// Replace with empty symbols, since we are entirely skipping the console
 #define Debug_Initialize()
 #define	Debug_Release()
 #define Debug_PrintRom( text )
@@ -283,10 +388,10 @@ void Debug_PrintConst_0x( void );
 #define	Debug_PrintU16( value )
 #define	Debug_PrintS8( value )
 #define	Debug_PrintS16( value )
-#define	Debug_TxBufferUsed()				DEBUG_TX_BUFFER_SIZE
-#define	Debug_TxBufferFree()				0
-#define	Debug_RxBufferUsed()				DEBUG_RX_BUFFER_SIZE
-#define	Debug_RxBufferFree()				0
+#define	Debug_TxBufferUsed()
+#define	Debug_TxBufferFree()
+#define	Debug_RxBufferUsed()
+#define	Debug_RxBufferFree()
 #define	Debug_Truncate()
 #define	Debug_Flush()
 #define	Debug_TxIntCallback()

@@ -190,20 +190,22 @@ void HighPriorityISR( void )
 #pragma interruptlow LowPriorityISR
 void LowPriorityISR( void )
 {
+	// Process transmitted debug console data
+	if ( DEBUG_UART_INT_TX ) {
+		if ( DEBUG_UART_FLAG_TX ) {
+			Debug_TxIntCallback();
+		}
+	}
+	
 	// Process USB tasks
 	#ifdef USB_INTERRUPT
 	USBDeviceTasks();
 	#endif
 	
-	// Process debug UART tasks
+	// Process received debug console data
 	if ( DEBUG_UART_INT_RX ) {
 		if ( DEBUG_UART_FLAG_RX ) {
 			Debug_RxIntCallback();
-		}
-	}
-	if ( DEBUG_UART_INT_TX ) {
-		if ( DEBUG_UART_FLAG_TX ) {
-			Debug_TxIntCallback();
 		}
 	}
 }

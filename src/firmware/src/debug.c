@@ -134,6 +134,7 @@ void Debug_Release( void )
 }
 
 
+#ifdef	USE_DEBUG_PRINT_ROM
 void Debug_PrintRom( const far rom char * text )
 {
 	while ( *text ) {
@@ -141,8 +142,10 @@ void Debug_PrintRom( const far rom char * text )
 		++text;
 	}
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINT_RAM
 void Debug_PrintRam( const far ram char * text )
 {
 	while ( *text ) {
@@ -150,50 +153,51 @@ void Debug_PrintRam( const far ram char * text )
 		++text;
 	}
 }
+#endif
 
 
 void Debug_PrintChar( char value )
 {
 	DisableTxInt();
 	App_DisableGlobalInterrupts();
+	
 	if ( debug_uartTxBufferFree == DEBUG_TX_BUFFER_SIZE && DEBUG_UART_FLAG_TX ) {
-		TXREG = value;		// SW & HW buffers are free, send directly to the USART
+		// SW & HW buffers are free, send directly to the USART
+		TXREG = value;
 		App_EnableGlobalInterrupts();
 	}
 	else {
 		// Check if buffer is full
 		while ( debug_uartTxBufferFree == 0 ) {
 			do {
-				App_EnableGlobalInterrupts();		// Let interrupts print their text
-				if ( debug_uartTxBufferFree != DEBUG_TX_BUFFER_SIZE ) {
-					EnableTxInt();
-				}
+				// Let interrupts print nested text
+				EnableTxInt();
+				App_EnableGlobalInterrupts();
 				App_DisableGlobalInterrupts();
 				DisableTxInt();
 			} while ( !DEBUG_UART_FLAG_TX );		// Block until a character is sent (mandatory!)
-			if ( debug_uartTxBufferFree != 0 ) {
-				TXREG = debug_uartTxBufferData[ debug_uartTxBufferHead ];
-				if ( ++debug_uartTxBufferHead >= DEBUG_TX_BUFFER_SIZE ) {
-					debug_uartTxBufferHead = 0;
-				}
-				++debug_uartTxBufferFree;
+		}
+		
+		if ( debug_uartTxBufferFree == DEBUG_TX_BUFFER_SIZE ) {
+			// SW & HW buffers are free (lucky guy at this point!), send directly to the USART
+			TXREG = value;
+			App_EnableGlobalInterrupts();
+		}
+		else {
+			// Enqueue the new character
+			--debug_uartTxBufferFree;
+			debug_uartTxBufferData[ debug_uartTxBufferTail ] = value;
+			if ( ++debug_uartTxBufferTail >= DEBUG_TX_BUFFER_SIZE ) {
+				debug_uartTxBufferTail = 0;
 			}
+			EnableTxInt();							// Further data to process
+			App_EnableGlobalInterrupts();
 		}
-		
-		// Enqueue the character
-		--debug_uartTxBufferFree;
-		debug_uartTxBufferData[ debug_uartTxBufferTail ] = value;
-		if ( ++debug_uartTxBufferTail >= DEBUG_TX_BUFFER_SIZE ) {
-			debug_uartTxBufferTail = 0;
-		}
-		App_EnableGlobalInterrupts();
-		
-		// Process the next character(s)
-		EnableTxInt();
 	}
 }
 
 
+#ifdef	USE_DEBUG_PRINT_HEX
 void Debug_PrintHex( unsigned char value )
 {
 	unsigned char c = (value >> 4) & 0x0F;
@@ -201,8 +205,10 @@ void Debug_PrintHex( unsigned char value )
 	c = value & 0x0F;
 	Debug_PrintChar( c + ((c >= 10) ? ('A' - 10) : '0') );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINT_U8
 void Debug_PrintU8( unsigned char value )
 {
 	unsigned char quotient;
@@ -216,8 +222,10 @@ void Debug_PrintU8( unsigned char value )
 	}
 	Debug_PrintChar( value + '0' );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINT_U16
 void Debug_PrintU16( unsigned short value )
 {
 	unsigned short quotient;
@@ -231,8 +239,10 @@ void Debug_PrintU16( unsigned short value )
 	}
 	Debug_PrintU8( value );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINT_S8
 void Debug_PrintS8( signed char value )
 {
 	unsigned char quotient;
@@ -249,8 +259,10 @@ void Debug_PrintS8( signed char value )
 	}
 	Debug_PrintU8( (unsigned char)value );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINT_S16
 void Debug_PrintS16( signed short value ) {
 	if ( value == -32768 ) {
 		Debug_PrintRom_( "-32768" );
@@ -262,6 +274,7 @@ void Debug_PrintS16( signed short value ) {
 	}
 	Debug_PrintU16( (unsigned short)value );
 }
+#endif
 
 
 DEBUG_UART_BUFFER_INDEX_TYPE Debug_TxBufferUsed( void )
@@ -342,38 +355,55 @@ void Debug_RxIntCallback( void )
 }
 
 
+void Debug_PrintPlaceholder( void )
+{
+	Debug_PrintChar( '§' );
+}
+
+
+#ifdef	USE_DEBUG_PRINTCONST_NEWLINE
 void Debug_PrintConst_NewLine( void )
 {
 	Debug_PrintChar( '\r' );
 	Debug_PrintChar( '\n' );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_INITIALIZING
 void Debug_PrintConst_Initializing( void )
 {
 	Debug_PrintRom_( "Initializing " );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_CHECKING
 void Debug_PrintConst_Checking( void )
 {
 	Debug_PrintRom_( "Checking " );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_EVENTBEGIN
 void Debug_PrintConst_EventBegin( void )
 {
 	Debug_PrintChar( '[' );
 	Debug_PrintChar( '@' );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_EVENTEND
 void Debug_PrintConst_EventEnd( void )
 {
 	Debug_PrintChar( ']' );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_DOTS
 void Debug_PrintConst_Dots( void )
 {
 	Debug_PrintChar( '.' );
@@ -381,15 +411,19 @@ void Debug_PrintConst_Dots( void )
 	Debug_PrintChar( '.' );
 	Debug_PrintChar( ' ' );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_OK
 void Debug_PrintConst_Ok( void )
 {
 	Debug_PrintChar( 'o' );
 	Debug_PrintChar( 'k' );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_FAIL
 void Debug_PrintConst_Fail( void )
 {
 	Debug_PrintChar( 'F' );
@@ -397,21 +431,26 @@ void Debug_PrintConst_Fail( void )
 	Debug_PrintChar( 'I' );
 	Debug_PrintChar( 'L' );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_EQ
 void Debug_PrintConst_Eq( void )
 {
 	Debug_PrintChar( ' ' );
 	Debug_PrintChar( '=' );
 	Debug_PrintChar( ' ' );
 }
+#endif
 
 
+#ifdef	USE_DEBUG_PRINTCONST_0X
 void Debug_PrintConst_0x( void )
 {
 	Debug_PrintChar( '0' );
 	Debug_PrintChar( 'x' );
 }
+#endif
 
 
 
