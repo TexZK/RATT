@@ -20,10 +20,10 @@
 
 // Integral values
 #define	USE_DEBUG_PRINT_HEX
-//#define	USE_DEBUG_PRINT_U8
-//#define	USE_DEBUG_PRINT_S8
-//#define	USE_DEBUG_PRINT_U16
-//#define	USE_DEBUG_PRINT_S16
+#define	USE_DEBUG_PRINT_U8
+#define	USE_DEBUG_PRINT_S8				// Requires U8
+#define	USE_DEBUG_PRINT_U16					// Requires U8
+#define	USE_DEBUG_PRINT_S16					// Requires U16, U8
 
 // Constants in ROM
 #define	USE_DEBUG_PRINTCONST_NEWLINE
@@ -36,6 +36,9 @@
 #define	USE_DEBUG_PRINTCONST_FAIL
 #define	USE_DEBUG_PRINTCONST_EQ
 #define	USE_DEBUG_PRINTCONST_0X
+
+// Use placeholder when not printing the actual value
+#define	USE_DEBUG_PRINTCONST_PLACEHOLDER
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -269,7 +272,11 @@ void Debug_RxIntCallback( void );
 /**
  * Prints '§'.
  */
+#ifdef	USE_DEBUG_PRINTCONST_PLACEHOLDER
 void Debug_PrintPlaceholder( void );
+#else
+#define	Debug_PrintPlaceholder()
+#endif
 
 
 /**

@@ -355,10 +355,12 @@ void Debug_RxIntCallback( void )
 }
 
 
+#ifdef	USE_DEBUG_PRINTCONST_PLACEHOLDER
 void Debug_PrintPlaceholder( void )
 {
 	Debug_PrintChar( '§' );
 }
+#endif
 
 
 #ifdef	USE_DEBUG_PRINTCONST_NEWLINE
