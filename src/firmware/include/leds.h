@@ -37,7 +37,7 @@
 #define	LEDS_LAT_RED			LATCbits.LATC5		/// Red LED latch
 
 
-// Shortcuts
+// Shorthands
 #define	GREEN_LED				LEDS_LAT_GREEN
 #define	YELLOW_LED				LEDS_LAT_YELLOW
 #define	RED_LED					LEDS_LAT_RED

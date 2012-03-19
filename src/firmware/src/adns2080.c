@@ -359,7 +359,7 @@ void Adns_Service( void )
 		Adns_ResetCommunication();
 		burst = Adns_BurstReadMotionDeltasBlocking();
 		YELLOW_LED = LED_ON;			// Yellow LED for cached HID packet
-		RED_LED = LED_OFF;
+		//RED_LED = LED_OFF;//FIXME
 		Adns_EnableInterrupt();
 		
 		adns_deltaY = burst.deltaY;
@@ -401,7 +401,7 @@ void Adns_MotionCallback( void )
 {
 	ADNS_INT_IF = 0;
 	adns_status.motionInt = 1;
-	RED_LED = LED_ON;					// Red LED for cached motion interrupt
+	//RED_LED = LED_ON;					// Red LED for cached motion interrupt FIXME
 	
 #ifdef __DEBUG
 	Debug_PrintChar( '[' );				// Print a Motion event

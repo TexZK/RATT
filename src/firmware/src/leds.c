@@ -47,15 +47,15 @@
 
 void Leds_Initialize( void )
 {
+	// Preload all LEDs off
+	GREEN_LED = LED_OFF;
+	YELLOW_LED = LED_OFF;
+	RED_LED = LED_OFF;
+	
 	// Setup pins as outputs
 	LEDS_TRIS_GREEN = 0;
 	LEDS_TRIS_YELLOW = 0;
 	LEDS_TRIS_RED = 0;
-	
-	// Turn all LEDs off
-	GREEN_LED = LED_OFF;
-	YELLOW_LED = LED_OFF;
-	RED_LED = LED_OFF;
 }
 
 

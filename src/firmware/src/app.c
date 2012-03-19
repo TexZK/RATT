@@ -312,7 +312,9 @@ void ProcessIO( void )
         
 		// Re-arm the OUT endpoint for the next packet
 		Usb_RxBufferedPacket();
-	}	
+	}
+	
+	GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
 }
 
 
@@ -353,23 +355,31 @@ void main( void )
 
 void App_Lock( void )
 {
+#if 0
 	if ( !app_status.bits.inHighIrq ) {
 		if ( !app_status.bits.inLowIrq ) {
 			App_DisableLowInterrupts();
 		}
 		App_DisableHighInterrupts();
 	}
+#else
+	App_DisableGlobalInterrupts();
+#endif
 }
 
 
 void App_Unlock( void )
 {
+#if 0
 	if ( !app_status.bits.inHighIrq ) {
 		App_EnableHighInterrupts();
 		if ( !app_status.bits.inLowIrq ) {
 			App_EnableLowInterrupts();
 		}
 	}
+#else
+	App_EnableGlobalInterrupts();
+#endif
 }
 
 

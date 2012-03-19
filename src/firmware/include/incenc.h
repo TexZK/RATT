@@ -30,8 +30,9 @@
 
 #define	INCENC_ANS_A			ANSELbits.ANS5		/// Signal A analog selection bit
 #define	INCENC_ANS_B			ANSELbits.ANS6		/// Signal B analog selection bit
-#define	INCENC_ANSBM_A			(1 << 5)			/// Signal A analog selection bit
-#define	INCENC_ANSBM_B			(1 << 6)			/// Signal B analog selection bit
+#define	INCENC_ANSBM_A			(1 << 5)			/// Signal A analog selection bit mask
+#define	INCENC_ANSBM_B			(1 << 6)			/// Signal B analog selection bit mask
+
 
 // Interrupt settings
 #define	INCENC_INT_IE_A			PIE2bits.C1IE		/// Signal A interrupt switch
@@ -39,6 +40,10 @@
 
 #define	INCENC_INT_IF_A			PIR2bits.C1IF		/// Signal A interrupt switch
 #define	INCENC_INT_IF_B			PIR2bits.C2IF		/// Signal B interrupt switch
+
+#define	INCENC_INT_IP_A			IPR2bits.C1IP		/// Signal A interrupt priority
+#define	INCENC_INT_IP_B			IPR2bits.C2IP		/// Signal B interrupt priority
+#define	INCENC_INT_IP_VALUE		1					/// Interrupts priority (0 = low, 1 = high)
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//

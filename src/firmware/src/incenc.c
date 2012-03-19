@@ -19,6 +19,8 @@
 // HEADERS
 
 #include "Compiler.h"
+#include "app.h"
+#include "leds.h"
 #include "debug.h"
 #include "incenc.h"
 
@@ -64,8 +66,8 @@ void IncEnc_Initialize( void )
 {
 	// Disable peripherals
 	IncEnc_DisableInterrupts();			// Disable interrupts
-	PIR2bits.C1IF = 0;
-	PIR2bits.C2IF = 0;
+	INCENC_INT_IF_A = 0;
+	INCENC_INT_IF_B = 0;
 	CM1CON0 = 0;						// Reset comparators
 	CM2CON0 = 0;
 	CM2CON1 = 0;
@@ -104,20 +106,20 @@ void IncEnc_Initialize( void )
 	incenc_delta = 0;
 	
 	// Enable interrupts
-	PIR2bits.C1IF = 0;
-	PIR2bits.C2IF = 0;
-//	IncEnc_EnableInterrupts();//FIXME
+	INCENC_INT_IP_A = INCENC_INT_IP_VALUE;
+	INCENC_INT_IP_B = INCENC_INT_IP_VALUE;
+	IncEnc_EnableInterrupts();
 }
 
 
 void IncEnc_Service( void )
 {
 	static signed short last = 0;
-	IncEnc_DisableInterrupts();
+	App_Lock();
 	if ( incenc_delta != last ) {
 		signed short delta = incenc_delta - last;
 		last = incenc_delta;
-//		IncEnc_EnableInterrupts();//FIXME
+		App_Unlock();
 		
 		// Print a debug event
 		Debug_PrintConst_EventBegin();
@@ -125,7 +127,7 @@ void IncEnc_Service( void )
 		Debug_PrintS16( delta );
 		Debug_PrintConst_EventEnd();
 	} else {
-//		IncEnc_EnableInterrupts();//FIXME
+		App_Unlock();
 	}
 }
 
@@ -133,46 +135,51 @@ void IncEnc_Service( void )
 signed short IncEnc_GetDelta( void )
 {
 	signed short value;
-	IncEnc_DisableInterrupts();
+	App_Lock();
 	value = incenc_delta;
 	incenc_delta = 0;
-//	IncEnc_EnableInterrupts();//FIXME
+	App_Unlock();
 	return value;
 }
 
 
 void IncEnc_ChangeCallback( void )
 {
-	// Clear interrupt flags (mutually exclusive, we can clear both)
-	PIR2bits.C1IF = 0;
-	PIR2bits.C2IF = 0;
+	// Clear interrupt flags (mutually exclusive, both can be cleared)
+	INCENC_INT_IF_A = 0;
+	INCENC_INT_IF_B = 0;
 	
 	// Sample the current state
 	incenc_state = (incenc_state >> 2) & 0b0011;	// Old state in bits 1:0
 	incenc_state |= (CM2CON1 >> 4) & 0b1100;		// Current state in bits 3:2
 	
-	/* (A;B)
+	/* [AB]:
 	 * Clockwise pattern:
-	 *  00 -> 01 -> 11 -> 10 -> 00
+	 *  [00] -> [01] -> [11] -> [10] -> [00]
 	 * Counter-clockwise pattern:
-	 *  00 -> 10 -> 11 -> 01 -> 00
+	 *  [00] -> [10] -> [11] -> [01] -> [00]
+	 * We do not care about direction changes
+	 *
+	 * 0bNNLL: LL = old, NN = new
 	 */
 	switch ( incenc_state ) {
-		case 0b0001:
-		case 0b0111:
-		case 0b1110:
-		case 0b1000: {
+		case 0b0100:
+		case 0b1101:
+		case 0b1011:
+		case 0b0010: {
 			++incenc_delta;
 			break;
 		}
-		case 0b0010:
-		case 0b1011:
-		case 0b1101:
-		case 0b0100: {
+		case 0b1000:
+		case 0b1110:
+		case 0b0111:
+		case 0b0001: {
 			--incenc_delta;
 			break;
 		}
 	}
+	
+	RED_LED = !RED_LED;
 }
 
 
