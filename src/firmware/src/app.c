@@ -190,20 +190,22 @@ void HighPriorityISR( void )
 #pragma interruptlow LowPriorityISR
 void LowPriorityISR( void )
 {
+	// Process transmitted debug console data
+	if ( DEBUG_UART_INT_TX ) {
+		if ( DEBUG_UART_FLAG_TX ) {
+			Debug_TxIntCallback();
+		}
+	}
+	
 	// Process USB tasks
 	#ifdef USB_INTERRUPT
 	USBDeviceTasks();
 	#endif
 	
-	// Process debug UART tasks
+	// Process received debug console data
 	if ( DEBUG_UART_INT_RX ) {
 		if ( DEBUG_UART_FLAG_RX ) {
 			Debug_RxIntCallback();
-		}
-	}
-	if ( DEBUG_UART_INT_TX ) {
-		if ( DEBUG_UART_FLAG_TX ) {
-			Debug_TxIntCallback();
 		}
 	}
 }
@@ -237,39 +239,19 @@ void InitializeSystem( void )
     ANSEL = INCENC_ANSBM_A | INCENC_ANSBM_B;
     ANSELH = AUXIN_ANSHBM;
     
-    // Initialize the LEDs module
-    Leds_Initialize();
+    // Initialize modules
+    Leds_Initialize();				// Initialize the LEDs module
     YELLOW_LED = LED_ON;			// Yellow LED to show initialization
+    Debug_Initialize();				// Initialize the debug module; NOTE: enables HP&LP interrupts!
+    Usb_UserInit();					// Initialize USB module
+    Adns_Initialize();				// Initialize ADNS module
+    IncEnc_Initialize();			// Initialize the incremental encoder module
     
-    // Initialize the debug module
-    RED_LED = LED_ON;
-    Debug_Initialize();				// NOTE: Enables HP&LP interrupts!
-    RED_LED = LED_OFF;
-    
-    // Initialize USB module
-    RED_LED = LED_ON;
-    Debug_PrintConst_Initializing();
-    Debug_PrintRom_( "USB device" );
+    Debug_PrintConst_NewLine();
+    Debug_PrintConst_NewLine();
     Debug_PrintConst_Dots();
-    Usb_UserInit();
-    USBDeviceInit();
+    Debug_PrintRom_( "INIT" );
     Debug_PrintConst_Ok();
-    Debug_PrintConst_NewLine();
-    RED_LED = LED_OFF;
-    
-    // Initialize ADNS module
-    RED_LED = LED_ON;
-	Adns_Initialize();
-    RED_LED = LED_OFF;
-    
-    // Initialize the incremental encoder module
-    RED_LED = LED_ON;
-    IncEnc_Initialize();
-    RED_LED = LED_OFF;
-    
-    Debug_PrintConst_NewLine();
-    Debug_PrintConst_NewLine();
-    Debug_PrintRom_( "=> DEVICE INITIALIZED <=" );
     Debug_PrintConst_NewLine();
     Debug_PrintConst_NewLine();
     Debug_Flush();
@@ -294,18 +276,18 @@ void InitializeSystem( void )
  */
 void ProcessIO( void )
 {
-	// Flush the debug console, to speed-up further messages
-	Debug_Flush();
+	Debug_Flush();					// Flush the debug console, to speed-up further messages
 	
 	// User Application USB tasks
     if ( USBDeviceState < CONFIGURED_STATE || USBSuspendControl == 1 ) {
 		return;
 	}
     
-    // TODO: Handle incremental encoder tasks
-    
-    // Handle ADNS tasks
-	Adns_Service();
+    // Process modules
+    IncEnc_Service();				// Handle incremental encoder tasks
+    Adns_Service();					// Handle ADNS tasks
+	
+	// TODO: Build & transfer HID packets here and not in ADNS service
 	
 	// Check if data was received from the host
     if ( Usb_RxReady() ) {
@@ -352,7 +334,7 @@ void main( void )
 }
 
 
-void WaitButtonPress( void )
+void App_WaitButtonPress( void )
 {
 	do {
 		DelayMs( 10 );			// Debounce previous release

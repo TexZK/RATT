@@ -1592,7 +1592,7 @@ Extended by Federico Battaglin &lt;author&gt;&amp;lt;federico.rd@fdpinternationa
 <library name="microchip_local">
 <description>Library extension for some useful Microchip products.</description>
 <packages>
-<package name="DIP-20">
+<package name="DIL20">
 <pad name="1" x="-3.81" y="11.43" drill="0.6" diameter="1.016" shape="long" first="yes"/>
 <pad name="2" x="-3.81" y="8.89" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="3" x="-3.81" y="6.35" drill="0.6" diameter="1.016" shape="long"/>
@@ -1614,7 +1614,7 @@ Extended by Federico Battaglin &lt;author&gt;&amp;lt;federico.rd@fdpinternationa
 <pad name="19" x="3.81" y="8.89" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="20" x="3.81" y="11.43" drill="0.6" diameter="1.016" shape="long"/>
 <text x="-2.54" y="13.97" size="1.27" layer="25">&gt;NAME</text>
-<text x="0.635" y="-12.7" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+<text x="0.635" y="-11.43" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
 <wire x1="-3.302" y1="13.335" x2="3.302" y2="13.335" width="0.127" layer="21"/>
 <wire x1="3.302" y1="13.335" x2="3.302" y2="-13.335" width="0.127" layer="21"/>
 <wire x1="3.302" y1="-13.335" x2="-3.302" y2="-13.335" width="0.127" layer="21"/>
@@ -1701,6 +1701,7 @@ Extended by Federico Battaglin &lt;author&gt;&amp;lt;federico.rd@fdpinternationa
 <wire x1="-3.302" y1="-10.668" x2="-3.302" y2="-12.192" width="0" layer="21"/>
 <wire x1="-4.064" y1="-10.668" x2="-3.302" y2="-10.668" width="0" layer="21"/>
 <wire x1="-4.064" y1="-12.192" x2="-3.302" y2="-12.192" width="0" layer="21"/>
+<wire x1="1.27" y1="13.335" x2="-1.27" y2="13.335" width="0.127" layer="51" curve="-180"/>
 </package>
 <package name="TO-92">
 <wire x1="-2.159" y1="-1.651" x2="2.159" y2="-1.651" width="0.127" layer="21" curve="-255.001371"/>
@@ -1923,13 +1924,13 @@ design rules under a new name.</description>
 <attribute name="OC_FARNELL" value="1667008" x="-29.21" y="15.24" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="25.527" y="11.43" size="1.27" layer="25" ratio="10" rot="R270"/>
 </element>
-<element name="S1" library="switch-omron" package="B3F-10XX" value="" x="6.35" y="5.08" smashed="yes" rot="R270">
-<attribute name="OC_NEWARK" value="36M3542" x="-26.67" y="-13.97" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="MPN" value="B3F-1000" x="-26.67" y="-13.97" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="MF" value="" x="-26.67" y="-13.97" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="OC_FARNELL" value="176432" x="-26.67" y="-13.97" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="NAME" x="2.667" y="4.572" size="1.27" layer="25" ratio="10" rot="R90"/>
-<attribute name="VALUE" x="1.27" y="8.128" size="1.27" layer="27" ratio="10" rot="R270"/>
+<element name="S1" library="switch-omron" package="B3F-10XX" value="" x="6.35" y="5.3975" smashed="yes" rot="R270">
+<attribute name="OC_NEWARK" value="36M3542" x="-26.67" y="-13.6525" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="B3F-1000" x="-26.67" y="-13.6525" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MF" value="" x="-26.67" y="-13.6525" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="176432" x="-26.67" y="-13.6525" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="NAME" x="2.667" y="4.8895" size="1.27" layer="25" ratio="10" rot="R90"/>
+<attribute name="VALUE" x="1.27" y="8.4455" size="1.27" layer="27" ratio="10" rot="R270"/>
 </element>
 <element name="P2" library="pinhead" package="1X03" value="" x="45.72" y="20.32" smashed="yes" rot="R90">
 <attribute name="NAME" x="47.8663" y="24.0538" size="1.27" layer="25" ratio="10"/>
@@ -1989,7 +1990,7 @@ design rules under a new name.</description>
 <element name="R9" library="rcl" package="0204/5" value="100k" x="12.7" y="3.81" smashed="yes" rot="R90">
 <attribute name="NAME" x="11.5316" y="3.0734" size="0.9906" layer="25" ratio="10" rot="R90"/>
 </element>
-<element name="U1" library="microchip_local" package="DIP-20" value="PIC18F14K50-E-P" x="27.94" y="17.78" smashed="yes" rot="R90">
+<element name="U1" library="microchip_local" package="DIL20" value="PIC18F14K50-E-P" x="27.94" y="17.78" smashed="yes" rot="R90">
 <attribute name="NAME" x="13.97" y="19.05" size="1.27" layer="25" rot="R90"/>
 </element>
 <element name="U2" library="microchip_local" package="TO-92" value="MCP17003302E/TO" x="6.35" y="27.94" smashed="yes">
@@ -2169,9 +2170,9 @@ design rules under a new name.</description>
 <contactref element="R9" pad="1"/>
 <contactref element="U1" pad="4"/>
 <wire x1="24.13" y1="13.0175" x2="24.13" y2="13.97" width="0.6096" layer="16"/>
-<wire x1="8.6106" y1="1.8288" x2="8.6106" y2="8.3312" width="0.6096" layer="16"/>
-<wire x1="8.6106" y1="1.8288" x2="9.1694" y2="1.27" width="0.6096" layer="16"/>
-<wire x1="9.1694" y1="1.27" x2="12.7" y2="1.27" width="0.6096" layer="16"/>
+<wire x1="8.6106" y1="2.1463" x2="8.6106" y2="8.6487" width="0.6096" layer="16"/>
+<wire x1="8.6106" y1="2.1463" x2="9.4869" y2="1.27" width="0.6096" layer="16"/>
+<wire x1="9.4869" y1="1.27" x2="12.7" y2="1.27" width="0.6096" layer="16"/>
 </signal>
 <signal name="TX">
 <contactref element="P2" pad="1"/>

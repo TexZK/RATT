@@ -55,6 +55,12 @@ void IncEnc_Initialize( void );
 
 
 /**
+ * Service which handles all the device management and communication.
+ */
+void IncEnc_Service( void );
+
+
+/**
  * Gets the counter delta insce the last call, then clears it.
  *
  * @return

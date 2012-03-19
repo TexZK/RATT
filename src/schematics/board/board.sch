@@ -15622,7 +15622,7 @@ Source: www.kingbright.com</description>
 <library name="microchip_local">
 <description>Library extension for some useful Microchip products.</description>
 <packages>
-<package name="DIP-20">
+<package name="DIL20">
 <pad name="1" x="-3.81" y="11.43" drill="0.6" diameter="1.016" shape="long" first="yes"/>
 <pad name="2" x="-3.81" y="8.89" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="3" x="-3.81" y="6.35" drill="0.6" diameter="1.016" shape="long"/>
@@ -15644,7 +15644,7 @@ Source: www.kingbright.com</description>
 <pad name="19" x="3.81" y="8.89" drill="0.6" diameter="1.016" shape="long"/>
 <pad name="20" x="3.81" y="11.43" drill="0.6" diameter="1.016" shape="long"/>
 <text x="-2.54" y="13.97" size="1.27" layer="25">&gt;NAME</text>
-<text x="0.635" y="-12.7" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+<text x="0.635" y="-11.43" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
 <wire x1="-3.302" y1="13.335" x2="3.302" y2="13.335" width="0.127" layer="21"/>
 <wire x1="3.302" y1="13.335" x2="3.302" y2="-13.335" width="0.127" layer="21"/>
 <wire x1="3.302" y1="-13.335" x2="-3.302" y2="-13.335" width="0.127" layer="21"/>
@@ -15731,6 +15731,7 @@ Source: www.kingbright.com</description>
 <wire x1="-3.302" y1="-10.668" x2="-3.302" y2="-12.192" width="0" layer="21"/>
 <wire x1="-4.064" y1="-10.668" x2="-3.302" y2="-10.668" width="0" layer="21"/>
 <wire x1="-4.064" y1="-12.192" x2="-3.302" y2="-12.192" width="0" layer="21"/>
+<wire x1="1.27" y1="13.335" x2="-1.27" y2="13.335" width="0.127" layer="51" curve="-180"/>
 </package>
 <package name="TO-92">
 <wire x1="-2.159" y1="-1.651" x2="2.159" y2="-1.651" width="0.127" layer="21" curve="-255.001371"/>
@@ -15797,7 +15798,7 @@ Source: www.kingbright.com</description>
 <gate name="P" symbol="PWRN" x="-63.5" y="0"/>
 </gates>
 <devices>
-<device name="" package="DIP-20">
+<device name="" package="DIL20">
 <connects>
 <connect gate="A" pin="RA0/D+/PGD" pad="19"/>
 <connect gate="A" pin="RA1/D-/PGC" pad="18"/>
