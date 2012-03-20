@@ -45,23 +45,17 @@
 // LOCAL VARIABLES
 #pragma udata data_adns_local
 
-ADNS_HID_DATA	adns_hidData;			/// HID report data
+volatile ADNS_LONG_DELTAS	adns_deltas;			/// Deltas accumulator
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
-#pragma udata access data_adns_global_access
+#pragma udata access data_adns_global_acs
 
 near ADNS_STATUS	adns_status;		/// Device status
 
-
 #pragma udata data_adns_global
 
-signed short		adns_deltaY;		/// Copy of Delta_Y register been read
-signed short		adns_deltaX;		/// Copy of Delta_X register been read
-
-signed short		adns_y;				/// Y position since last HID report
-signed short		adns_x;				/// X position since last HID report
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -307,14 +301,8 @@ void Adns_Initialize( void )
 	adns_status.motionInt = 0;
 	adns_status.dataReady = 0;
 	
-	adns_deltaX = 0;
-	adns_deltaY = 0;
-	adns_x = 0;
-	adns_y = 0;
-	
-	adns_hidData.reportID = 0;
-	adns_hidData.deltaX = 0;
-	adns_hidData.deltaY = 0;
+	adns_deltas.dx = 0;
+	adns_deltas.dy = 0;
 	
 	Adns_PowerUpDelay();
 	Debug_PrintConst_Ok();
@@ -352,47 +340,38 @@ void Adns_Service( void )
 {
 	// Check for motion interrupt
 	if ( adns_status.motionInt ) {
-		ADNS_BURST_MOTION_DELTAS burst;
+		ADNS_SHORT_DELTAS burst;
+		union {
+			struct {
+				signed short	lo;
+				unsigned short	hi;
+			} words;
+			signed long	value;
+		} split;
 		
 		Adns_DisableInterrupt();
 		adns_status.motionInt = 0;
-		Adns_ResetCommunication();
-		burst = Adns_BurstReadMotionDeltasBlocking();
-		YELLOW_LED = LED_ON;			// Yellow LED for cached HID packet
-		//RED_LED = LED_OFF;//FIXME
 		Adns_EnableInterrupt();
 		
-		adns_deltaY = burst.deltaY;
-		adns_deltaX = burst.deltaX;
+		burst = Adns_BurstReadMotionDeltasBlocking();
 		
-		adns_x += (signed short)adns_deltaX;
-		adns_y += (signed short)adns_deltaY;
-		adns_status.dataReady = 1;
-	}
-	
-	// Check if a HID packet can be sent
-	if ( adns_status.dataReady ) {
-		if ( Usb_TxReady() ) {
-			// Build the packet
-			Adns_DisableInterrupt();
-			++adns_hidData.reportID;
-			adns_hidData.deltaX = adns_x;
-			adns_hidData.deltaY = adns_y;
-			Adns_EnableInterrupt();
-			*((ADNS_HID_DATA *)usb_txBuffer) = adns_hidData;
-			
-			// Send the HID packet
-			Usb_TxBufferedPacket();
-			
-			// Clear the delta state
-			Adns_DisableInterrupt();
-			adns_status.dataReady = 0;
-			adns_x = 0;
-			adns_y = 0;
-			Adns_EnableInterrupt();
-			
-			YELLOW_LED = LED_OFF;
+		App_Lock();
+		split.words.lo = burst.dx;
+		split.words.hi = 0;
+		if ( split.words.lo & 0x8000 ) {
+			split.words.hi = ~0;
 		}
+		adns_deltas.dx += split.value;
+		
+		split.words.lo = burst.dy;
+		split.words.hi = 0;
+		if ( split.words.lo & 0x8000 ) {
+			split.words.hi = ~0;
+		}
+		adns_deltas.dy += split.value;
+		
+		adns_status.dataReady = 1;
+		App_Unlock();
 	}
 }
 
@@ -401,14 +380,6 @@ void Adns_MotionCallback( void )
 {
 	ADNS_INT_IF = 0;
 	adns_status.motionInt = 1;
-	//RED_LED = LED_ON;					// Red LED for cached motion interrupt FIXME
-	
-#ifdef __DEBUG
-	Debug_PrintChar( '[' );				// Print a Motion event
-	Debug_PrintChar( '@' );
-	Debug_PrintChar( 'M' );
-	Debug_PrintChar( ']' );
-#endif
 }	
 
 
@@ -513,16 +484,16 @@ unsigned char Adns_ReadBlocking( unsigned char address )
 }
 
 
-ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
+ADNS_SHORT_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 {
-	ADNS_BURST_MOTION_DELTAS	result;
-	unsigned char				dx, dy, dxyh;
+	ADNS_SHORT_DELTAS		deltas;
+	unsigned char			dx, dy, dxyh;
 	union {
 		struct {
-			unsigned char		lo;
-			unsigned char		hi;
+			unsigned char	lo;
+			unsigned char	hi;
 		} bytes;
-		signed short			value;
+		signed short		value;
 	} split;
 	
 	// Call a Motion Burst message chain
@@ -542,7 +513,7 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	if ( split.bytes.hi & 0x08 ) {
 		split.bytes.hi |= 0xF0;				// Sign extension
 	}
-	result.deltaX = split.value;
+	deltas.dx = split.value;
 	
 	// Compute Delta Y as a 16-bits signed integer
 	split.bytes.lo = dy;
@@ -550,9 +521,9 @@ ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	if ( split.bytes.hi & 0x08 ) {
 		split.bytes.hi |= 0xF0;				// Sign extension
 	}
-	result.deltaY = split.value;
+	deltas.dy = split.value;
 	
-	return result;
+	return deltas;
 }	
 
 
@@ -585,5 +556,14 @@ void Adns_ReadSubsequentDelay( void )
 	Nop();
 }
 
+
+ADNS_LONG_DELTAS Adns_GetDeltas( void )
+{
+	ADNS_LONG_DELTAS	deltas;
+	App_Lock();
+	deltas = adns_deltas;
+	App_Unlock();
+	return deltas;
+}
 
 // EOF

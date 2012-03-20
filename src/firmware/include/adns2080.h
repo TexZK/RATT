@@ -231,44 +231,32 @@ typedef union {
 // Aggregate types of the driver
 
 typedef struct {
-	unsigned	motionInt		: 1;	/// Motion flag (interrupt sets, service clears)
-	unsigned	dataReady		: 1;	/// Data ready flag
+	unsigned		motionInt	: 1;	/// Motion flag (interrupt sets, service clears)
+	unsigned		dataReady	: 1;	/// Data ready flag
 	unsigned					: 6;
 } ADNS_STATUS;							/// Device status
 
 
 typedef struct {
-	signed short	deltaX;				/// X movement since last motion read
-	signed short	deltaY;				/// Y movement since last motion read
-} ADNS_BURST_MOTION_DELTAS;				/// Motion burst values
+	signed short		dx;				/// X movement since last motion read
+	signed short		dy;				/// Y movement since last motion read
+} ADNS_SHORT_DELTAS;					/// Short integer deltas
 
 
 typedef struct {
-	unsigned long	reportID;			/// Report identifier
-	signed short	deltaX;				/// X movement since last HID report
-	signed short	deltaY;				/// Y movement since last HID report
-} ADNS_HID_DATA;						/// HID data for USB transfers	
+	signed short long	dx;				/// X movement since last HID report
+	signed short long	dy;				/// Y movement since last HID report
+} ADNS_LONG_DELTAS;						/// Long integer deltas
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
-#pragma udata access data_adns_global_access
 
 extern near ADNS_STATUS	adns_status;
 
 
-#pragma udata data_adns_global
-
-extern signed char		adns_lastDeltaX;
-extern signed char		adns_lastDeltaY;
-
-extern signed short		adns_x;
-extern signed short		adns_y;
-
-
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL PROTOTYPES
-#pragma code code_adns_global
 
 /**
  * Initializes the device service, and the SPI module.
@@ -344,13 +332,13 @@ unsigned char Adns_ReadBlocking( unsigned char address );
 
 
 /**
- * Issues a blocking Burst Read command, in order to retrieve the first
- * 3 registers of the Motion Burst.
+ * Issues a blocking Burst Read command, in order to retrieve the neded
+ * motion deltas.
  *
  * @return
- *		The first 3 registers of the Motion Burst.
+ *		The first Motion Burst values.
  */
-ADNS_BURST_MOTION_DELTAS Adns_BurstReadMotionDeltasBlocking( void );
+ADNS_SHORT_DELTAS Adns_BurstReadMotionDeltasBlocking( void );
 
 
 /**
@@ -376,6 +364,16 @@ void Adns_AddressDataDelay( void );
  * Read or Write).
  */
 void Adns_ReadSubsequentDelay( void );
+
+
+/**
+ * Retrieves the deltas accumulated since the last call of this
+ * function.
+ *
+ * @return
+ *		Motion deltas since the last call.
+ */
+ADNS_LONG_DELTAS Adns_GetDeltas( void );
 
 
 #endif	/* !__ADNS3530_H__ */
