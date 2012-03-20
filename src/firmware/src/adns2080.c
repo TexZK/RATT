@@ -54,8 +54,8 @@ volatile ADNS_LONG_DELTAS	adns_deltas;			/// Deltas accumulator
 
 near ADNS_STATUS	adns_status;		/// Device status
 
-#pragma udata data_adns_global
 
+#pragma udata data_adns_global
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//

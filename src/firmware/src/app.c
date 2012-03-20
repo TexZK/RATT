@@ -104,14 +104,14 @@ APP_HID_TX_REPORT				app_hidTxReport;	/// HID report
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
-#pragma udata data_app_global
-
-volatile unsigned long			app_timestamp;
-
-
 #pragma udata access data_app_global_acs
 
 near volatile APP_STATUS		app_status;
+
+
+#pragma udata data_app_global
+
+volatile unsigned long			app_timestamp;
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -313,27 +313,24 @@ void ProcessIO( void )
 {
 	Debug_Flush();					// Flush the debug console, to speed-up further messages
 	
+	// Process modules
+    IncEnc_Service();				// Handle incremental encoder tasks
+    Adns_Service();					// Handle ADNS tasks
+	
 	// User Application USB tasks
     if ( USBDeviceState < CONFIGURED_STATE || USBSuspendControl == 1 ) {
 		return;
 	}
     
-    // Process modules
-    IncEnc_Service();				// Handle incremental encoder tasks
-    Adns_Service();					// Handle ADNS tasks
-	
-	// Build & transfer HID report
+    // Build & transfer HID report
 	App_Lock();
 	if ( incenc_status.bits.dataReady && adns_status.dataReady && Usb_TxReady() ) {
 		App_Unlock();
 		
+		++app_hidTxReport.id;
+		app_hidTxReport.timestamp = App_GetTimestamp();
 		app_hidTxReport.mouseMotion = Adns_GetDeltas();
 		app_hidTxReport.incencMotion = IncEnc_GetDelta();
-		
-		++app_hidTxReport.id;
-		App_Lock();
-		app_hidTxReport.timestamp = app_timestamp;
-		App_Unlock();
 		
 		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
 		Usb_TxBufferedPacket();
@@ -396,6 +393,16 @@ void App_WaitButtonPress( void )
 	while ( BUTTON_PIN ) {		// Wait for button press
 		DelayMs( 10 );			// Debounce button press
 	}
+}
+
+
+unsigned long App_GetTimestamp( void )
+{
+	unsigned long timestamp;
+	App_Lock();
+	timestamp = app_timestamp;
+	App_Unlock();
+	return timestamp;
 }
 
 

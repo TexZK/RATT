@@ -28,8 +28,6 @@
 // GLOBAL VARIABLES
 #pragma udata data_leds_global
 
-#pragma udata access data_leds_global_acs
-
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL PROTOTYPES

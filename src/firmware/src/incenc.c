@@ -39,11 +39,12 @@ volatile INCENC_DELTA		incenc_delta;		/// Delta accumulator
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
-#pragma udata data_incenc_global
-
 #pragma udata access data_incenc_global_acs
 
 near volatile INCENC_STATUS	incenc_status;
+
+
+#pragma udata data_incenc_global
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
