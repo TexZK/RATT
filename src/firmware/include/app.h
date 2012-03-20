@@ -50,7 +50,8 @@ typedef	union {
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
 
-extern near volatile APP_STATUS	app_status;				/// Application status
+extern volatile unsigned long	app_timestamp;		/// Application timestamp
+extern near volatile APP_STATUS	app_status;			/// Application status
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -113,15 +114,15 @@ void App_Initialize( void );
 
 
 /**
- * Disables interrupts at higher priority than the caller.
+ * Shorthand for App_DisableGlobalInterrupts().
  */
-void App_Lock( void );
+#define	App_Lock()			App_DisableGlobalInterrupts()
 
 
 /**
- * Enables interrupts at higher priority than the caller.
+ * Shorthand for App_EnableGlobalInterrupts().
  */
-void App_Unlock( void );
+#define	App_Unlock()		App_EnableGlobalInterrupts()
 
 
 /**

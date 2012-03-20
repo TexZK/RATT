@@ -48,6 +48,8 @@
 #include "debug.h"
 #include "incenc.h"
 
+#include <string.h>
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // FUSE CONFIGURATION
@@ -82,13 +84,30 @@
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
+// DEFINITIONS
+
+// Structures
+typedef struct {
+	unsigned long		id;							/// Report ID
+	unsigned long		timestamp;					/// Report timestamp
+	ADNS_LONG_DELTAS	mouseMotion;				/// Motion from mouse sensor
+	INCENC_DELTA		incencMotion;				/// Motion from incremental encoder
+} APP_HID_TX_REPORT;								/// HID TX report
+
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL VARIABLES
 #pragma udata data_app_local
+
+APP_HID_TX_REPORT				app_hidTxReport;	/// HID report
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
 #pragma udata data_app_global
+
+volatile unsigned long			app_timestamp;
+
 
 #pragma udata access data_app_global_acs
 
@@ -267,7 +286,6 @@ void InitializeSystem( void )
     Debug_PrintConst_NewLine();
     Debug_PrintConst_NewLine();
     Debug_PrintConst_Dots();
-    Debug_PrintRom_( "INIT " );
     Debug_PrintConst_Ok();
     Debug_PrintConst_NewLine();
     Debug_PrintConst_NewLine();
@@ -304,11 +322,28 @@ void ProcessIO( void )
     IncEnc_Service();				// Handle incremental encoder tasks
     Adns_Service();					// Handle ADNS tasks
 	
-	// TODO: Build & transfer HID packets here and not in ADNS service
+	// Build & transfer HID report
+	App_Lock();
+	if ( incenc_status.bits.dataReady && adns_status.dataReady && Usb_TxReady() ) {
+		App_Unlock();
+		
+		app_hidTxReport.mouseMotion = Adns_GetDeltas();
+		app_hidTxReport.incencMotion = IncEnc_GetDelta();
+		
+		++app_hidTxReport.id;
+		App_Lock();
+		app_hidTxReport.timestamp = app_timestamp;
+		App_Unlock();
+		
+		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
+		Usb_TxBufferedPacket();
+	} else {
+		App_Unlock();
+	}
 	
 	// Check if data was received from the host
     if ( Usb_RxReady() ) {
-		// TODO: Process ReceivedDataBuffer[*]
+		// TODO: Process usb_rxBuffer[*]
         
 		// Re-arm the OUT endpoint for the next packet
 		Usb_RxBufferedPacket();
@@ -350,36 +385,6 @@ void main( void )
     	
     	ProcessIO();        
     }
-}
-
-
-void App_Lock( void )
-{
-#if 0
-	if ( !app_status.bits.inHighIrq ) {
-		if ( !app_status.bits.inLowIrq ) {
-			App_DisableLowInterrupts();
-		}
-		App_DisableHighInterrupts();
-	}
-#else
-	App_DisableGlobalInterrupts();
-#endif
-}
-
-
-void App_Unlock( void )
-{
-#if 0
-	if ( !app_status.bits.inHighIrq ) {
-		App_EnableHighInterrupts();
-		if ( !app_status.bits.inLowIrq ) {
-			App_EnableLowInterrupts();
-		}
-	}
-#else
-	App_EnableGlobalInterrupts();
-#endif
 }
 
 

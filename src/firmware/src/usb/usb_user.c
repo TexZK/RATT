@@ -256,6 +256,11 @@ void USBCB_SOF_Handler( void )
      * No need to clear UIRbits.SOFIF to 0 here. Callback caller is already
      * doing that.
      */
+    
+    // Increment the timestamp
+    App_Lock();
+    ++app_timestamp;
+    App_Unlock();
 }
 
 

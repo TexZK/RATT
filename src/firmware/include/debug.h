@@ -18,29 +18,29 @@
 
 // Strings
 #define	USE_DEBUG_PRINT_ROM
-#define	USE_DEBUG_PRINT_RAM
+//#define	USE_DEBUG_PRINT_RAM
 
 // Integral values
 #define	USE_DEBUG_PRINT_HEX
-#define	USE_DEBUG_PRINT_U8
-#define	USE_DEBUG_PRINT_S8					// Requires U8
-#define	USE_DEBUG_PRINT_U16					// Requires U8
-#define	USE_DEBUG_PRINT_S16					// Requires U16, U8
+//#define	USE_DEBUG_PRINT_U8
+//#define	USE_DEBUG_PRINT_S8					// Requires U8
+//#define	USE_DEBUG_PRINT_U16					// Requires U8
+//#define	USE_DEBUG_PRINT_S16					// Requires U16
 
 // Constants in ROM
 #define	USE_DEBUG_PRINTCONST_NEWLINE
-#define	USE_DEBUG_PRINTCONST_INITIALIZING
-#define	USE_DEBUG_PRINTCONST_CHECKING
+//#define	USE_DEBUG_PRINTCONST_INITIALIZING
+//#define	USE_DEBUG_PRINTCONST_CHECKING
 #define	USE_DEBUG_PRINTCONST_EVENTBEGIN
 #define	USE_DEBUG_PRINTCONST_EVENTEND
 #define	USE_DEBUG_PRINTCONST_DOTS
 #define	USE_DEBUG_PRINTCONST_OK
 #define	USE_DEBUG_PRINTCONST_FAIL
 #define	USE_DEBUG_PRINTCONST_EQ
-#define	USE_DEBUG_PRINTCONST_0X
+//#define	USE_DEBUG_PRINTCONST_0X
 
 // Use placeholder when not printing the actual value
-#define	USE_DEBUG_PRINTCONST_PLACEHOLDER
+//#define	USE_DEBUG_PRINTCONST_PLACEHOLDER
 
 #endif
 
