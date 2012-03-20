@@ -258,9 +258,7 @@ void USBCB_SOF_Handler( void )
      */
     
     // Increment the timestamp
-    App_Lock();
     ++app_timestamp;
-    App_Unlock();
 }
 
 

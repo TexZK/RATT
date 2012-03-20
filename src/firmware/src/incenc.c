@@ -70,6 +70,7 @@ void IncEnc_Initialize( void )
 	CM1CON0 = 0;						// Reset comparators
 	CM2CON0 = 0;
 	CM2CON1 = 0;
+	CCP1CON = 0;						// Do not use Capture/Compare/PWM!
 	
 	// Setup pins
 	INCENC_ANS_A = 1;					// Set as analog pins
@@ -89,6 +90,7 @@ void IncEnc_Initialize( void )
 	CM1CON0bits.C1CH1 = 0;
 	CM1CON0bits.C1SP = 1;				// High-speed
 	CM1CON0bits.C1POL = 1;				// Inverted output (= input pin)
+	CM2CON1bits.C1HYS = 1;				// Enable hysteresis
 	CM1CON0bits.C1ON = 1;				// Enable Comparator 1
 	
 	// Setup Comparator 2
@@ -98,6 +100,7 @@ void IncEnc_Initialize( void )
 	CM2CON0bits.C2CH1 = 1;
 	CM2CON0bits.C2SP = 1;				// High-speed
 	CM2CON0bits.C2POL = 1;				// Inverted output (= input pin)
+	CM2CON1bits.C2HYS = 1;				// Enable hysteresis
 	CM2CON0bits.C2ON = 1;				// Enable Comparator 2
 	
 	// Reset variables
@@ -107,6 +110,8 @@ void IncEnc_Initialize( void )
 	// Enable interrupts
 	INCENC_INT_IP_A = INCENC_INT_IP_VALUE;
 	INCENC_INT_IP_B = INCENC_INT_IP_VALUE;
+	OneUsDelay();
+	OneUsDelay();
 	IncEnc_EnableInterrupts();
 }
 
@@ -130,15 +135,17 @@ INCENC_DELTA IncEnc_GetDelta( void )
 
 void IncEnc_ChangeCallback( void )
 {
-	static unsigned char state;
-	
-	// Clear interrupt flags (mutually exclusive, both can be cleared)
-	INCENC_INT_IF_A = 0;
-	INCENC_INT_IF_B = 0;
+	static volatile unsigned char state, dummy;
 	
 	// Sample the current state
 	state = (incenc_status.value >> 2) & 0b0011;	// Old state in bits 1:0
 	state |= (CM2CON1 >> 4) & 0b1100;				// Current state in bits 3:2
+	
+	// Clear the mismatch condition and interrupt flags
+	dummy = CM1CON0;
+	dummy = CM2CON0;
+	INCENC_INT_IF_A = 0;
+	INCENC_INT_IF_B = 0;
 	
 	/* [AB]:
 	 * Clockwise pattern:
@@ -176,10 +183,9 @@ void IncEnc_ChangeCallback( void )
 		}
 	}
 	
-	incenc_status.value &= 0x0F;
+	incenc_status.value &= 0xF0;
 	incenc_status.value |= state;
 	incenc_status.bits.dataReady = 1;
-	RED_LED = !RED_LED;
 }
 
 

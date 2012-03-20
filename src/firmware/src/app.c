@@ -346,6 +346,7 @@ void ProcessIO( void )
 		Usb_RxBufferedPacket();
 	}
 	
+	DelayMs(50);
 	GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
 }
 
