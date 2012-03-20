@@ -171,13 +171,7 @@ void IncEnc_ChangeCallback( void )
 		case 0b0110:
 		case 0b0011:
 		case 0b1001: {
-			// Direction has changed
-			incenc_status.bits.direction = !incenc_status.bits.direction;
-			if ( incenc_status.bits.direction ) {
-				incenc_delta += 2;
-			} else {
-				incenc_delta += 2;
-			}
+			// Invalid states
 		}
 	}
 	
