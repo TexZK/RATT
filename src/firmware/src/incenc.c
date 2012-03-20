@@ -34,11 +34,7 @@
 // LOCAL VARIABLES
 #pragma udata data_incenc_local
 
-volatile signed short	incenc_delta;		/// Delta accumulator
-
-#pragma udata access data_incenc_local_acs
-
-near unsigned char		incenc_state;		/// Incremental state ([3:2] = current inputs, [1:0] = last inputs)
+volatile INCENC_DELTA		incenc_delta;		/// Delta accumulator
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -46,6 +42,8 @@ near unsigned char		incenc_state;		/// Incremental state ([3:2] = current inputs
 #pragma udata data_incenc_global
 
 #pragma udata access data_incenc_global_acs
+
+near volatile INCENC_STATUS	incenc_status;
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -102,7 +100,7 @@ void IncEnc_Initialize( void )
 	CM2CON0bits.C2ON = 1;				// Enable Comparator 2
 	
 	// Reset variables
-	incenc_state = 0;
+	incenc_status.value = 0;
 	incenc_delta = 0;
 	
 	// Enable interrupts
@@ -114,44 +112,32 @@ void IncEnc_Initialize( void )
 
 void IncEnc_Service( void )
 {
-	static signed short last = 0;
-	App_Lock();
-	if ( incenc_delta != last ) {
-		signed short delta = incenc_delta - last;
-		last = incenc_delta;
-		App_Unlock();
-		
-		// Print a debug event
-		Debug_PrintConst_EventBegin();
-		Debug_PrintChar( 'e' );
-		Debug_PrintS16( delta );
-		Debug_PrintConst_EventEnd();
-	} else {
-		App_Unlock();
-	}
+	// Nothing to do
 }
 
 
-signed short IncEnc_GetDelta( void )
+INCENC_DELTA IncEnc_GetDelta( void )
 {
-	signed short value;
+	INCENC_DELTA delta;
 	App_Lock();
-	value = incenc_delta;
+	delta = incenc_delta;
 	incenc_delta = 0;
 	App_Unlock();
-	return value;
+	return delta;
 }
 
 
 void IncEnc_ChangeCallback( void )
 {
+	static unsigned char state;
+	
 	// Clear interrupt flags (mutually exclusive, both can be cleared)
 	INCENC_INT_IF_A = 0;
 	INCENC_INT_IF_B = 0;
 	
 	// Sample the current state
-	incenc_state = (incenc_state >> 2) & 0b0011;	// Old state in bits 1:0
-	incenc_state |= (CM2CON1 >> 4) & 0b1100;		// Current state in bits 3:2
+	state = (incenc_status.value >> 2) & 0b0011;	// Old state in bits 1:0
+	state |= (CM2CON1 >> 4) & 0b1100;				// Current state in bits 3:2
 	
 	/* [AB]:
 	 * Clockwise pattern:
@@ -162,23 +148,42 @@ void IncEnc_ChangeCallback( void )
 	 *
 	 * 0bNNLL: LL = old, NN = new
 	 */
-	switch ( incenc_state ) {
+	switch ( state ) {
 		case 0b0100:
 		case 0b1101:
 		case 0b1011:
 		case 0b0010: {
+			// Going forward
 			++incenc_delta;
+			incenc_status.bits.direction = 1;
 			break;
 		}
 		case 0b1000:
 		case 0b1110:
 		case 0b0111:
 		case 0b0001: {
+			// Going backwards
 			--incenc_delta;
+			incenc_status.bits.direction = 0;
 			break;
+		}
+		case 0b1100:
+		case 0b0110:
+		case 0b0011:
+		case 0b1001: {
+			// Direction has changed
+			incenc_status.bits.direction = !incenc_status.bits.direction;
+			if ( incenc_status.bits.direction ) {
+				incenc_delta += 2;
+			} else {
+				incenc_delta += 2;
+			}
 		}
 	}
 	
+	incenc_status.value &= 0x0F;
+	incenc_status.value |= state;
+	incenc_status.bits.dataReady = 1;
 	RED_LED = !RED_LED;
 }
 

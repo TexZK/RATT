@@ -46,8 +46,25 @@
 #define	INCENC_INT_IP_VALUE		1					/// Interrupts priority (0 = low, 1 = high)
 
 
+// Types
+typedef unsigned long			INCENC_DELTA;		/// Incremental encoder delta
+
+typedef union {
+	struct {
+		unsigned	oldState	: 2;				/// Old state
+		unsigned	curState	: 2;				/// Current state
+		unsigned				: 2;
+		unsigned	direction	: 1;				/// Direction (1 = forward, 0 = backward)
+		unsigned	dataReady	: 1;				/// Data ready to be processed
+	} bits;
+	unsigned char	value;							/// Integral value
+} INCENC_STATUS;									/// Incremental encoder module status
+
+
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
+
+extern near volatile INCENC_STATUS	incenc_status;	/// Incremental encoder module status
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -71,7 +88,7 @@ void IncEnc_Service( void );
  * @return
  *		The counter delta since the last call.
  */
-signed short IncEnc_GetDelta( void );
+INCENC_DELTA IncEnc_GetDelta( void );
 
 
 /**
