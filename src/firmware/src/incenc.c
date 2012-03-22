@@ -10,9 +10,7 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // CONFIGURATION
 
-//#ifndef	__DEBUG
 #define	DONT_USE_DEBUG_CONSOLE
-//#endif
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -152,7 +150,6 @@ void IncEnc_ChangeCallback( void )
 	 *  [00] -> [01] -> [11] -> [10] -> [00]
 	 * Counter-clockwise pattern:
 	 *  [00] -> [10] -> [11] -> [01] -> [00]
-	 * We do not care about direction changes
 	 *
 	 * 0bNNLL: LL = old, NN = new
 	 */
@@ -174,12 +171,6 @@ void IncEnc_ChangeCallback( void )
 			--incenc_delta;
 			incenc_status.bits.direction = 0;
 			break;
-		}
-		case 0b1100:
-		case 0b0110:
-		case 0b0011:
-		case 0b1001: {
-			// Invalid states
 		}
 	}
 	

@@ -9,15 +9,21 @@
  */
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
+// CONFIGURATION
+
+#define	DISABLE_THIS_MODULE
+
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
 #include "Compiler.h"
 #include "app.h"
 
-#ifdef	DONT_USE_DEBUG_CONSOLE		// Always delcare prototypes and macros
-#undef	DONT_USE_DEBUG_CONSOLE
-#endif
 #include "debug.h"
+#if defined(DISABLE_THIS_MODULE) && !defined(DONT_USE_DEBUG_CONSOLE)
+#define	DONT_USE_DEBUG_CONSOLE
+#endif
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -101,6 +107,7 @@ void Debug_Initialize( void )
 	INTCONbits.GIEH = 1;		// Enable interrupts
     INTCONbits.GIEL = 1;
     
+#ifndef	DONT_USE_DEBUG_CONSOLE
 	// Print a welcome message
 	Debug_PrintRom_( "=> MOUSE SENSOR HID CONTROLLER <=" );
     Debug_PrintConst_NewLine();
@@ -122,6 +129,7 @@ void Debug_Initialize( void )
     Debug_PrintConst_Dots();
     Debug_PrintConst_Ok();
     Debug_PrintConst_NewLine();
+#endif
 }
 
 	
@@ -159,6 +167,7 @@ void Debug_PrintRam( const far ram char * text )
 void Debug_PrintChar( char value )
 {
 	DisableTxInt();
+#ifndef	DONT_USE_DEBUG_CONSOLE
 	App_Lock();
 	if ( debug_uartTxBufferFree == DEBUG_TX_BUFFER_SIZE && DEBUG_UART_FLAG_TX ) {
 		// SW & HW buffers are free, send directly to the USART
@@ -183,6 +192,7 @@ void Debug_PrintChar( char value )
 		EnableTxInt();		// Further data to process
 	}
 	App_Unlock();
+#endif
 }
 
 
@@ -303,6 +313,7 @@ void Debug_Truncate( void )
 	
 void Debug_Flush( void )
 {
+#ifndef	DONT_USE_DEBUG_CONSOLE
 	DisableTxInt();
 	App_Lock();
 	while ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
@@ -319,6 +330,9 @@ void Debug_Flush( void )
 	debug_uartTxBufferTail = 0;
 	debug_uartTxBufferFree = DEBUG_TX_BUFFER_SIZE;
 	App_Unlock();
+#else
+	Debug_Truncate();
+#endif
 }
 
 
@@ -326,6 +340,7 @@ void Debug_TxIntCallback( void )
 {
 	// Send the next character
 	DisableTxInt();
+#ifndef	DONT_USE_DEBUG_CONSOLE
 	App_Lock();
 	if ( debug_uartTxBufferFree < DEBUG_TX_BUFFER_SIZE ) {
 		while ( !DEBUG_UART_FLAG_TX );		// Should always be true
@@ -341,6 +356,7 @@ void Debug_TxIntCallback( void )
 		}
 	}
 	App_Unlock();
+#endif
 }
 
 

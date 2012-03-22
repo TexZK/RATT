@@ -30,6 +30,8 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // CONFIGURATION
 
+#define	DONT_USE_DEBUG_CONSOLE
+
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
@@ -197,20 +199,20 @@ void HighPriorityISR( void )
 	
 	// Check for incremental encoder motion
 	// Note: Mutually exclusive thanks to the Gray code
-	if ( INCENC_INT_IE_A ) {
-		if ( INCENC_INT_IF_A ) {
+	if ( INCENC_INT_IF_A ) {
+		if ( INCENC_INT_IE_A ) {
 			IncEnc_ChangeCallback();
 		}
 	}
-	if ( INCENC_INT_IE_B ) {
-		if ( INCENC_INT_IF_B ) {
+	if ( INCENC_INT_IF_B ) {
+		if ( INCENC_INT_IE_B ) {
 			IncEnc_ChangeCallback();
 		}
 	}
 	
 	// Check if the motion sensor has detected motion
-	if ( ADNS_INT_IE ) {
-		if ( ADNS_INT_IF ) {
+	if ( ADNS_INT_IF ) {
+		if ( ADNS_INT_IE ) {
 			Adns_MotionCallback();
 		}
 	}
@@ -224,8 +226,8 @@ void LowPriorityISR( void )
 	app_status.bits.inLowIrq = 1;
 	
 	// Process transmitted debug console data
-	if ( DEBUG_UART_INT_TX ) {
-		if ( DEBUG_UART_FLAG_TX ) {
+	if ( DEBUG_UART_FLAG_TX ) {
+		if ( DEBUG_UART_INT_TX ) {
 			Debug_TxIntCallback();
 		}
 	}
@@ -236,8 +238,8 @@ void LowPriorityISR( void )
 	#endif
 	
 	// Process received debug console data
-	if ( DEBUG_UART_INT_RX ) {
-		if ( DEBUG_UART_FLAG_RX ) {
+	if ( DEBUG_UART_FLAG_RX ) {
+		if ( DEBUG_UART_INT_RX ) {
 			Debug_RxIntCallback();
 		}
 	}
@@ -346,8 +348,10 @@ void ProcessIO( void )
 		Usb_RxBufferedPacket();
 	}
 	
-	DelayMs(50);
+#ifdef	__DEBUG						// Remove when releasing
+	DelayMs(50);					// Human-friendly flash delay
 	GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
+#endif
 }
 
 

@@ -246,6 +246,8 @@ firmware design flexibility.
 #include "usb/usb.h"
 #include "bootloader.h"
 #include "app.h"
+
+#define	DONT_USE_DEBUG_CONSOLE
 #include "debug.h"
 
 #include "usb/usb_device_local.h"
@@ -418,6 +420,7 @@ static void USBStallHandler(void);
 
 static void PrintUsbStateChange( void )
 {
+#ifndef	DONT_USE_DEBUG_CONSOLE
 	Debug_Flush();						// Workaround: we should NOT write inside interrupts...
 	Debug_PrintConst_EventBegin();
 	Debug_PrintRom_( "USB_" );
@@ -457,6 +460,7 @@ static void PrintUsbStateChange( void )
 		}
 	}
 	Debug_PrintConst_EventEnd();
+#endif
 }
 
 
