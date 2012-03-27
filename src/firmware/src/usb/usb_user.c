@@ -8,7 +8,7 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // CONFIGURATION
 
-#define	DONT_USE_DEBUG_CONSOLE
+//#define	DONT_USE_DEBUG_CONSOLE
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -366,9 +366,11 @@ void USBCBSendResume( void )
 
 void Usb_UserInit( void )
 {
+#ifndef	DONT_USE_DEBUG_CONSOLE
 	Debug_PrintConst_Initializing();
     Debug_PrintRom_( "USB" );
     Debug_PrintConst_Dots();
+#endif
     
     // Reset variables
 	usb_outHandle = 0;
@@ -376,9 +378,11 @@ void Usb_UserInit( void )
 	
 	// Initialize USB module
     USBDeviceInit();
-    
+
+#ifndef	DONT_USE_DEBUG_CONSOLE    
     Debug_PrintConst_Ok();
     Debug_PrintConst_NewLine();
+#endif
 }
 
 

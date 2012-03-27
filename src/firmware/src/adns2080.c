@@ -369,6 +369,8 @@ void Adns_Service( void )
 		adns_deltas.dy += split.value;
 		
 		adns_status.dataReady = 1;
+		RED_LED = LED_OFF;
+		YELLOW_LED = LED_ON;
 		App_Unlock();
 	}
 }
@@ -378,6 +380,7 @@ void Adns_MotionCallback( void )
 {
 	ADNS_INT_IF = 0;
 	adns_status.motionInt = 1;
+	RED_LED = LED_ON;
 }	
 
 

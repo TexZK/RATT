@@ -313,7 +313,17 @@ void InitializeSystem( void )
  */
 void ProcessIO( void )
 {
+	static unsigned short flashTimeStamp = 0;
+	unsigned short timeStamp;
+	
 	Debug_Flush();					// Flush the debug console, to speed-up further messages
+	
+	// Flash each 200ms when configured
+	timeStamp = App_GetTimestamp();
+	if ( timeStamp - flashTimeStamp >= 200 ) {
+		GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
+		flashTimeStamp = timeStamp;
+	}
 	
 	// Process modules
     IncEnc_Service();				// Handle incremental encoder tasks
@@ -336,6 +346,7 @@ void ProcessIO( void )
 		
 		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
 		Usb_TxBufferedPacket();
+		YELLOW_LED = LED_OFF;
 	} else {
 		App_Unlock();
 	}
@@ -347,11 +358,6 @@ void ProcessIO( void )
 		// Re-arm the OUT endpoint for the next packet
 		Usb_RxBufferedPacket();
 	}
-	
-#ifdef	__DEBUG						// Remove when releasing
-	DelayMs(50);					// Human-friendly flash delay
-	GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
-#endif
 }
 
 
