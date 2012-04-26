@@ -29,8 +29,8 @@
 #pragma udata usbram2
 
 // USB buffers
-unsigned char	usb_txBuffer[64];
-unsigned char	usb_rxBuffer[64];
+unsigned char	usb_txBuffer[ USB_TXBUFFER_SIZE ];
+unsigned char	usb_rxBuffer[ USB_RXBUFFER_SIZE ];
 
 
 #pragma udata data_sys_global
@@ -445,11 +445,11 @@ BOOL USER_USB_CALLBACK_EVENT_HANDLER( USB_EVENT event, void * pdata, WORD size )
 
 void Usb_TxBufferedPacket( void )
 {
-	usb_inHandle = HIDTxPacket( HID_EP, (BYTE *)&usb_txBuffer[0], sizeof(usb_txBuffer) );
+	usb_inHandle = HIDTxPacket( HID_EP, (BYTE *)&usb_txBuffer[0], USB_TXBUFFER_SIZE );
 }
 
 
 void Usb_RxBufferedPacket( void )
 {
-	usb_outHandle = HIDRxPacket( HID_EP, (BYTE *)&usb_rxBuffer[0], sizeof(usb_rxBuffer) );
+	usb_outHandle = HIDRxPacket( HID_EP, (BYTE *)&usb_rxBuffer[0], USB_RXBUFFER_SIZE );
 }

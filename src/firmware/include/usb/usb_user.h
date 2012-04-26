@@ -25,15 +25,18 @@
 #pragma udata usbram2
 
 // USB buffers
-extern unsigned char	usb_txBuffer[64];	/// Device->Host data chunk
-extern unsigned char	usb_rxBuffer[64];	/// Host->Device data chunk
+#define	USB_TXBUFFER_SIZE	64								///< Device->Host buffer size, in bytes
+#define	USB_RXBUFFER_SIZE	64								///< Host->Device buffer size, in bytes
+
+extern unsigned char	usb_txBuffer[ USB_TXBUFFER_SIZE ];	///< Device->Host data chunk
+extern unsigned char	usb_rxBuffer[ USB_RXBUFFER_SIZE ];	///< Host->Device data chunk
 
 
 #pragma udata data_sys_global
 
 // Handles
-extern USB_HANDLE		usb_outHandle;		/// Output handle
-extern USB_HANDLE		usb_inHandle;		/// Input handle
+extern USB_HANDLE		usb_outHandle;		///< Output handle
+extern USB_HANDLE		usb_inHandle;		///< Input handle
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//

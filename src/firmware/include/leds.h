@@ -19,31 +19,30 @@
 // GLOBAL DEFINITIONS
 
 // Pins configuration
-#define	LEDS_PORT				PORTC				/// LEDs port
-#define	LEDS_TRIS				TRISC				/// LEDs port tristate
-#define	LEDS_MASK				0b00111000			/// LEDs port/tristate mask
+#define	LEDS_PORT				PORTC				///< LEDs port
+#define	LEDS_TRIS				TRISC				///< LEDs port tristate
+#define	LEDS_MASK				0b00111000			///< LEDs port/tristate mask
 
-#define	LEDS_TRIS_GREEN			TRISCbits.TRISC3	/// Green LED pin tristate
-#define	LEDS_TRIS_YELLOW		TRISCbits.TRISC4	/// Yellow LED pin tristate
-#define	LEDS_TRIS_RED			TRISCbits.TRISC5	/// Red LED pin tristate
+#define	LEDS_TRIS_GREEN			TRISCbits.TRISC3	///< Green LED pin tristate
+#define	LEDS_TRIS_YELLOW		TRISCbits.TRISC4	///< Yellow LED pin tristate
+#define	LEDS_TRIS_RED			TRISCbits.TRISC5	///< Red LED pin tristate
 
-#define	LEDS_PIN_GREEN			PORTCbits.RC3		/// Green LED pin
-#define	LEDS_PIN_YELLOW			PORTCbits.RC4		/// Yellow LED pin
-#define	LEDS_PIN_RED			PORTCbits.RC5		/// Red LED pin
+#define	LEDS_PIN_GREEN			PORTCbits.RC3		///< Green LED pin
+#define	LEDS_PIN_YELLOW			PORTCbits.RC4		///< Yellow LED pin
+#define	LEDS_PIN_RED			PORTCbits.RC5		///< Red LED pin
 
-#define	LEDS_LAT_GREEN			LATCbits.LATC3		/// Green LED latch
-
-#define	LEDS_LAT_YELLOW			LATCbits.LATC4		/// Yellow LED latch
-#define	LEDS_LAT_RED			LATCbits.LATC5		/// Red LED latch
+#define	LEDS_LAT_GREEN			LATCbits.LATC3		///< Green LED latch
+#define	LEDS_LAT_YELLOW			LATCbits.LATC4		///< Yellow LED latch
+#define	LEDS_LAT_RED			LATCbits.LATC5		///< Red LED latch
 
 
 // Shorthands
-#define	GREEN_LED				LEDS_LAT_GREEN
-#define	YELLOW_LED				LEDS_LAT_YELLOW
-#define	RED_LED					LEDS_LAT_RED
+#define	GREEN_LED				LEDS_LAT_GREEN		///< Shortcut for green LED bit
+#define	YELLOW_LED				LEDS_LAT_YELLOW		///< Shortcut for yellow LED bit
+#define	RED_LED					LEDS_LAT_RED		///< Shortcut for red LED bit
 
-#define	LED_ON					0					/// Incoming current
-#define	LED_OFF					1					/// Pull-up
+#define	LED_ON					0					///< Incoming current, LED lit
+#define	LED_OFF					1					///< Pull-up, LED off
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//

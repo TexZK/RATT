@@ -299,8 +299,8 @@ void Adns_Initialize( void )
 	adns_status.motionInt = 0;
 	adns_status.dataReady = 0;
 	
-	adns_deltas.dx = 0;
-	adns_deltas.dy = 0;
+	adns_deltas.dx = 0L;
+	adns_deltas.dy = 0L;
 	
 	Adns_PowerUpDelay();
 	Debug_PrintConst_Ok();
@@ -565,6 +565,15 @@ ADNS_LONG_DELTAS Adns_GetDeltas( void )
 	deltas = adns_deltas;
 	App_Unlock();
 	return deltas;
+}
+
+
+void Adns_ClearDeltas( void )
+{
+	App_Lock();
+	adns_deltas.dx = 0L;
+	adns_deltas.dy = 0L;
+	App_Unlock();
 }
 
 // EOF

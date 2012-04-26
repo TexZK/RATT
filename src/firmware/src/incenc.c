@@ -103,7 +103,7 @@ void IncEnc_Initialize( void )
 	
 	// Reset variables
 	incenc_status.value = 0;
-	incenc_delta = 0;
+	incenc_delta = 0L;
 	
 	// Enable interrupts
 	INCENC_INT_IP_A = INCENC_INT_IP_VALUE;
@@ -125,9 +125,16 @@ INCENC_DELTA IncEnc_GetDelta( void )
 	INCENC_DELTA delta;
 	App_Lock();
 	delta = incenc_delta;
-	incenc_delta = 0;
 	App_Unlock();
 	return delta;
+}
+
+
+void IncEnc_ClearDelta( void )
+{
+	App_Lock();
+	incenc_delta = 0L;
+	App_Unlock();
 }
 
 

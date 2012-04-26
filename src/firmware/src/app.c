@@ -88,32 +88,24 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // DEFINITIONS
 
-// Structures
-typedef struct {
-	unsigned long		id;							/// Report ID
-	unsigned long		timestamp;					/// Report timestamp
-	ADNS_LONG_DELTAS	mouseMotion;				/// Motion from mouse sensor
-	INCENC_DELTA		incencMotion;				/// Motion from incremental encoder
-} APP_HID_TX_REPORT;								/// HID TX report
-
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL VARIABLES
 #pragma udata data_app_local
 
-APP_HID_TX_REPORT				app_hidTxReport;	/// HID report
+APP_HID_TX_REPORT			app_hidTxReport;		///< HID report
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
 #pragma udata access data_app_global_acs
 
-near volatile APP_STATUS		app_status;
+near volatile APP_STATUS	app_status;				///< Application status
 
 
 #pragma udata data_app_global
 
-volatile unsigned long			app_timestamp;
+volatile unsigned long		app_timestamp;			///< Application timestamp
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -293,7 +285,7 @@ void InitializeSystem( void )
     Debug_PrintConst_NewLine();
     Debug_Flush();
     
-    GREEN_LED = LED_ON;				// Green LED for initialization completed
+    GREEN_LED = LED_ON;				// Only green LED for initialization completed
     YELLOW_LED = LED_OFF;
     RED_LED = LED_OFF;
     
@@ -318,13 +310,6 @@ void ProcessIO( void )
 	
 	Debug_Flush();					// Flush the debug console, to speed-up further messages
 	
-	// Flash each 200ms when configured
-	timeStamp = App_GetTimestamp();
-	if ( timeStamp - flashTimeStamp >= 200 ) {
-		GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
-		flashTimeStamp = timeStamp;
-	}
-	
 	// Process modules
     IncEnc_Service();				// Handle incremental encoder tasks
     Adns_Service();					// Handle ADNS tasks
@@ -334,7 +319,14 @@ void ProcessIO( void )
 		return;
 	}
     
-    // Build & transfer HID report
+    // Flash each 200ms when configured
+	timeStamp = App_GetTimestamp();
+	if ( timeStamp - flashTimeStamp >= 200 ) {
+		GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
+		flashTimeStamp = timeStamp;
+	}
+	
+	// Build & transfer HID report
 	App_Lock();
 	if ( incenc_status.bits.dataReady && adns_status.dataReady && Usb_TxReady() ) {
 		App_Unlock();
@@ -342,7 +334,9 @@ void ProcessIO( void )
 		++app_hidTxReport.id;
 		app_hidTxReport.timestamp = App_GetTimestamp();
 		app_hidTxReport.mouseMotion = Adns_GetDeltas();
+		Adns_ClearDeltas();
 		app_hidTxReport.incencMotion = IncEnc_GetDelta();
+		IncEnc_ClearDelta();
 		
 		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
 		Usb_TxBufferedPacket();

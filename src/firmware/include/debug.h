@@ -71,17 +71,17 @@ typedef unsigned short	DEBUG_UART_BUFFER_INDEX_TYPE;
 
 
 // Interrupt definitions
-#define	DEBUG_UART_INT_TX			PIE1bits.TXIE		/// TX interrupt switch
-#define	DEBUG_UART_INT_RX			PIE1bits.RCIE		/// RX interrupt switch
-#define	DEBUG_UART_FLAG_TX			PIR1bits.TXIF		/// TX interrupt flag
-#define	DEBUG_UART_FLAG_RX			PIR1bits.RCIF		/// RX interrupt flag
+#define	DEBUG_UART_INT_TX			PIE1bits.TXIE		///< TX interrupt switch
+#define	DEBUG_UART_INT_RX			PIE1bits.RCIE		///< RX interrupt switch
+#define	DEBUG_UART_FLAG_TX			PIR1bits.TXIF		///< TX interrupt flag
+#define	DEBUG_UART_FLAG_RX			PIR1bits.RCIF		///< RX interrupt flag
 
 
 // Pin definitions
-#define	DEBUG_TRIS_TX				TRISBbits.TRISB7	/// TX tristate
-#define	DEBUG_TRIS_RX				TRISBbits.TRISB5	/// RX tristate
-#define	DEBUG_PIN_TX				PORTBbits.RB7		/// TX pin
-#define	DEBUG_PIN_RX				PORTBbits.RB5		/// RX pin
+#define	DEBUG_TRIS_TX				TRISBbits.TRISB7	///< TX tristate
+#define	DEBUG_TRIS_RX				TRISBbits.TRISB5	///< RX tristate
+#define	DEBUG_PIN_TX				PORTBbits.RB7		///< TX pin
+#define	DEBUG_PIN_RX				PORTBbits.RB5		///< RX pin
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
