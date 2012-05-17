@@ -45,158 +45,455 @@
 %
 % CAUTION:   The first reference to a figure/table in the text should be formatted fat.
 %
+%\begin{figurehere}
+%  \centering
+%  \includegraphics[width=8cm, height=4cm]{./eps/placeholder.eps}
+%  \caption{Some single-column figure caption.}
+%  \label{fig:myfigure1}
+%\end{figurehere}
+%
+%\begin{figure*}[t]
+%  \centering
+%  \includegraphics[width=16cm, height=4cm]{./eps/placeholder.eps}
+%  \caption{Some wide-figure caption.}
+%  \label{fig:myfigure2}
+%\end{figure*}
+
 \makeatletter
 \newenvironment{tablehere}{\def\@captype{table}}{}
 \newenvironment{figurehere}{\def\@captype{figure}\vspace{2ex}}{\vspace{2ex}}
 \makeatother
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-% Please use capital letters in the beginning of important words as for example
-\begin{mytitle}A LaTeX Report Template\end{mytitle}
-\begin{mysubtitle}The report subtitle\end{mysubtitle}
-%
+\newcommand{\TODO}{\textbf{TODO\dots\ }}
+
+
+\begin{mytitle}RATT	- Relatiely Accurate TurnTable\end{mytitle}
+\begin{mysubtitle}Relative turntable motion detector with mouse sensor\end{mysubtitle}
 % Please do not insert a line here
-%
 \\
-Last-name First-name\\
-Matr. 123456, (address@email.com)\\
-\hspace{10ex}
-Last-name First-name\\
-Matr. 123456, (address@email.com)\\
+Zoppi Andrea\\
+Matr. 765662, (andrea.zoppi@mail.polimi.it)\\
 \begin{flushright}
 \emph{Report for the master course of Embedded Systems}\\
 \emph{Reviser: PhD. Patrick Bellasi (bellasi@elet.polimi.it)}
 \end{flushright}
 
-Received: April, 01 2011\\
+Received: <MONTH>, <DAY> 2012\\
 \hspace{10ex}
 
 \begin{myabstract} Abstract \end{myabstract}
-This is a normal text in 10pt type size and 12pt line spacing.
-Place here a summary of your report. Focus on what is the problem and how you
-propose to tackle it. Briefly resume achieved results.
+Cheap jogwheel encoders for emulated DJ turntables are often inaccurate, due to
+the low CPR in the order of some tens. Precise encoders are rather expensive and
+are not convenient when detecting very fast rotations, because they become too
+much accurate for their purpose.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dapibus. Donec
-fermentum mauris non lectus. Nulla porttitor pede id ante. Donec in erat
-pellentesque erat ultrices rutrum. Pellentesque id tellus. Donec vel mi non dui
-adipiscing tempor.  Nunc laoreet pede ut lectus. Aenean aliquam quam a sem. Duis
-at elit? Ut dolor massa, dictum vel; convallis quis, ullamcorper id, urna.
+The presented research tries to improve the detection of at least small and slow
+relative rotations of the jogwheel, by employing a cheap COTS mouse sensor, and
+keep the absolute position or fast rotation with the classic cheap optical encoder.
+
+A very crude HID demoboard was developed, so that some simple tests were done.
+An extended proposal is also described, for better performance and more features
+to match those of a common DJ controller.
+
 
 \vspace{4ex}	% Please do not remove or reduce this space here.
 \begin{multicols}{2}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Fusce non eros nec dui
-sagittis placerat. Sed vulputate accumsan massa? Quisque dapibus consequat
-magna! Mauris ante erat, ullamcorper eu, iaculis a, posuere at, massa. Donec
-diam orci, luctus non, tristique at, volutpat vulputate, dui.  Suspendisse
-potenti. Vivamus lacinia justo id enim! Maecenas ut odio. Donec nisi urna,
-gravida eu, sollicitudin eget, gravida quis, dolor. Nulla quam erat, convallis
-id, lobortis vel, rutrum tempor, felis. Nam id ante. Sed hendrerit ultricies
-sapien. Morbi interdum convallis elit. Class aptent taciti sociosqu ad litora
-torquent per conubia nostra, per inceptos himenaeos. Suspendisse potenti.
-Praesent egestas.
+\TODO 
 
 
 %-----------------------------------------------------------------------------
-\subsection{The first subsection of the first \\ Section}
-% Please avoid separations in titles
-% and separate text manually
+\subsection{Optical encoder jogwheel}
 
-This is a citation \cite{Norman09Learn} and here is another citation
-\cite{Peyton93Howto}.  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Sed velit. Ut id orci ut quam placerat rhoncus. Pellentesque sed nisl. Aliquam
-sagittis nunc ut dui.  Nullam elementum felis eget mauris! Curabitur nunc arcu,
-venenatis ac, commodo id, tristique molestie, urna? Donec in tortor vel augue
-rhoncus elementum. Nunc ac felis. Nam nulla quam, cursus sed, egestas nec,
-rutrum et, purus. Nullam sapien mi, ullamcorper rutrum, placerat eget,
-consectetur ut, metus. Integer porta, lacus non fermentum pretium, enim dui
-auctor ligula, ut faucibus lacus sem a metus. Maecenas posuere dui eu est. Ut
-massa urna, auctor quis, tempus et, sollicitudin quis, justo?
+\TODO 
 
 
-And this is the reference to a single column figure (see {\bf Figure
-\ref{fig:myfigure1}}).  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Vivamus dapibus convallis odio. Nunc sollicitudin laoreet ante! Vivamus dictum
-euismod orci.
+\paragraph{Architecture}
+\TODO
 
-\begin{figurehere}
- \centering
- \includegraphics[width=8cm, height=4cm]{./eps/placeholder.eps}
- \caption{Some single-column figure caption.}
- \label{fig:myfigure1}
-\end{figurehere}
+
+\paragraph{Motion detection}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
 
 
 %-----------------------------------------------------------------------------
-\subsection{The second subsection of the first \\ Section}
+\subsection{Timecoded media jogwheel}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec et ligula. Nullam
-in libero. Donec dictum pede in justo. Lorem ipsum dolor sit amet, consectetur
-adipiscing elit. Aliquam congue. Aliquam egestas. Nunc eu est ac nibh mattis
-vestibulum. Curabitur aliquet bibendum odio. Etiam hendrerit. Nunc a velit quis
-dui molestie consequat. Sed et turpis et mi feugiat tincidunt. Sed sollicitudin.
-Ut risus? Duis eget orci eu turpis consectetur fringilla? Lorem ipsum dolor sit
-amet, consectetur adipiscing elit. Nullam tellus ligula, placerat vitae, tempor
-vitae, varius id; est! Nullam et ipsum eget tellus eleifend sollicitudin? Fusce
-urna massa, imperdiet vitae, convallis in; lacinia sed, tortor.
+\TODO 
 
-\begin{figure*}[t]
-  \centering
- \includegraphics[width=16cm, height=4cm]{./eps/placeholder.eps}
- \caption{Some wide-figure caption.}
- \label{fig:myfigure2}
-\end{figure*}
 
-And this is the reference to a single column figure (see {\bf Figure
-\ref{fig:myfigure2}}). Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Nullam consectetur neque at orci. Curabitur non metus. Praesent congue porta
-nisl. Suspendisse ultricies, sem ac ultrices aliquam, erat nisi fermentum est; a
-rhoncus mauris arcu eget nibh. Aliquam sollicitudin velit non erat. Lorem ipsum
-dolor sit amet, consectetur adipiscing elit. Integer nulla diam, facilisis vel,
-accumsan sed; molestie egestas, massa. Fusce malesuada, ipsum et pulvinar
-aliquet, est dolor laoreet enim, quis porttitor erat mauris eget sapien. Integer
-vitae urna. Duis lectus.
+\paragraph{Architecture}
+\TODO
+
+
+\paragraph{Motion detection}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+
+\TODO Add comparison table
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Second Section}
+\section{Simplified proposed approach}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Aenean magna. Nunc non
-ante eget nibh condimentum tempor. Nullam ullamcorper lectus eget mauris. Nam
-neque orci; rhoncus at, pulvinar quis, elementum sit amet, turpis. Mauris
-posuere nisi ut justo. Morbi non lorem vitae mauris interdum faucibus.
-Vestibulum ut sapien in augue faucibus fringilla. Vestibulum ante ipsum primis
-in faucibus orci luctus et ultrices posuere cubilia Curae; Etiam vestibulum
-fringilla libero. Curabitur libero diam, hendrerit sit amet, ornare eget,
-imperdiet vel, purus!
+\TODO
 
 
 %-----------------------------------------------------------------------------
-\subsection{The first subsection of the second \\ Section}
+\subsection{Hardware architecture}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam consectetur ante at
-eros. Vestibulum mi nisi, venenatis sollicitudin, tempus sed, auctor id, tortor.
-Fusce orci. Duis tellus arcu, euismod sed, consequat sit amet, elementum vel,
-mauris. Curabitur leo diam; dapibus quis, condimentum vitae, dignissim ut, diam.
-Nulla et nulla eget elit volutpat sagittis.
+\TODO
+
+
+\paragraph{Controller board}
+\TODO
+
+
+\paragraph{Sensor board}
+\TODO
+
+
+\paragraph{Timecode preamp board}
+\TODO
+
 
 %-----------------------------------------------------------------------------
-\subsection{The second subsection of the second \\ Section}
+\subsection{Firmware architecture}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris eget mauris.
-Nulla facilisi. Ut condimentum tempor eros? Integer metus mauris, consectetur
-sit amet, tempor a, facilisis eu, nisl. Vestibulum at turpis. Ut vitae tortor
-pretium nisl vestibulum blandit. Nulla nibh urna, semper et, elementum at,
-mattis ut, nisi! Cum sociis natoque penatibus et magnis dis parturient montes,
-nascetur ridiculus mus. Morbi vel ligula eget lacus convallis venenatis. Aliquam
-lacinia tincidunt felis. Ut dui.
+\TODO
 
+
+\paragraph{Main module}
+\TODO
+
+
+\paragraph{HID/USB module}
+\TODO
+
+
+\paragraph{LED module}
+\TODO
+
+
+\paragraph{Encoder module}
+\TODO
+
+
+\paragraph{Sensor module}
+\TODO
+
+
+\paragraph{Tasks organization}
+\TODO
+
+
+\paragraph{Remarks}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Software architecture}
+
+\TODO
+
+
+\paragraph{HID/USB connectivity}
+\TODO
+
+
+\paragraph{Device description}
+\TODO
+
+
+\paragraph{Device mapping}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Field results}
+
+\TODO
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Extended proposed approach}
+
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Hardware architecture}
+
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Firmware architecture}
+
+\TODO
+
+
+\paragraph{Main module}
+\TODO
+
+
+\paragraph{HID/USB module}
+\TODO
+
+
+\paragraph{LED module}
+\TODO
+
+
+\paragraph{Encoder module}
+\TODO
+
+
+\paragraph{Sensor module}
+\TODO
+
+
+\paragraph{Debug module}
+\TODO
+
+
+\paragraph{Tasks organization}
+\TODO
+
+
+\paragraph{Remarks}
+\TODO
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Appendix A - Brief common MCU survey}
+
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Microchip PIC18}
+
+\TODO
+
+
+\paragraph{Common features}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Microchip PIC24}
+
+\TODO
+
+
+\paragraph{Common features}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Microchip PIC32}
+
+\TODO
+
+
+\paragraph{Common features}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Atmel AVR}
+
+\TODO
+
+
+\paragraph{Common features}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Atmel AVR32}
+
+\TODO
+
+
+\paragraph{Common features}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{TI MSP-430}
+
+\TODO
+
+
+\paragraph{Common features}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{ARM Cortex Mx}
+
+\TODO
+
+
+\paragraph{Common features}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Appendix B - Optical motion (mouse) sensors}
+
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Generic architecture}
+
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Operation}
+
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Communication}
+
+\TODO
+
+
+\paragraph{SSP/SPI}
+\TODO
+
+
+\paragraph{I2C}
+\TODO
+
+
+\paragraph{Parallel}
+\TODO
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Appendix C - HID/USB versus MIDI/USB}
+
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{HID}
+
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{MIDI}
+
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % We suggest the use of JabRef for editing your bibliography file (Report.bib)
 \bibliographystyle{splncs}
 \bibliography{Report}
