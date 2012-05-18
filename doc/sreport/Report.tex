@@ -24,6 +24,7 @@
 \usepackage{amssymb}
 \usepackage[dvips]{graphicx}
 \usepackage{epsfig}
+\usepackage{mdwlist}
 \input{tcilatex}
 %-----------------------------------------------------------------------------
 % Page Setup
@@ -68,6 +69,8 @@
 \begin{document}
 
 \newcommand{\TODO}{\textbf{TODO\dots\ }}
+\newcommand{\CITEME}{\textbf{[CITEME]}}
+\newcommand{\INSFIG}{\textbf{Figure PLACEHOLDER}}
 
 
 \begin{mytitle}RATT	- Relatiely Accurate TurnTable\end{mytitle}
@@ -88,15 +91,15 @@ Received: <MONTH>, <DAY> 2012\\
 Cheap jogwheel encoders for emulated DJ turntables are often inaccurate, due to
 the low CPR in the order of some tens. Precise encoders are rather expensive and
 are not convenient when detecting very fast rotations, because they become too
-much accurate for their purpose.
+much accurate for the purpose.
 
 The presented research tries to improve the detection of at least small and slow
 relative rotations of the jogwheel, by employing a cheap COTS mouse sensor, and
 keep the absolute position or fast rotation with the classic cheap optical encoder.
 
 A very crude HID demoboard was developed, so that some simple tests were done.
-An extended proposal is also described, for better performance and more features
-to match those of a common DJ controller.
+An extended proposal is also described, in order to achieve better performance
+and more features, to match those of a commercial DJ controller.
 
 
 \vspace{4ex}	% Please do not remove or reduce this space here.
@@ -106,38 +109,146 @@ to match those of a common DJ controller.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-\TODO 
+In the latest years, the market of digital-DJ related products grew considerably.
+By the way, cheap digtital turntable emulation is still tricky, because the design
+of a cheap yet accurate jogwheel is still a challenge even with the technology
+available today.
+
+It is true that state-of-the-art processing units are very fast, but there are
+still issues such as those related to protocol latency, precise and fast plate
+motion detection, motion samples interpolation, and so on.
+
+These issues are not a big problem for the average DJ, but they arise when requiring
+a higher performance (e.g. \emph{scratch}) while keeping the costs low.
+
+The proposed approach is based on COTS components called \emph{optical motion/mouse
+sensors}, which can provide a very good accuracy when detecting small local motions,
+which is a behavior difficult to obtain with cheap encoders.
+
+A simplified verison of the proposal was developed on a crude prototype, just to
+check if it is worth at least for the average DJ -- the most demanding ones do
+not care about the price of products, and still rely on timecoded vinyl emulation
+even tough high CPR optical encoders are available at the same overall price.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Current market}
+
+The common commercial approaches can be divided into two groups: jogwheels based
+on optical encoders, and reuse of vinyl turntables (or CD players) as if they were
+digital jogwheels. These two technologies will be described in the following, showing
+their pros and cons.
+
+There exist also some other ways to emulate turntables, which are currently still
+in a niche. For example, there are some touchscreen-based turntable controllers
+\CITEME, which follow the market wave of touchscreen devices.
+There are also some evolutions of the optical jogwheels, which are motorized \CITEME
+and thus more suitable for professionals, but rather expensive.
 
 
 %-----------------------------------------------------------------------------
-\subsection{Optical encoder jogwheel}
+\subsection{Optical encoder jogwheel controllers}
 
-\TODO 
+The most common technology for turntable emulation is based on optical encoders.
+An optical encoder is a device which detects motion by counting the number of steps
+an evenly-marked wheel performs. It is found in almost all purely digital DJ
+\emph{controllers}, which in this context are referred to those remote digital
+devices used by the DJ to control the user application. Some examples of commercial
+controllers with jogwheels can be found in \CITEME.
+
+Common jogwheels have a resolution (\emph{CPR, Counts Per Revolution}) in the order of
+tens, thus are not suitable for \emph{scratching}\CITEME, and are usually addressed
+only in coarse track navigation, or \emph{bending}\CITEME.
+Even a resoltion in the order of some hundreds cannot be enough for scratch or precise
+motion tracking. For example, with a 720 CPR encoder it is possible to detect only
+motions of half degrees, that for a 12 inches wide wheel is still low -- keep in mind
+that a vinyl spins at roughly 150 degrees per second, and good sampling should require
+at least 1500 samples per second to track it decently enough.
 
 
-\paragraph{Architecture}
-\TODO
+\paragraph{System architecture}
+The basic architecture of these controllers is shown is \textbf{Figure \CITEME}.
+The controller commonly has a set of input devices -- buttons, knobs,
+sliders, \textit{etc.} -- so that the user can \emph{map}\footnote{
+	Assign a triggered action to an input event
+} these inputs to some software parameters, such as the play/stop events, or the desired
+volume level.
+
+A special kind of input device focused throughout this work is the optical encoder,
+\TODO which will be described in depth later.
+
+Commonly, there is a also set of output devices -- LEDs, displays -- so that the
+user sight should not always be switched between the computer monitor and the controllr
+to see what is going on.
+
+All these devices are managed by a MCU, which detects their changes, and generates
+meaningful messages to be sent to the DJ software, or receives messages from the latter.
+
+The communication between the controller and the software is often performed through
+an USB bus with HID/USB or MIDI/USB protocols, but some controllers still rely on
+the plain old MIDI port (see Section~\CITEME).
+
+
+\paragraph{Wheel architecture}
+The wheel is emulated with a so-called \emph{jogwheel} \INSFIG. This is a disc whose full
+rotation is divided into equalli-spaced angle slices. Each slice is assigned a code.
+
+Usually, the code is marked on the wheel with holes aligned on circles (see \INSFIG),
+so that holes can be detected by light-detector sensors mounted on the chassis.
+The light-detector sensor is almost always made with a LED which points towards the
+disc, and on the other side the light is detected by a fast phototransistor.
+These light sensors are positioned so that they can detect one and only one code per slice.
+
+The code is either abolute or relative. Absolute encoders assign a unique code to each
+slice, so that it is always possible to know the current wheel angle by just reading the
+light-detector sensors outputs. Due to the need to have a high number of bits, the number
+of holes can also grow exponentially (usually as the power of two), and the production of
+precisely aligned marks and sensors is expensive -- misaligned ones can provide
+misdetections of the angle, even with robust codes such as the \emph{Grey code} \CITEME.
+
+Instead, relative encoders just need the two least significant bits of an absolute code,
+thus cheaper to manufacture. On the other hand, it is not possible to know the absolute
+rotation without any additional bits. This is why there is often a mark which signals
+a full revolution been performed, and needs an additional flag bit. The particular
+subset of the Grey code used for the relative motion detection is called \emph{quadrature
+code}, because only 4 code sequences can be generated by moving to the adjacent wheel
+slice \CITEME.
 
 
 \paragraph{Motion detection}
-\TODO
-
+When the user turns the wheel, the light-detector sensors can convert the sight of
+light into the code assigned to the focused disc slice. The digital code is then
+triggered by the MCU through some interrupts, and a message containing the motion (or
+even the absolute angle) is sent to the user software.
 
 \paragraph{Pros}
-\TODO
+\begin{itemize*}
+	\item Easy to manufacture
+	\item Code detection is inherently digital
+	\item Fast code transitions can be processed easily
+	\item A cheap MCU can handle jogwheels as well as all the other digital devices
+		commonly found in DJ controllers
+\end{itemize*}
 
 
 \paragraph{Cons}
-\TODO
+\begin{itemize*}
+	\item Small motions have poor resolution with cheap encoders
+	\item High resolution encoders are too much expensive for the purpose
+\end{itemize*}
 
 
 %-----------------------------------------------------------------------------
-\subsection{Timecoded media jogwheel}
+\subsection{Timecoded media turntable emulation}
 
 \TODO 
 
 
-\paragraph{Architecture}
+\paragraph{System architecture}
+\TODO
+
+
+\paragraph{Wheel architecture}
 \TODO
 
 
@@ -460,14 +571,18 @@ to match those of a common DJ controller.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Appendix C - HID/USB versus MIDI/USB}
+\section{Appendix C - Controller communication protocol comparison}
 
 \TODO
 
 
 %-----------------------------------------------------------------------------
-\subsection{HID}
+\subsection{HID/USB}
 
+\TODO
+
+
+\paragraph{Basic protocol}
 \TODO
 
 
@@ -480,8 +595,30 @@ to match those of a common DJ controller.
 
 
 %-----------------------------------------------------------------------------
-\subsection{MIDI}
+\subsection{MIDI/USB}
 
+\TODO
+
+
+\paragraph{Basic Protocol}
+\TODO
+
+
+\paragraph{Pros}
+\TODO
+
+
+\paragraph{Cons}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Plain MIDI}
+
+\TODO
+
+
+\paragraph{Basic Protocol}
 \TODO
 
 
