@@ -74,7 +74,7 @@
 
 
 \begin{mytitle}RATT	- Relatiely Accurate TurnTable\end{mytitle}
-\begin{mysubtitle}Relative turntable motion detector with mouse sensor\end{mysubtitle}
+\begin{mysubtitle}Relative turntable motion detection with mouse sensors\end{mysubtitle}
 % Please do not insert a line here
 \\
 Zoppi Andrea\\
@@ -159,7 +159,7 @@ controllers with jogwheels can be found in \CITEME.
 Common jogwheels have a resolution (\emph{CPR, Counts Per Revolution}) in the order of
 tens, thus are not suitable for \emph{scratching}\CITEME, and are usually addressed
 only in coarse track navigation, or \emph{bending}\CITEME.
-Even a resoltion in the order of some hundreds cannot be enough for scratch or precise
+Even a resolution in the order of some hundreds cannot be enough for scratch or precise
 motion tracking. For example, with a 720 CPR encoder it is possible to detect only
 motions of half degrees, that for a 12 inches wide wheel is still low -- keep in mind
 that a vinyl spins at roughly 150 degrees per second, and good sampling should require
@@ -178,8 +178,8 @@ A special kind of input device focused throughout this work is the optical encod
 \TODO which will be described in depth later.
 
 Commonly, there is a also set of output devices -- LEDs, displays -- so that the
-user sight should not always be switched between the computer monitor and the controllr
-to see what is going on.
+user's sight should not always keep switching switched between the computer monitor
+and the controller to see what is going on.
 
 All these devices are managed by a MCU, which detects their changes, and generates
 meaningful messages to be sent to the DJ software, or receives messages from the latter.
@@ -240,6 +240,35 @@ even the absolute angle) is sent to the user software.
 
 %-----------------------------------------------------------------------------
 \subsection{Timecoded media turntable emulation}
+
+An alternative way to emulate a turntable in software is to use a \emph{timecoded audio track},
+which is an audio stream coded so that the software DSP can read the track position just
+by decoding the incoming audio stream.
+
+This technique makes it possible to use existing turntables or CD players to control the
+user software, which in turn will emulate the turntable behavior.
+
+The good side of this approach is that a DJ, who already has turntables or CD players,
+can keep using them just by buying a sound card with the appropriate audio inputs.
+This way the DJ can have almost perfectly the same old feeling, because he is still
+using the same equipment.
+
+On the bad side, vinyls and CDs are very sensible to usage, and decay easily. This
+makes the timecode unreadable in the ruined parts of the support, thus software cannot always
+understand the code. In addition, turntable needles must follow tracks almost perfectly,
+or the timecoded signal would degradate at the ADC side, especially the phase component
+which is necessary for the purpose, but almost ignored in audio players since the human
+ear has poor phase sensitivity.
+
+Another bad point relates to the overall performance. It is true that with this technique
+the performance is almost the same of a real vinyl, but the need of an intermiate sound card,
+which in turn is often connected through the USB bus, just makes low latencies hard to achieve,
+unless the host computer is powerful and well optimised to reach soft-realtime requirements.
+
+Also, a novice DJ would hardly choose this approach, because the overall price of the equipment
+can be rather high -- turntables/players + good soundcard + perfect needles + cables +
+hi-performance computer can easily exceed \$3000.
+
 
 \TODO 
 
