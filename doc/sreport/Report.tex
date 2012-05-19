@@ -369,25 +369,98 @@ sufficient to get the adjacent code, with only 1~ms delay at 1~kHz.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Simplified proposed approach}
 
-\TODO
+The proposed approach was developed so that it is possible to achieve good
+performance both at high and low speeds, without introducing expensive parts.
+
+The main idea is to use a mouse sensor to measure slow local motions, which
+are difficult to process with timecode, and need high resolution jogwheels.
+As seen in the previous section, this is not possible with cheap designs.
+Slow local motions are common when scratching or trying to reposition the
+virtual needle of the emulated turntable, for example when the DJ is searching
+for a good pont where to start playing from.
+
+When the disc is spinning at cruise speed, or when the rotation is fast
+enough, the classic methods can be used to keep track of the position.
+Mouse sensors, in fact, are not able to keep track of absolute movements,
+especially when they are very fast. Anyway, even cheap sensors have a
+resolution in the order of several hundreds, if not thousands, DPIs nowadays.
+As proven later, the disc can theoretically be divided in thousands slices,
+thus providing a local resolution higher than the most expensive encoders on
+the market -- obviously in the set of those affordable for a DJ, not the
+state-of-the-art encoders for hi-end industrial machineries.
+
+In the following, a simplified prototype will be presented. A low-end MCU and
+a standard COTS mouse sensor were chosen, just to see if it is possible to
+achieve good performance with a simple circuit. Unfortunately, the performance
+was not that good, mainly because of latencies in both the MCU and the sensor.
+This is why an advanced approach will be proposed in the next section, which
+should provide a much better response and could handle more peripherals then
+the only wheel.
 
 
 %-----------------------------------------------------------------------------
 \subsection{Hardware architecture}
 
-\TODO
+The simplified prototype has a very crude hardware architecture. It is split
+into three modules: the \emph{controller board} (aka \emph{main board}), the
+\emph{sensor board} and an optional \emph{timecode preamp board} for the use
+with timecode media. This subdivision was done just to decouple the controller
+with the sensor, for further experiments with other hardware configurations.
 
 
 \paragraph{Controller board}
-\TODO
+The controller board hosts the MCU, a \emph{PIC18LF14K50}\CITEME by
+\emph{Microchip}, which is a 8-bits MCU running at 48~MHz (16 MIPS).
+It is fast enough to handle a single wheel, but nothing more advanced such as
+DSP, which is left to the user software application.
+
+This board also mounts the voltage regulator, to get 3.3~V from the standard
+5~V provided by the USB host. Bulk capacitors keep it stable.
+
+There are also a user button for input, and three LEDs for user interactions.
+
+A standard UART can be used for basic messaging with an optional text console.
+
+There are also two pins dedicated for an additional quadrature encoder input.
+They can be configured to be directly coupled with the MCU comparator
+interrupts, in order to trigger encoder changes.
+
+Finally, to communicate with the sensor module some control and interrupt
+signals, and a half-duplex serial port are provided.
+
+\INSFIG
 
 
 \paragraph{Sensor board}
-\TODO
+The sensor board simply hosts the mouse sensor and the surface illumination
+LED. The sensor is an \emph{ADNS-2080}\CITEME by \emph{Avago}. It is a sensor
+aimed at office users, with average performance and low cost. As for the MCU,
+higher performance modules are on the market, but the challenge of this
+proposal was to find a basic average solution, which can be improved with
+further research. Briefly, the sensor can reach an interesting resolution of
+up to 2000~DPI, and motion speed up to 30~in/s (76.2~cm/s). There is no
+guarantee of maximum latency because the clock speed is variable, but it can
+be forced to maximum performance through communication.
+
+\INSFIG
 
 
 \paragraph{Timecode preamp board}
-\TODO
+An optional board was designed to properly amplify a \emph{Line} -- no
+\emph{Phono}! -- timecode signal so that it can be properly recognized by
+comparators of the controller board.
+
+Each audio channel can be amplified in amplitude, by controlling the inverting
+gain of the opamp with a potentiometer. A spare opamp generates the $V_{DD}/2$
+voltage reference for single-supply conditioning.
+
+Two LEDs help the user in keeping the overall timecode level compatible with
+the comparator inputs on the controller board, by warning if the signal is
+near saturation, or too low to be squared correctly by comparators.
+In fact, when the volume is too low or saturates, the sinusoidal timecode
+signals won't be squared with 50\% duty cycle, which can generate some jitter.
+
+\INSFIG
 
 
 %-----------------------------------------------------------------------------
@@ -439,6 +512,12 @@ sufficient to get the adjacent code, with only 1~ms delay at 1~kHz.
 
 
 \paragraph{Device mapping}
+\TODO
+
+
+%-----------------------------------------------------------------------------
+\subsection{Sizing and computations}
+
 \TODO
 
 
