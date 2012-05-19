@@ -33,7 +33,7 @@
 \evensidemargin-5mm                % required margin size: 2cm
 \headheight0cm \headsep0cm \topmargin0cm \parindent0cm
 \pagestyle{empty}                  % delete footer and header
-%----------------------------------------------------------------------------
+%-----------------------------------------------------------------------------
 % Environment definitions
 \newenvironment*{mytitle}{\begin{LARGE}\bf}{\end{LARGE}\\}%
 \newenvironment*{mysubtitle}{\bf}{\\[1.5ex]}%
@@ -88,14 +88,15 @@ Received: <MONTH>, <DAY> 2012\\
 \hspace{10ex}
 
 \begin{myabstract} Abstract \end{myabstract}
-Cheap jogwheel encoders for emulated DJ turntables are often inaccurate, due to
-the low CPR in the order of some tens. Precise encoders are rather expensive and
-are not convenient when detecting very fast rotations, because they become too
-much accurate for the purpose.
+Cheap jogwheel encoders for emulated DJ turntables are often inaccurate, due
+to the low CPR in the order of some tens. Precise encoders are rather expensive
+and are not convenient when detecting very fast rotations, because they become
+too much accurate for the purpose.
 
-The presented research tries to improve the detection of at least small and slow
-relative rotations of the jogwheel, by employing a cheap COTS mouse sensor, and
-keep the absolute position or fast rotation with the classic cheap optical encoder.
+The presented research tries to improve the detection of at least small and
+slow relative rotations of the jogwheel, by employing a cheap COTS mouse sensor,
+and keep the absolute position or fast rotation with the classic cheap optical
+encoder.
 
 A very crude HID demoboard was developed, so that some simple tests were done.
 An extended proposal is also described, in order to achieve better performance
@@ -110,60 +111,63 @@ and more features, to match those of a commercial DJ controller.
 \section{Introduction}
 
 In the latest years, the market of digital-DJ related products grew considerably.
-By the way, cheap digtital turntable emulation is still tricky, because the design
-of a cheap yet accurate jogwheel is still a challenge even with the technology
-available today.
+By the way, cheap digtital turntable emulation is still tricky, because the
+design of a cheap yet accurate jogwheel is still a challenge even with the
+technology available today.
 
 It is true that state-of-the-art processing units are very fast, but there are
 still issues such as those related to protocol latency, precise and fast plate
 motion detection, motion samples interpolation, and so on.
 
-These issues are not a big problem for the average DJ, but they arise when requiring
-a higher performance (e.g. \emph{scratch}) while keeping the costs low.
+These issues are not a big problem for the average DJ, but they arise when
+requiring a higher performance (e.g. \emph{scratch}) while keeping the costs
+low.
 
 The proposed approach is based on COTS components called \emph{optical motion/mouse
-sensors}, which can provide a very good accuracy when detecting small local motions,
-which is a behavior difficult to obtain with cheap encoders.
+sensors}, which can provide a very good accuracy when detecting small local
+motions, which is a behavior difficult to obtain with cheap encoders.
 
-A simplified verison of the proposal was developed on a crude prototype, just to
-check if it is worth at least for the average DJ -- the most demanding ones do
-not care about the price of products, and still rely on timecoded vinyl emulation
-even tough high CPR optical encoders are available at the same overall price.
+A simplified verison of the proposal was developed on a crude prototype, just
+to check if it is worth at least for the average DJ -- the most demanding ones
+do not care about the price of products, and still rely on timecoded vinyl
+emulation even tough high CPR optical encoders are available at the same
+overall price.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Current market}
 
-The common commercial approaches can be divided into two groups: jogwheels based
-on optical encoders, and reuse of vinyl turntables (or CD players) as if they were
-digital jogwheels. These two technologies will be described in the following, showing
-their pros and cons.
+The common commercial approaches can be divided into two groups: jogwheels
+based on optical encoders, and reuse of vinyl turntables (or CD players) as if
+they were digital jogwheels. These two technologies will be described in the
+following, showing their pros and cons.
 
-There exist also some other ways to emulate turntables, which are currently still
-in a niche. For example, there are some touchscreen-based turntable controllers
-\CITEME, which follow the market wave of touchscreen devices.
-There are also some evolutions of the optical jogwheels, which are motorized \CITEME
-and thus more suitable for professionals, but rather expensive.
+There exist also some other ways to emulate turntables, which are currently
+still in a niche. For example, there are some touchscreen-based turntable
+controllers \CITEME, which follow the market wave of touchscreen devices.
+There are also some evolutions of the optical jogwheels, which are motorized
+\CITEME and thus more suitable for professionals, but rather expensive.
 
 
 %-----------------------------------------------------------------------------
 \subsection{Optical encoder jogwheel controllers}
 
 The most common technology for turntable emulation is based on optical encoders.
-An optical encoder is a device which detects motion by counting the number of steps
-an evenly-marked wheel performs. It is found in almost all purely digital DJ
-\emph{controllers}, which in this context are referred to those remote digital
-devices used by the DJ to control the user application. Some examples of commercial
-controllers with jogwheels can be found in \CITEME.
+An optical encoder is a device which detects motion by counting the number of
+steps an evenly-marked wheel performs. It is found in almost all purely digital
+DJ \emph{controllers}, which in this context are referred to those remote
+digital devices used by the DJ to control the user application. Some examples
+of commercial controllers with jogwheels can be found in \CITEME.
 
-Common jogwheels have a resolution (\emph{CPR, Counts Per Revolution}) in the order of
-tens, thus are not suitable for \emph{scratching}\CITEME, and are usually addressed
-only in coarse track navigation, or \emph{bending}\CITEME.
-Even a resolution in the order of some hundreds cannot be enough for scratch or precise
-motion tracking. For example, with a 720 CPR encoder it is possible to detect only
-motions of half degrees, that for a 12 inches wide wheel is still low -- keep in mind
-that a vinyl spins at roughly 150 degrees per second, and good sampling should require
-at least 1500 samples per second to track it decently enough.
+Common jogwheels have a resolution (\emph{CPR, Counts Per Revolution}) in the
+order of tens, thus are not suitable for \emph{scratching}\CITEME, and are
+usually addressed only in coarse track navigation, or \emph{bending}\CITEME.
+Even a resolution in the order of some hundreds cannot be enough for scratch
+or precise motion tracking. For example, with a 720 CPR encoder it is possible
+to detect only motions of half degrees, that for a 12 inches wide wheel is
+still low -- keep in mind that a vinyl spins at roughly 150 degrees per second,
+and good sampling should require at least 1500 samples per second to track it
+decently enough.
 
 
 \paragraph{System architecture}
@@ -171,63 +175,68 @@ The basic architecture of these controllers is shown is \textbf{Figure \CITEME}.
 The controller commonly has a set of input devices -- buttons, knobs,
 sliders, \textit{etc.} -- so that the user can \emph{map}\footnote{
 	Assign a triggered action to an input event
-} these inputs to some software parameters, such as the play/stop events, or the desired
-volume level.
+} these inputs to some software parameters, such as the play/stop events, or
+the desired volume level.
 
-A special kind of input device focused throughout this work is the optical encoder,
-\TODO which will be described in depth later.
+A special kind of input device focused throughout this work is the optical
+encoder, \TODO which will be described in depth later.
 
-Commonly, there is a also set of output devices -- LEDs, displays -- so that the
-user's sight should not always keep switching switched between the computer monitor
-and the controller to see what is going on.
+Commonly, there is a also set of output devices -- LEDs, displays -- so that
+the user's sight should not always keep switching switched between the computer
+monitor and the controller to see what is going on.
 
-All these devices are managed by a MCU, which detects their changes, and generates
-meaningful messages to be sent to the DJ software, or receives messages from the latter.
+All these devices are managed by a MCU, which detects their changes, and
+generates meaningful messages to be sent to the DJ software, or receives
+messages from the latter.
 
-The communication between the controller and the software is often performed through
-an USB bus with HID/USB or MIDI/USB protocols, but some controllers still rely on
-the plain old MIDI port (see Section~\CITEME).
+The communication between the controller and the software is often performed
+through an USB bus with HID/USB or MIDI/USB protocols, but some controllers
+still rely on the plain old MIDI port (see Section~\CITEME).
 
 
 \paragraph{Wheel architecture}
-The wheel is emulated with a so-called \emph{jogwheel} \INSFIG. This is a disc whose full
-rotation is divided into equalli-spaced angle slices. Each slice is assigned a code.
+The wheel is emulated with a so-called \emph{jogwheel} \INSFIG. This is a disc
+whose full rotation is divided into equalli-spaced angle slices. Each slice is
+assigned a code.
 
-Usually, the code is marked on the wheel with holes aligned on circles (see \INSFIG),
-so that holes can be detected by light-detector sensors mounted on the chassis.
-The light-detector sensor is almost always made with a LED which points towards the
-disc, and on the other side the light is detected by a fast phototransistor.
-These light sensors are positioned so that they can detect one and only one code per slice.
+Usually, the code is marked on the wheel with holes aligned on circles (see
+\INSFIG), so that holes can be detected by light-detector sensors mounted on
+the chassis. The light-detector sensor is almost always made with a LED which
+points towards the disc, and on the other side the light is detected by a fast
+phototransistor. These light sensors are positioned so that they can detect
+one and only one code per slice.
 
-The code is either abolute or relative. Absolute encoders assign a unique code to each
-slice, so that it is always possible to know the current wheel angle by just reading the
-light-detector sensors outputs. Due to the need to have a high number of bits, the number
-of holes can also grow exponentially (usually as the power of two), and the production of
-precisely aligned marks and sensors is expensive -- misaligned ones can provide
-misdetections of the angle, even with robust codes such as the \emph{Grey code} \CITEME.
+The code is either abolute or relative. Absolute encoders assign a unique code
+to each slice, so that it is always possible to know the current wheel angle
+by just reading the light-detector sensors outputs. Due to the need to have a
+high number of bits, the number of holes can also grow exponentially (usually
+as the power of two), and the production of precisely aligned marks and
+sensors is expensive -- misaligned ones can provide misdetections of the
+angle, even with robust codes such as the \emph{Grey code} \CITEME.
 
-Instead, relative encoders just need the two least significant bits of an absolute code,
-thus cheaper to manufacture. On the other hand, it is not possible to know the absolute
-rotation without any additional bits. This is why there is often a mark which signals
-a full revolution been performed, and needs an additional flag bit. The particular
-subset of the Grey code used for the relative motion detection is called \emph{quadrature
-code}, because only 4 code sequences can be generated by moving to the adjacent wheel
-slice \CITEME.
+Instead, relative encoders just need the two least significant bits of an
+absolute code, thus cheaper to manufacture. On the other hand, it is not
+possible to know the absolute rotation without any additional bits. This is
+why there is often a mark which signals a full revolution been performed, and
+needs an additional flag bit. The particular subset of the Grey code used for
+the relative motion detection is called \emph{quadrature code}, because only 4
+code sequences can be generated by moving to the adjacent wheel slice \CITEME.
 
 
 \paragraph{Motion detection}
-When the user turns the wheel, the light-detector sensors can convert the sight of
-light into the code assigned to the focused disc slice. The digital code is then
-triggered by the MCU through some interrupts, and a message containing the motion (or
-even the absolute angle) is sent to the user software.
+When the user turns the wheel, the light-detector sensors can convert the
+sight of light into the code assigned to the focused disc slice. The digital
+code is then triggered by the MCU through some interrupts, and a message
+containing the motion (or even the absolute angle) is sent to the user
+software.
 
 \paragraph{Pros}
 \begin{itemize*}
 	\item Easy to manufacture
 	\item Code detection is inherently digital
 	\item Fast code transitions can be processed easily
-	\item A cheap MCU can handle jogwheels as well as all the other digital devices
-		commonly found in DJ controllers
+	\item A cheap MCU can handle jogwheels as well as all the other digital
+		devices commonly found in DJ controllers
 \end{itemize*}
 
 
@@ -241,56 +250,115 @@ even the absolute angle) is sent to the user software.
 %-----------------------------------------------------------------------------
 \subsection{Timecoded media turntable emulation}
 
-An alternative way to emulate a turntable in software is to use a \emph{timecoded audio track},
-which is an audio stream coded so that the software DSP can read the track position just
-by decoding the incoming audio stream.
+An alternative way to emulate a turntable in software is to use a
+\emph{timecoded audio track}, which is an audio stream coded so that the
+software can read the track position just by decoding the incoming audio
+stream.
 
-This technique makes it possible to use existing turntables or CD players to control the
-user software, which in turn will emulate the turntable behavior.
+This technique makes it possible to use existing turntables or CD players to
+control the user software, which in turn will emulate the turntable behavior.
 
-The good side of this approach is that a DJ, who already has turntables or CD players,
-can keep using them just by buying a sound card with the appropriate audio inputs.
-This way the DJ can have almost perfectly the same old feeling, because he is still
-using the same equipment.
+The good side of this approach is that a DJ, who already owns turntables or CD
+players, can keep using them just by buying a sound card with the appropriate
+audio inputs. This way the DJ can have almost perfectly the same old feeling,
+because he is still using the same equipment.
 
-On the bad side, vinyls and CDs are very sensible to usage, and decay easily. This
-makes the timecode unreadable in the ruined parts of the support, thus software cannot always
-understand the code. In addition, turntable needles must follow tracks almost perfectly,
-or the timecoded signal would degradate at the ADC side, especially the phase component
-which is necessary for the purpose, but almost ignored in audio players since the human
-ear has poor phase sensitivity.
+On the bad side, vinyls and CDs are very sensible to usage, and decay easily.
+This makes the timecode unreadable in the ruined parts of the support, where
+software cannot always understand the code thus producing jittered or jerky
+behavior.
 
-Another bad point relates to the overall performance. It is true that with this technique
-the performance is almost the same of a real vinyl, but the need of an intermiate sound card,
-which in turn is often connected through the USB bus, just makes low latencies hard to achieve,
-unless the host computer is powerful and well optimised to reach soft-realtime requirements.
+In addition, turntable needles must follow tracks almost perfectly, or the
+timecoded signal would degradate at the ADC side, especially the phase
+component which is necessary for the purpose, but almost ignored in audio
+players since the human ear has poor phase sensitivity.
 
-Also, a novice DJ would hardly choose this approach, because the overall price of the equipment
-can be rather high -- turntables/players + good soundcard + perfect needles + cables +
-hi-performance computer can easily exceed \$3000.
+Another bad point relates to the overall performance. It is true that with
+this technique the performance is almost the same of a real vinyl, but the
+need of an intermiate sound card, which in turn is often connected through the
+USB bus, just makes low latencies hard to achieve, unless the host computer is
+powerful and well optimised to reach soft-realtime requirements.
 
+With a timecoded media is only possible to control the track position (phase)
+and pitch (frequency), whihc is good for plain turntable emulation, but it is
+impossible to use some features -- effects, precise loops, track preview, etc.
+-- of some professional CD players.
 
-\TODO 
+When the disc spins at low speed, the intrinsic high-pass filter of needles
+and soundcards will fade the signal, and it can become difficult to find the
+zero-crossings while decoding (described further). This issue makes slow
+scartches difficult to emulate because of jitter and corruption, and will be
+mitigated with the work devolped in the rest of this document.
+
+Finally, a novice DJ would hardly choose this approach, because the overall
+price of the equipment can be rather high -- turntables/players + good
+soundcard + accurate needles + cables + hi-performance computer can easily
+exceed \$3000. 
 
 
 \paragraph{System architecture}
-\TODO
+A common commercial architecture can be seen in \INSFIG. The existing
+turntables or CD players are connected to the appropriate soundcard
+inputs.
+
+The soundcard can be placed either internally or externally the host computer.
+Internal soundcards are very fast in transfering data from the incoming audio
+signal to the CPU, thanks to the fast system bus (PCI, PCI-E).
+
+However, as internal soundacards are almost always designed for desktop
+computers but notebook computers are much easier to carry, the choice of an
+external soundcard is the very most common.
+
+External soundcards are mostly connected through an USB bus, but some
+professional FireWire soundcards are still on the market. The USB bus has the
+drawback of having a fixed minimum latency of 1ms for isochronous signals,
+which increases latencies even more, while FireWire is faster -- good internal
+soundcards have a negligible latency.
 
 
-\paragraph{Wheel architecture}
-\TODO
+\paragraph{Signal pattern}
+The timecoded signal is printed on the source media -- vinyl, CD -- with
+patterns recognized by the specific user software. In general, the timecoded
+signal is composed by a left sine and right cosine signals at a constant
+frequency, usually in the range of 1~kHz to 3~kHz. The amplitude of each
+half-wave of the same sign is slightly modulated with a proprietary digital
+code, which represents the absolute position inside the whole timecoded track.
 
+To read the code from an timecoded stream, it is sufficient to trigger a
+zero-crossing on one channel, and read the amplitude on the other channel,
+then convert the amplitude into a bit of the code word. If the absolute
+position is not needed, instead of the code it is possible interpret the
+sine/cosine as a quadrature control signal, for relative motions.
 
-\paragraph{Motion detection}
-\TODO
+The code is designed to be decoded in both directions, so that the user can
+navigate the emulated turntable just like a real vinyl. The most advanced
+codes are designed to support fast error correction, because dust, decay of
+the vinyl, or even EMF, wouldbgenerate a corrupted signal.
+
+In fact, if a single code is a bare label of the position, for example of 20
+bits, it is necessary to read at least 20 consecutive half-waves. With a
+nominal frequency of 1~kHz, the minimum latency would become 20~ms, which is
+rather high for audio manipulation by a human. Advanced codes would still
+correctly read the first 20 half-waves, but then each subsequent bit is
+sufficient to get the adjacent code, with only 1~ms delay at 1~kHz.
 
 
 \paragraph{Pros}
-\TODO
+\begin{itemize*}
+	\item Same old equipment
+	\item Just add soundcard to a computer
+	\item Natural feeling and performance
+\end{itemize*}
 
 
 \paragraph{Cons}
-\TODO
+\begin{itemize*}
+	\item Needs high quality componente in the chain
+	\item Expensive for a novice
+	\item Signal subsceptible to corruption
+	\item Bad tracking at low speeds
+	\item Expensive signal processing
+\end{itemize*}
 
 
 %-----------------------------------------------------------------------------
