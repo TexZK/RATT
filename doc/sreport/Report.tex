@@ -325,6 +325,17 @@ frequency, usually in the range of 1~kHz to 3~kHz. The amplitude of each
 half-wave of the same sign is slightly modulated with a proprietary digital
 code, which represents the absolute position inside the whole timecoded track.
 
+In \textbf{Figure~\ref{fig:serato_timecode_slice}} it is possible to see a
+slice of the \emph{Serato Scratch Live} timecode signal (aka \emph{noisemap}),
+with some amplitude-modulated bits at the sine wave peaks.
+
+\begin{figurehere}
+	\label{fig:serato_timecode_slice}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/serato_timecode_slice.pdf}
+	\caption{Slice of the \emph{Serato Scratch Live} timecode}
+\end{figurehere}
+
 To read the code from an timecoded stream, it is sufficient to trigger a
 zero-crossing on one channel, and read the amplitude on the other channel,
 then convert the amplitude into a bit of the code word. If the absolute
@@ -334,7 +345,7 @@ sine/cosine as a quadrature control signal, for relative motions.
 The code is designed to be decoded in both directions, so that the user can
 navigate the emulated turntable just like a real vinyl. The most advanced
 codes are designed to support fast error correction, because dust, decay of
-the vinyl, or even EMF, wouldbgenerate a corrupted signal.
+the vinyl, or even EMF, would generate a corrupted signal.
 
 In fact, if a single code is a bare label of the position, for example of 20
 bits, it is necessary to read at least 20 consecutive half-waves. With a
@@ -1020,6 +1031,16 @@ some delay too.
 
 %-----------------------------------------------------------------------------
 \subsection{HID/USB}
+
+Besides MIDI/USB, another application protocol was developed to handle those
+devices which interface with human beings, and is much widely implemented.
+The \emph{Human Interface Device} (\emph{HID}), in fact, is an USB class
+with huge flexibility and support -- it can be found in almost any USB device
+with keys, knobs, sliders, simple displays, LEDs, control wheels and so on.
+
+The flexibility of HID is justified by the way its sub-protocol is developed.
+HID messages, called \emph{reports}, have a fixed structure, defined at the
+moment the HID configuration of the device is sent to the host.
 
 \TODO
 
