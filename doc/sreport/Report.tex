@@ -26,6 +26,7 @@
 \usepackage{epsfig}
 \usepackage{epstopdf}
 \usepackage{mdwlist}
+\usepackage{hyperref}
 \input{tcilatex}
 %-----------------------------------------------------------------------------
 % Page Setup
@@ -144,10 +145,12 @@ they were digital jogwheels. These two technologies will be described in the
 following, showing their pros and cons.
 
 There exist also some other ways to emulate turntables, which are currently
-still in a niche. For example, there are some touchscreen-based turntable
-controllers \CITEME, which follow the market wave of touchscreen devices.
+still in a niche. For example, there are some touchscreen-based \cite{sm_emulator}
+\cite{hn_touchosc} or capacitive \cite{stanton_scs3d} controllers, which
+follow the market wave of touchscreen devices.
 There are also some evolutions of the optical jogwheels, which are motorized
-\CITEME and thus more suitable for professionals, but rather expensive.
+\cite{denon_sc3900} \cite{numark_v7} and thus more suitable for professionals,
+but rather expensive.
 
 
 %-----------------------------------------------------------------------------
@@ -158,11 +161,12 @@ An optical encoder is a device which detects motion by counting the number of
 steps an evenly-marked wheel performs. It is found in almost all purely digital
 DJ \emph{controllers}, which in this context are referred to those remote
 digital devices used by the DJ to control the user application. Some examples
-of commercial controllers with jogwheels can be found in \CITEME.
+of commercial controllers with jogwheels can be found in \cite{eks_op}
+\cite{pioneer_ddjs1} \cite{vestax_vci400}.
 
 Common jogwheels have a resolution (\emph{CPR, Counts Per Revolution}) in the
-order of tens, thus are not suitable for \emph{scratching}\CITEME, and are
-usually addressed only in coarse track navigation, or \emph{bending}\CITEME.
+order of tens, thus are not suitable for \emph{scratching}, and are usually
+addressed only in coarse track navigation, or \emph{bending}.
 Even a resolution in the order of some hundreds cannot be enough for scratch
 or precise motion tracking. For example, with a 720 CPR encoder it is possible
 to detect only motions of half degrees, that for a 12 inches wide wheel is
@@ -172,7 +176,7 @@ decently enough.
 
 
 \paragraph{System architecture}
-The basic architecture of these controllers is shown is \textbf{Figure \CITEME}.
+The basic architecture of these controllers is shown is \textbf{Figure~\ref{fig:hercules_mp3e2_schematic}}.
 The controller commonly has a set of input devices -- buttons, knobs,
 sliders, \textit{etc.} -- so that the user can \emph{map}\footnote{
 	Assign a triggered action to an input event
@@ -194,6 +198,14 @@ The communication between the controller and the software is often performed
 through an USB bus with HID/USB or MIDI/USB protocols, but some controllers
 still rely on the plain old MIDI port (see Section~\CITEME).
 
+\begin{figurehere}
+	\label{fig:hercules_mp3e2_schematic}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/hercules_mp3e2_schematic.pdf}
+	\caption{\emph{Hercules DJ Control MP3 e2}\cite{hercules_djcmp3e2}
+	intereface schematic with buttons, incremental encoders, sliders and knobs}
+\end{figurehere}
+
 
 \paragraph{Wheel architecture}
 The wheel is emulated with a so-called \emph{jogwheel} \INSFIG. This is a disc
@@ -201,11 +213,11 @@ whose full rotation is divided into equalli-spaced angle slices. Each slice is
 assigned a code.
 
 Usually, the code is marked on the wheel with holes aligned on circles (see
-\INSFIG), so that holes can be detected by light-detector sensors mounted on
-the chassis. The light-detector sensor is almost always made with a LED which
-points towards the disc, and on the other side the light is detected by a fast
-phototransistor. These light sensors are positioned so that they can detect
-one and only one code per slice.
+\textbf{Figure~\ref{fig:encoder_wheels}}), so that holes can be detected by
+light-detector sensors mounted on the chassis. The light-detector sensor is
+almost always made with a LED which points towards the disc, and on the other
+side the light is detected by a fast phototransistor. These light sensors are
+positioned so that they can detect one and only one code per slice.
 
 The code is either abolute or relative. Absolute encoders assign a unique code
 to each slice, so that it is always possible to know the current wheel angle
@@ -213,7 +225,7 @@ by just reading the light-detector sensors outputs. Due to the need to have a
 high number of bits, the number of holes can also grow exponentially (usually
 as the power of two), and the production of precisely aligned marks and
 sensors is expensive -- misaligned ones can provide misdetections of the
-angle, even with robust codes such as the \emph{Grey code} \CITEME.
+angle, even with robust codes such as the \emph{Gray code} \CITEME.
 
 Instead, relative encoders just need the two least significant bits of an
 absolute code, thus cheaper to manufacture. On the other hand, it is not
@@ -222,6 +234,13 @@ why there is often a mark which signals a full revolution been performed, and
 needs an additional flag bit. The particular subset of the Grey code used for
 the relative motion detection is called \emph{quadrature code}, because only 4
 code sequences can be generated by moving to the adjacent wheel slice \CITEME.
+
+\begin{figurehere}
+	\label{fig:encoder_wheels}
+	\centering
+	\includegraphics[keepaspectratio=true,width=0.9\columnwidth]{images/encoder_wheels.pdf}
+	\caption{A set of incremental (quadrature) rotary encoder wheels}
+\end{figurehere}
 
 
 \paragraph{Motion detection}
@@ -298,9 +317,9 @@ exceed \$3000.
 
 
 \paragraph{System architecture}
-A common commercial architecture can be seen in \INSFIG. The existing
-turntables or CD players are connected to the appropriate soundcard
-inputs.
+A common commercial architecture \cite{rane_ssl}\cite{ni_tsp} can be seen in
+\textbf{Figure~\ref{fig:serato_setup}}. The existing turntables or CD players
+are connected to the appropriate soundcard inputs.
 
 The soundcard can be placed either internally or externally the host computer.
 Internal soundcards are very fast in transfering data from the incoming audio
@@ -316,6 +335,13 @@ drawback of having a fixed minimum latency of 1ms for isochronous signals,
 which increases latencies even more, while FireWire is faster -- good internal
 soundcards have a negligible latency.
 
+\begin{figurehere}
+	\label{fig:serato_setup}
+	\centering
+	\includegraphics[keepaspectratio=true,width=0.9\columnwidth]{images/serato_setup.pdf}
+	\caption{\emph{Serato Scratch Live} setup with two turntables}
+\end{figurehere}
+
 
 \paragraph{Signal pattern}
 The timecoded signal is printed on the source media -- vinyl, CD -- with
@@ -326,8 +352,9 @@ half-wave of the same sign is slightly modulated with a proprietary digital
 code, which represents the absolute position inside the whole timecoded track.
 
 In \textbf{Figure~\ref{fig:serato_timecode_slice}} it is possible to see a
-slice of the \emph{Serato Scratch Live} timecode signal (aka \emph{noisemap}),
-with some amplitude-modulated bits at the sine wave peaks.
+slice of the \emph{Serato Scratch Live}\cite{rane_ssl} timecode signal
+(aka \emph{noisemap}), with some amplitude-modulated bits at the sine wave
+top peaks.
 
 \begin{figurehere}
 	\label{fig:serato_timecode_slice}
@@ -365,7 +392,7 @@ sufficient to get the adjacent code, with only 1~ms delay at 1~kHz.
 
 \paragraph{Cons}
 \begin{itemize*}
-	\item Needs high quality componente in the chain
+	\item Needs high quality components in the signal chain
 	\item Expensive for a novice
 	\item Signal subsceptible to corruption
 	\item Bad tracking at low speeds
@@ -609,7 +636,7 @@ and enable.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Appendix A - Brief common MCU survey}
+\section{Appendix A - Common MCUs brief survey}
 
 \TODO
 
@@ -780,7 +807,7 @@ in \textbf{Figure~\ref{fig:sensor_assembly}}.
 \begin{figurehere}
 	\label{fig:sensor_assembly}
 	\centering
-	\includegraphics[keepaspectratio=true,height=4cm]{images/sensor_assembly.pdf}
+	\includegraphics[keepaspectratio=true,height=5cm]{images/sensor_assembly.pdf}
 	\caption{Common motion sensor assembly}
 \end{figurehere}
 
@@ -830,16 +857,24 @@ an interface to an external controller.
 %-----------------------------------------------------------------------------
 \subsection{Communication}
 
-Optical motion sensors to communicate with an external processor through an
-interface. This interface often belongs to standard I/F types, even though
-some pins are often added for ad-hoc operation.
+Optical motion sensors communicate with an external processor through an
+interface which often belongs to standard I/F types, even though some pins
+are frequently added for faster or ad-hoc operation -- chip shutdown, chip
+selection, flow control, and so on.
 
 
 \paragraph{Quadrature}
-Sensors with only quadrature wave outputs are now outdated, because they do
-not offer any advanced features, and require an interrupt-driven counter
-at controller side. On the other hand, quadrature outputs can be used with
-any device which natively accepts such signals.
+Sensors with only quadrature wave outputs (see \textbf{Figure~\ref{fig:quad_wave}})
+are now outdated, because they do not offer any advanced features, and require
+an interrupt-driven counter at controller side. On the other hand, quadrature
+outputs can be used with any device which natively accepts such signals.
+
+\begin{figurehere}
+	\label{fig:quad_wave}
+	\centering
+	\includegraphics[keepaspectratio=true,width=0.8\columnwidth]{images/quad_wave.pdf}
+	\caption{Quadrature pattern, going forward left-to-right}
+\end{figurehere}
 
 
 \paragraph{I2C}
@@ -851,6 +886,8 @@ On the other hand, the I2C protocol introduces some unnecessary latencies
 due to handshaking and baud rate -- standard I2C is only at 100~kb/s, fast
 mode at 400~kb/s.
 
+\INSFIG
+
 
 \paragraph{SSP/SPI}
 When requiring slightly higher speed and lower latency, it is possible to
@@ -860,6 +897,8 @@ They usually do not require handhaking, even though some control pins are
 often used in such a way (e.g. the common \emph{shutdown} pin).
 Also, the bit rate is often higher -- from 1~MHz to some tens -- even though
 pratically not much higher than I2C.
+
+\INSFIG
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -6,6 +6,6 @@
 *.dvi
 *.log
 *.ps
-*.pdf
 *.swp
 *.gz
+
