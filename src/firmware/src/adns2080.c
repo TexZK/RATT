@@ -319,7 +319,7 @@ void Adns_PowerUpDelay( void )
 void Adns_Service( void )
 {
 #if !ADNS_USE_INTERRUPT
-	// Poll for motion status
+	// Poll for motion status		// TODO: Read from MOTION pin instead of wasting time with SPI
 	if ( Adns_ReadBlocking( ADNS_REG_MOTION_ST ) & 0x80 ) {
 		adns_status.motionInt = 1;
 		RED_LED = LED_ON;

@@ -15,7 +15,7 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // CONFIGURATION
 
-#define	ADNS_USE_INTERRUPT				0					///< Use interrupt instead of polling
+#define	ADNS_USE_INTERRUPT				1					///< Use interrupt instead of polling
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
