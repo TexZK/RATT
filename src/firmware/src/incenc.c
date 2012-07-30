@@ -30,9 +30,9 @@
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL VARIABLES
-#pragma udata data_incenc_local
+#pragma udata access data_incenc_local_acs
 
-volatile INCENC_DELTA		incenc_delta;		/// Delta accumulator
+near volatile INCENC_DELTA	incenc_deltaAccum;	///< Delta accumulator
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -43,6 +43,8 @@ near volatile INCENC_STATUS	incenc_status;
 
 
 #pragma udata data_incenc_global
+
+volatile INCENC_DELTA		incenc_delta;		///< Cached delta accumulator
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -116,25 +118,18 @@ void IncEnc_Initialize( void )
 
 void IncEnc_Service( void )
 {
-	// Nothing to do
-}
-
-
-INCENC_DELTA IncEnc_GetDelta( void )
-{
-	INCENC_DELTA delta;
-	App_Lock();
-	delta = incenc_delta;
-	App_Unlock();
-	return delta;
+	IncEnc_DisableInterrupts();
+	incenc_delta = incenc_deltaAccum;
+	incenc_status.bits.dataReady = 0;
+	IncEnc_EnableInterrupts();
 }
 
 
 void IncEnc_ClearDelta( void )
 {
-	App_Lock();
-	incenc_delta = 0L;
-	App_Unlock();
+	IncEnc_DisableInterrupts();
+	incenc_deltaAccum = 0L;
+	IncEnc_EnableInterrupts();
 }
 
 
@@ -166,7 +161,7 @@ void IncEnc_ChangeCallback( void )
 		case 0b1011:
 		case 0b0010: {
 			// Going forward
-			++incenc_delta;
+			++incenc_deltaAccum;
 			incenc_status.bits.direction = 1;
 			break;
 		}
@@ -175,7 +170,7 @@ void IncEnc_ChangeCallback( void )
 		case 0b0111:
 		case 0b0001: {
 			// Going backwards
-			--incenc_delta;
+			--incenc_deltaAccum;
 			incenc_status.bits.direction = 0;
 			break;
 		}

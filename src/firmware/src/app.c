@@ -203,11 +203,13 @@ void HighPriorityISR( void )
 	}
 	
 	// Check if the motion sensor has detected motion
+#if ADNS_USE_INTERRUPT		// Avoid useless code in high priority ISR
 	if ( ADNS_INT_IF ) {
 		if ( ADNS_INT_IE ) {
 			Adns_MotionCallback();
 		}
 	}
+#endif
 	
 	app_status.bits.inHighIrq = 0;
 }
@@ -319,7 +321,7 @@ void ProcessIO( void )
 		return;
 	}
     
-    // Flash each 200ms when configured
+    // Flash every 200ms when configured
 	timeStamp = App_GetTimestamp();
 	if ( timeStamp - flashTimeStamp >= 200 ) {
 		GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
@@ -328,19 +330,21 @@ void ProcessIO( void )
 	
 	// Build & transfer HID report
 	App_Lock();
-	if ( incenc_status.bits.dataReady && adns_status.dataReady && Usb_TxReady() ) {
+	if ( (incenc_status.bits.dataReady || adns_status.dataReady) && Usb_TxReady() ) {
 		App_Unlock();
 		
 		++app_hidTxReport.id;
 		app_hidTxReport.timestamp = App_GetTimestamp();
-		app_hidTxReport.mouseMotion = Adns_GetDeltas();
+		
+		app_hidTxReport.mouseMotion = adns_deltas;
 		Adns_ClearDeltas();
-		app_hidTxReport.incencMotion = IncEnc_GetDelta();
+		
+		app_hidTxReport.incencMotion = incenc_delta;
 		IncEnc_ClearDelta();
 		
 		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
 		Usb_TxBufferedPacket();
-		YELLOW_LED = LED_OFF;
+		YELLOW_LED = !YELLOW_LED;
 	} else {
 		App_Unlock();
 	}

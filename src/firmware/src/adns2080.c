@@ -36,21 +36,21 @@
  */
 #define	USE_WORKAROUND_DS80411E_2_1_OPT2
 
-#define	PR2_VALUE	(SYS_FCY / (ADNS_SPI_FREQ * 2) - 1)		/// PR2 value for Timer 2 time base
+#define	PR2_VALUE	(SYS_FCY / (ADNS_SPI_FREQ * 2) - 1)		///< PR2 value for Timer 2 time base
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // LOCAL VARIABLES
 #pragma udata data_adns_local
 
-volatile ADNS_LONG_DELTAS	adns_deltas;			/// Deltas accumulator
+volatile ADNS_DELTAS	adns_deltas;				///< Deltas accumulator
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
 #pragma udata access data_adns_global_acs
 
-near ADNS_STATUS	adns_status;		/// Device status
+near ADNS_STATUS		adns_status;				///< Device status
 
 
 #pragma udata data_adns_global
@@ -179,7 +179,7 @@ void Adns_SetupConfiguration( void )
 		goto failure;
 	}
 	Debug_PrintConst_NewLine();
-	
+
 	// Setup Motion Control
 	Debug_PrintRom_( "\tMOTION_CTRL" );
 	
@@ -336,42 +336,24 @@ void Adns_PowerUpDelay( void )
 
 void Adns_Service( void )
 {
+#if !ADNS_USE_INTERRUPT
+	// Poll for motion status
+	if ( Adns_ReadBlocking( ADNS_REG_MOTION_ST ) & 0x80 ) {
+		adns_status.motionInt = 1;
+		RED_LED = LED_ON;
+	}
+#endif
+	
 	// Check for motion interrupt
 	if ( adns_status.motionInt ) {
-		ADNS_SHORT_DELTAS burst;
-		union {
-			struct {
-				signed short	lo;
-				unsigned short	hi;
-			} words;
-			signed long	value;
-		} split;
-		
 		Adns_DisableInterrupt();
 		adns_status.motionInt = 0;
 		Adns_EnableInterrupt();
 		
-		burst = Adns_BurstReadMotionDeltasBlocking();
-		
-		App_Lock();
-		split.words.lo = burst.dx;
-		split.words.hi = 0;
-		if ( split.words.lo & 0x8000 ) {
-			split.words.hi = ~0;
-		}
-		adns_deltas.dx += split.value;
-		
-		split.words.lo = burst.dy;
-		split.words.hi = 0;
-		if ( split.words.lo & 0x8000 ) {
-			split.words.hi = ~0;
-		}
-		adns_deltas.dy += split.value;
+		Adns_BurstReadMotionDeltasBlocking();
 		
 		adns_status.dataReady = 1;
 		RED_LED = LED_OFF;
-		YELLOW_LED = LED_ON;
-		App_Unlock();
 	}
 }
 
@@ -485,17 +467,16 @@ unsigned char Adns_ReadBlocking( unsigned char address )
 }
 
 
-ADNS_SHORT_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
+void Adns_BurstReadMotionDeltasBlocking( void )
 {
-	ADNS_SHORT_DELTAS		deltas;
-	unsigned char			dx, dy, dxyh;
-	union {
+	static union {
 		struct {
 			unsigned char	lo;
 			unsigned char	hi;
 		} bytes;
-		signed short		value;
+		signed long			value;
 	} split;
+	unsigned char			dx, dy, dxyh;
 	
 	// Call a Motion Burst message chain
 	Adns_WriteSPI( ADNS_REG_MOTION_BURST | ADNS_READ_OR_MASK );
@@ -514,7 +495,7 @@ ADNS_SHORT_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	if ( split.bytes.hi & 0x08 ) {
 		split.bytes.hi |= 0xF0;				// Sign extension
 	}
-	deltas.dx = split.value;
+	adns_deltas.dx += split.value;			// Accumulate
 	
 	// Compute Delta Y as a 16-bits signed integer
 	split.bytes.lo = dy;
@@ -522,9 +503,7 @@ ADNS_SHORT_DELTAS Adns_BurstReadMotionDeltasBlocking( void )
 	if ( split.bytes.hi & 0x08 ) {
 		split.bytes.hi |= 0xF0;				// Sign extension
 	}
-	deltas.dy = split.value;
-	
-	return deltas;
+	adns_deltas.dy += split.value;			// Accumulate
 }	
 
 
@@ -558,22 +537,13 @@ void Adns_ReadSubsequentDelay( void )
 }
 
 
-ADNS_LONG_DELTAS Adns_GetDeltas( void )
-{
-	ADNS_LONG_DELTAS	deltas;
-	App_Lock();
-	deltas = adns_deltas;
-	App_Unlock();
-	return deltas;
-}
-
-
 void Adns_ClearDeltas( void )
 {
-	App_Lock();
-	adns_deltas.dx = 0L;
-	adns_deltas.dy = 0L;
-	App_Unlock();
+	Adns_DisableInterrupt();
+	adns_deltas.dx = 0;
+	adns_deltas.dy = 0;
+	adns_status.dataReady = 0;
+	Adns_EnableInterrupt();
 }
 
 // EOF

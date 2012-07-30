@@ -53,7 +53,7 @@ typedef	union {
 typedef struct {
 	unsigned long			id;						///< Report ID
 	unsigned long			timestamp;				///< Report timestamp
-	ADNS_LONG_DELTAS		mouseMotion;			///< Motion from mouse sensor
+	ADNS_DELTAS				mouseMotion;			///< Motion from mouse sensor
 	INCENC_DELTA			incencMotion;			///< Motion from incremental encoder
 } APP_HID_TX_REPORT;								///< HID TX report
 

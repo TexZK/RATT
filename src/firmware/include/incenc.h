@@ -64,7 +64,9 @@ typedef union {
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
 
-extern near volatile INCENC_STATUS	incenc_status;	///< Incremental encoder module status
+extern near volatile INCENC_STATUS	incenc_status;		///< Incremental encoder module status
+
+extern volatile INCENC_DELTA		incenc_delta;		///< Cached delta accumulator
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -80,15 +82,6 @@ void IncEnc_Initialize( void );
  * Service which handles all the device management and communication.
  */
 void IncEnc_Service( void );
-
-
-/**
- * Gets the counter delta since the last clear.
- *
- * @return
- *		The counter delta since the last clear.
- */
-INCENC_DELTA IncEnc_GetDelta( void );
 
 
 /**

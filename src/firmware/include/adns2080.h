@@ -13,6 +13,12 @@
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
+// CONFIGURATION
+
+#define	ADNS_USE_INTERRUPT				0					///< Use interrupt instead of polling
+
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // HEADERS
 
 
@@ -240,19 +246,14 @@ typedef struct {
 typedef struct {
 	signed short		dx;				///< X movement since last motion read
 	signed short		dy;				///< Y movement since last motion read
-} ADNS_SHORT_DELTAS;					///< Short integer deltas
-
-
-typedef struct {
-	signed long			dx;				///< X movement since last HID report
-	signed long			dy;				///< Y movement since last HID report
-} ADNS_LONG_DELTAS;						///< Long integer deltas
+} ADNS_DELTAS;							///< Motion deltas
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
 
-extern near ADNS_STATUS	adns_status;	///< ADNS module status
+extern near ADNS_STATUS			adns_status;		///< ADNS module status
+extern volatile ADNS_DELTAS		adns_deltas;		///< Cached short deltas
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -285,8 +286,11 @@ void Adns_MotionCallback( void );
 /**
  * Enables the Motion interrupt.
  */
+#if ADNS_USE_INTERRUPT
 #define	Adns_EnableInterrupt()		{ ADNS_INT_IE = 1; }
-
+#else
+#define	Adns_EnableInterrupt()
+#endif
 
 /**
  * Disables the Motion interrupt.
@@ -334,10 +338,9 @@ unsigned char Adns_ReadBlocking( unsigned char address );
  * Issues a blocking Burst Read command, in order to retrieve the neded
  * motion deltas.
  *
- * @return
- *		The first Motion Burst values.
+ * Values are cached into <tt>adns_short_deltas</tt>.
  */
-ADNS_SHORT_DELTAS Adns_BurstReadMotionDeltasBlocking( void );
+void Adns_BurstReadMotionDeltasBlocking( void );
 
 
 /**
@@ -363,16 +366,6 @@ void Adns_AddressDataDelay( void );
  * Read or Write).
  */
 void Adns_ReadSubsequentDelay( void );
-
-
-/**
- * Retrieves the deltas accumulated since the last call of this
- * function.
- *
- * @return
- *		Motion deltas since the last call.
- */
-ADNS_LONG_DELTAS Adns_GetDeltas( void );
 
 
 /**
