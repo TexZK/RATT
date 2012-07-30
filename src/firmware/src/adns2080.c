@@ -161,24 +161,6 @@ void Adns_SetupConfiguration( void )
 		goto failure;
 	}
 	Debug_PrintConst_NewLine();
-	
-	// Setup Performance
-	Debug_PrintRom_( "\tPERFORMANCE" );
-	
-	performance.value = ADNS_DEF_PERFORMANCE;
-	performance.bits.FORCE = 0x05;			// Run 2
-	Adns_WriteBlocking( ADNS_REG_PERFORMANCE, performance.value );
-	Adns_WriteReadDelay();
-	value = Adns_ReadBlocking( ADNS_REG_PERFORMANCE );
-	
-	Debug_PrintConst_Eq();
-	Debug_PrintConst_0x();
-	Debug_PrintHex( value );
-	expected = performance.value;
-	if ( value != expected ) {
-		goto failure;
-	}
-	Debug_PrintConst_NewLine();
 
 	// Setup Motion Control
 	Debug_PrintRom_( "\tMOTION_CTRL" );
