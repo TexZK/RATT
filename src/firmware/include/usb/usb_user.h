@@ -14,6 +14,7 @@
 
 #include "usb/usb.h"
 #include "usb/usb_function_hid.h"
+#include "app.h"
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -25,8 +26,8 @@
 #pragma udata usbram2
 
 // USB buffers
-#define	USB_TXBUFFER_SIZE	64								///< Device->Host buffer size, in bytes
-#define	USB_RXBUFFER_SIZE	64								///< Host->Device buffer size, in bytes
+#define	USB_TXBUFFER_SIZE	sizeof(APP_HID_TX_REPORT)		///< Device->Host buffer size, in bytes
+#define	USB_RXBUFFER_SIZE	sizeof(APP_HID_TX_REPORT)		///< Host->Device buffer size, in bytes
 
 extern unsigned char	usb_txBuffer[ USB_TXBUFFER_SIZE ];	///< Device->Host data chunk
 extern unsigned char	usb_rxBuffer[ USB_RXBUFFER_SIZE ];	///< Host->Device data chunk

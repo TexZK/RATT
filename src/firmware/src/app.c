@@ -336,10 +336,11 @@ void ProcessIO( void )
 		++app_hidTxReport.id;
 		app_hidTxReport.timestamp = App_GetTimestamp();
 		
-		app_hidTxReport.mouseMotion = adns_deltas;
+		app_hidTxReport.mouseMotion.dx += adns_deltas.dx;
+		app_hidTxReport.mouseMotion.dy += adns_deltas.dy;
 		Adns_ClearDeltas();
 		
-		app_hidTxReport.incencMotion = incenc_delta;
+		app_hidTxReport.incencMotion += incenc_delta;
 		IncEnc_ClearDelta();
 		
 		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
