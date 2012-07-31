@@ -15,7 +15,7 @@
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // CONFIGURATION
 
-#define	ADNS_USE_INTERRUPT				1					///< Use interrupt instead of polling
+#define	ADNS_USE_INTERRUPT				0					///< Use interrupt instead of polling
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -53,17 +53,17 @@
 #define	ADNS_TRIS_MISO					TRISBbits.TRISB4	///< SPI MISO/SDI
 #define	ADNS_TRIS_MOSI					TRISCbits.TRISC7	///< SPI MOSI/SDO
 #define	ADNS_TRIS_SCLK					TRISBbits.TRISB6	///< SPI SCLK/SCK
-#define	ADNS_TRIS_MOTION				TRISCbits.TRISC2	///< MOTION IRQ
+#define	ADNS_TRIS_MOTION				TRISCbits.TRISC0	///< MOTION IRQ
 
 #define	ADNS_PIN_MISO					PORTBbits.RB4		///< SPI MISO/SDI
 #define	ADNS_PIN_MOSI					PORTCbits.RC7		///< SPI MOSI/SDO
 #define	ADNS_PIN_SCLK					PORTBbits.RB6		///< SPI SCLK/SCK
-#define	ADNS_PIN_MOTION					PORTCbits.RC2		///< MOTION IRQ
+#define	ADNS_PIN_MOTION					PORTCbits.RC0		///< MOTION IRQ
 
 #define	ADNS_LAT_MISO					LATBbits.LATB4		///< SPI MISO/SDI
 #define	ADNS_LAT_MOSI					LATCbits.LATC7		///< SPI MOSI/SDO
 #define	ADNS_LAT_SCLK					LATBbits.LATB6		///< SPI SCLK/SCK
-#define	ADNS_LAT_MOTION					LATCbits.LATC2		///< MOTION IRQ
+#define	ADNS_LAT_MOTION					LATCbits.LATC0		///< MOTION IRQ
 
 
 // Interrupt settings

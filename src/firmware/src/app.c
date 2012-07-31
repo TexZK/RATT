@@ -344,7 +344,7 @@ void ProcessIO( void )
 		
 		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
 		Usb_TxBufferedPacket();
-		YELLOW_LED = !YELLOW_LED;
+		YELLOW_LED = LED_OFF;
 	} else {
 		App_Unlock();
 	}

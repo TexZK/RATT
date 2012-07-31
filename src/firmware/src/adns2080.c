@@ -319,14 +319,14 @@ void Adns_PowerUpDelay( void )
 void Adns_Service( void )
 {
 #if !ADNS_USE_INTERRUPT
-	// Poll for motion status		// TODO: Read from MOTION pin instead of wasting time with SPI
-	if ( Adns_ReadBlocking( ADNS_REG_MOTION_ST ) & 0x80 ) {
+	// Poll for motion status
+	if ( ADNS_PIN_MOTION == ADNS_INT_EDGE_VALUE ) {
 		adns_status.motionInt = 1;
 		RED_LED = LED_ON;
 	}
 #endif
 	
-	// Check for motion interrupt
+	// Process motion if detected
 	if ( adns_status.motionInt ) {
 		Adns_DisableInterrupt();
 		adns_status.motionInt = 0;
@@ -336,6 +336,7 @@ void Adns_Service( void )
 		
 		adns_status.dataReady = 1;
 		RED_LED = LED_OFF;
+		YELLOW_LED = LED_ON;
 	}
 }
 
@@ -458,7 +459,7 @@ void Adns_BurstReadMotionDeltasBlocking( void )
 		} bytes;
 		signed long			value;
 	} split;
-	unsigned char			dx, dy, dxyh;
+	static unsigned char			dx, dy, dxyh;
 	
 	// Call a Motion Burst message chain
 	Adns_WriteSPI( ADNS_REG_MOTION_BURST | ADNS_READ_OR_MASK );
