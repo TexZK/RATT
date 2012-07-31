@@ -143,14 +143,6 @@ void App_WaitButtonPress( void );
 
 
 /**
- * Gets the current timestamp.
- *
- * @return
- *		The current timestamp.
- */
-unsigned long App_GetTimestamp( void );
-
-/**
  * One microsecond delay, precise timing.
  */
 #define	OneUsDelayPrecise()	{Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();Nop();}	// @ 48 MHz

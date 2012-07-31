@@ -307,8 +307,7 @@ void InitializeSystem( void )
  */
 void ProcessIO( void )
 {
-	static unsigned short flashTimeStamp = 0;
-	unsigned short timeStamp;
+	static unsigned short curFlash = 0, oldFlash = 0;
 	
 	Debug_Flush();					// Flush the debug console, to speed-up further messages
 	
@@ -322,10 +321,12 @@ void ProcessIO( void )
 	}
     
     // Flash every 200ms when configured
-	timeStamp = App_GetTimestamp();
-	if ( timeStamp - flashTimeStamp >= 200 ) {
+    App_Lock();
+	curFlash = (unsigned short)app_timestamp;
+	App_Unlock();
+	if ( curFlash - oldFlash >= 200 ) {
 		GREEN_LED = !GREEN_LED;			// Flash the green to see if it is still alive
-		flashTimeStamp = timeStamp;
+		oldFlash = curFlash;
 	}
 	
 	// Build & transfer HID report
@@ -334,7 +335,9 @@ void ProcessIO( void )
 		App_Unlock();
 		
 		++app_hidTxReport.id;
-		app_hidTxReport.timestamp = App_GetTimestamp();
+		App_Lock();
+		app_hidTxReport.timestamp = app_timestamp;
+		App_Unlock();
 		
 		app_hidTxReport.mouseMotion.dx += adns_deltas.dx;
 		app_hidTxReport.mouseMotion.dy += adns_deltas.dy;
@@ -403,16 +406,6 @@ void App_WaitButtonPress( void )
 	while ( BUTTON_PIN ) {		// Wait for button press
 		DelayMs( 10 );			// Debounce button press
 	}
-}
-
-
-unsigned long App_GetTimestamp( void )
-{
-	unsigned long timestamp;
-	App_Lock();
-	timestamp = app_timestamp;
-	App_Unlock();
-	return timestamp;
 }
 
 
