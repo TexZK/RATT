@@ -89,7 +89,7 @@ void IncEnc_Initialize( void )
 	CM1CON0bits.C1CH0 = 1;				// - = C12IN1-
 	CM1CON0bits.C1CH1 = 0;
 	CM1CON0bits.C1SP = 1;				// High-speed
-	CM1CON0bits.C1POL = 1;				// Inverted output (= input pin)
+	CM1CON0bits.C1POL = 0;				// Non-inverted output (= input pin)
 	CM2CON1bits.C1HYS = 1;				// Enable hysteresis
 	CM1CON0bits.C1ON = 1;				// Enable Comparator 1
 	
@@ -99,13 +99,14 @@ void IncEnc_Initialize( void )
 	CM2CON0bits.C2CH0 = 0;				// - = C12IN2-
 	CM2CON0bits.C2CH1 = 1;
 	CM2CON0bits.C2SP = 1;				// High-speed
-	CM2CON0bits.C2POL = 1;				// Inverted output (= input pin)
+	CM2CON0bits.C2POL = 0;				// Non-inverted output (= input pin)
 	CM2CON1bits.C2HYS = 1;				// Enable hysteresis
 	CM2CON0bits.C2ON = 1;				// Enable Comparator 2
 	
 	// Reset variables
 	incenc_status.value = 0;
 	incenc_delta = 0L;
+	incenc_deltaAccum = 0L;
 	
 	// Enable interrupts
 	INCENC_INT_IP_A = INCENC_INT_IP_VALUE;
@@ -135,7 +136,10 @@ void IncEnc_ClearDelta( void )
 
 void IncEnc_ChangeCallback( void )
 {
-	static volatile unsigned char state, dummy;
+	static volatile unsigned char dummy;
+	static unsigned char state;
+	
+	RED_LED = LED_ON;
 	
 	// Sample the current state
 	state = (incenc_status.value >> 2) & 0b0011;	// Old state in bits 1:0
@@ -156,22 +160,24 @@ void IncEnc_ChangeCallback( void )
 	 * 0bNNLL: LL = old, NN = new
 	 */
 	switch ( state ) {
-		case 0b0100:
-		case 0b1101:
-		case 0b1011:
-		case 0b0010: {
-			// Going forward
-			++incenc_deltaAccum;
-			incenc_status.bits.direction = 1;
-			break;
-		}
 		case 0b1000:
 		case 0b1110:
 		case 0b0111:
 		case 0b0001: {
+			// Going forward
+			++incenc_deltaAccum;
+			incenc_status.bits.direction = 0;
+			YELLOW_LED = LED_OFF;
+			break;
+		}
+		case 0b0100:
+		case 0b1101:
+		case 0b1011:
+		case 0b0010: {
 			// Going backwards
 			--incenc_deltaAccum;
-			incenc_status.bits.direction = 0;
+			incenc_status.bits.direction = 1;
+			YELLOW_LED = LED_ON;
 			break;
 		}
 	}
@@ -179,6 +185,8 @@ void IncEnc_ChangeCallback( void )
 	incenc_status.value &= 0xF0;
 	incenc_status.value |= state;
 	incenc_status.bits.dataReady = 1;
+	
+	RED_LED = LED_OFF;
 }
 
 

@@ -332,12 +332,9 @@ void ProcessIO( void )
 	// Build & transfer HID report
 	App_Lock();
 	if ( (incenc_status.bits.dataReady || adns_status.dataReady) && Usb_TxReady() ) {
-		App_Unlock();
-		
-		++app_hidTxReport.id;
-		App_Lock();
 		app_hidTxReport.timestamp = app_timestamp;
 		App_Unlock();
+		++app_hidTxReport.id;
 		
 		app_hidTxReport.mouseMotion.dx += adns_deltas.dx;
 		app_hidTxReport.mouseMotion.dy += adns_deltas.dy;
@@ -348,7 +345,6 @@ void ProcessIO( void )
 		
 		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
 		Usb_TxBufferedPacket();
-		YELLOW_LED = LED_OFF;
 	} else {
 		App_Unlock();
 	}
@@ -371,9 +367,9 @@ void ProcessIO( void )
  * Program entry point
  */
 void main( void )
-{   
+{
     InitializeSystem();
-
+    
     while ( 1 ) {
         #ifdef USB_POLLING
 		/* Check bus status and service USB interrupts.

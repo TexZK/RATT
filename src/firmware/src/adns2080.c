@@ -149,6 +149,8 @@ void Adns_SetupConfiguration( void )
 	
 	mouse_ctrl.value = ADNS_DEF_MOUSE_CTRL;
 	mouse_ctrl.bits.BIT_REPORTING = 1;		// 12-bits reporting
+	mouse_ctrl.bits.RES = 0x6;				// 2000 DPI
+	mouse_ctrl.bits.RES_EN = 1;				// Enable custom DPI
 	Adns_WriteBlocking( ADNS_REG_MOUSE_CTRL, mouse_ctrl.value );
 	Adns_WriteReadDelay();
 	value = Adns_ReadBlocking( ADNS_REG_MOUSE_CTRL );
@@ -322,7 +324,6 @@ void Adns_Service( void )
 	// Poll for motion status
 	if ( ADNS_PIN_MOTION == ADNS_INT_EDGE_VALUE ) {
 		adns_status.motionInt = 1;
-		RED_LED = LED_ON;
 	}
 #endif
 	
@@ -335,8 +336,6 @@ void Adns_Service( void )
 		Adns_BurstReadMotionDeltasBlocking();
 		
 		adns_status.dataReady = 1;
-		RED_LED = LED_OFF;
-		YELLOW_LED = LED_ON;
 	}
 }
 
@@ -345,7 +344,6 @@ void Adns_MotionCallback( void )
 {
 	ADNS_INT_IF = 0;
 	adns_status.motionInt = 1;
-	RED_LED = LED_ON;
 }	
 
 
@@ -459,7 +457,7 @@ void Adns_BurstReadMotionDeltasBlocking( void )
 		} bytes;
 		signed long			value;
 	} split;
-	static unsigned char			dx, dy, dxyh;
+	static unsigned char	dx, dy, dxyh;
 	
 	// Call a Motion Burst message chain
 	Adns_WriteSPI( ADNS_REG_MOTION_BURST | ADNS_READ_OR_MASK );

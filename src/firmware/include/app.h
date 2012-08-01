@@ -55,6 +55,7 @@ typedef struct {
 	unsigned long			timestamp;				///< Report timestamp
 	ADNS_DELTAS				mouseMotion;			///< Motion from mouse sensor
 	INCENC_DELTA			incencMotion;			///< Motion from incremental encoder
+	unsigned short			__padding;				///< Padding to 16 bytes
 } APP_HID_TX_REPORT;								///< HID TX report
 
 

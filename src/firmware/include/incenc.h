@@ -47,7 +47,7 @@
 
 
 // Types
-typedef signed long				INCENC_DELTA;		///< Incremental encoder delta
+typedef signed short			INCENC_DELTA;		///< Incremental encoder delta
 
 typedef union {
 	struct {
