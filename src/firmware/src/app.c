@@ -336,8 +336,8 @@ void ProcessIO( void )
 		App_Unlock();
 		++app_hidTxReport.id;
 		
-		app_hidTxReport.mouseMotion.dx += adns_deltas.dx;
-		app_hidTxReport.mouseMotion.dy += adns_deltas.dy;
+		app_hidTxReport.mouseMotion.dx -= adns_deltas.dx;
+		app_hidTxReport.mouseMotion.dy -= adns_deltas.dy;
 		Adns_ClearDeltas();
 		
 		app_hidTxReport.incencMotion += incenc_delta;
