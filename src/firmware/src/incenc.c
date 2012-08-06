@@ -160,20 +160,20 @@ void IncEnc_ChangeCallback( void )
 	 * 0bNNLL: LL = old, NN = new
 	 */
 	switch ( state ) {
-		case 0b1000:
-		case 0b1110:
-		case 0b0111:
-		case 0b0001: {
+		case 0b0100:
+		case 0b1101:
+		case 0b1011:
+		case 0b0010: {
 			// Going forward
 			++incenc_deltaAccum;
 			incenc_status.bits.direction = 0;
 			YELLOW_LED = LED_OFF;
 			break;
 		}
-		case 0b0100:
-		case 0b1101:
-		case 0b1011:
-		case 0b0010: {
+		case 0b1000:
+		case 0b1110:
+		case 0b0111:
+		case 0b0001: {
 			// Going backwards
 			--incenc_deltaAccum;
 			incenc_status.bits.direction = 1;
