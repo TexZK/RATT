@@ -11,14 +11,14 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svgcontent_0"
-   height="110.5"
-   viewBox="0 0 367.08386 110.5"
-   width="367.08386"
+   height="50.174561"
+   viewBox="0 0 952.85925 50.174561"
+   width="952.85925"
    version="1.1"
    inkscape:version="0.48.0 r9654"
-   sodipodi:docname="quad_wave.svg">
+   sodipodi:docname="midi_voice_msg.svg">
   <metadata
-     id="metadata1026">
+     id="metadata1137">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -39,15 +39,15 @@
      inkscape:pageshadow="2"
      inkscape:window-width="1280"
      inkscape:window-height="748"
-     id="namedview1024"
+     id="namedview1135"
      showgrid="false"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="1.7913372"
-     inkscape:cx="149.77792"
-     inkscape:cy="60.146002"
+     inkscape:zoom="1.0748023"
+     inkscape:cx="138.28538"
+     inkscape:cy="80.54601"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -2785,415 +2785,347 @@
   </defs>
   <g
      id="waves_0"
-     transform="matrix(0.9969585,0,0,0.98989607,-32.756261,-4.1437641)">
+     transform="matrix(0.70139644,0,0,1,-15.42353,-5)">
     <g
        id="lanes_0"
-       transform="translate(80,0)">
+       transform="translate(60,0)">
       <g
          id="gmarks_0">
         <text
-           x="300"
-           y="115"
+           x="1300"
+           y="55"
            id="text918"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">33</text>
+        <text
+           x="1260"
+           y="55"
+           id="text920"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">32</text>
+        <text
+           x="1220"
+           y="55"
+           id="text922"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">31</text>
+        <text
+           x="1180"
+           y="55"
+           id="text924"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">30</text>
+        <text
+           x="1140"
+           y="55"
+           id="text926"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">29</text>
+        <text
+           x="1100"
+           y="55"
+           id="text928"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">28</text>
+        <text
+           x="1060"
+           y="55"
+           id="text930"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">27</text>
+        <text
+           x="1020"
+           y="55"
+           id="text932"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">26</text>
+        <text
+           x="980"
+           y="55"
+           id="text934"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">25</text>
+        <text
+           x="940"
+           y="55"
+           id="text936"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">24</text>
+        <text
+           x="900"
+           y="55"
+           id="text938"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">23</text>
+        <text
+           x="860"
+           y="55"
+           id="text940"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">22</text>
+        <text
+           x="820"
+           y="55"
+           id="text942"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">21</text>
+        <text
+           x="780"
+           y="55"
+           id="text944"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">20</text>
+        <text
+           x="740"
+           y="55"
+           id="text946"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">19</text>
+        <text
+           x="700"
+           y="55"
+           id="text948"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">18</text>
+        <text
+           x="660"
+           y="55"
+           id="text950"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">17</text>
+        <text
+           x="620"
+           y="55"
+           id="text952"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">16</text>
+        <text
+           x="580"
+           y="55"
+           id="text954"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">15</text>
+        <text
+           x="540"
+           y="55"
+           id="text956"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">14</text>
+        <text
+           x="500"
+           y="55"
+           id="text958"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">13</text>
+        <text
+           x="460"
+           y="55"
+           id="text960"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">12</text>
+        <text
+           x="420"
+           y="55"
+           id="text962"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">11</text>
+        <text
+           x="380"
+           y="55"
+           id="text964"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">10</text>
+        <text
+           x="340"
+           y="55"
+           id="text966"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">9</text>
+        <text
+           x="300"
+           y="55"
+           id="text968"
            style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">8</text>
         <text
            x="260"
-           y="115"
-           id="text920"
+           y="55"
+           id="text970"
            style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">7</text>
         <text
            x="220"
-           y="115"
-           id="text922"
+           y="55"
+           id="text972"
            style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">6</text>
         <text
            x="180"
-           y="115"
-           id="text924"
+           y="55"
+           id="text974"
            style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">5</text>
         <text
            x="140"
-           y="115"
-           id="text926"
+           y="55"
+           id="text976"
            style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">4</text>
         <text
            x="100"
-           y="115"
-           id="text928"
+           y="55"
+           id="text978"
            style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">3</text>
         <text
            x="60"
-           y="115"
-           id="text930"
+           y="55"
+           id="text980"
            style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">2</text>
         <text
            x="20"
-           y="115"
-           id="text932"
+           y="55"
+           id="text982"
            style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill:#aaaaaa;fill-opacity:1;font-family:Helvetica">1</text>
         <path
+           id="gmark_33_0"
+           d="m 1320,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_32_0"
+           d="m 1280,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_31_0"
+           d="m 1240,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_30_0"
+           d="m 1200,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_29_0"
+           d="m 1160,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_28_0"
+           d="m 1120,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_27_0"
+           d="m 1080,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_26_0"
+           d="m 1040,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_25_0"
+           d="m 1000,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_24_0"
+           d="m 960,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_23_0"
+           d="m 920,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_22_0"
+           d="m 880,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_21_0"
+           d="m 840,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_20_0"
+           d="m 800,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_19_0"
+           d="m 760,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_18_0"
+           d="m 720,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_17_0"
+           d="m 680,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_16_0"
+           d="m 640,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_15_0"
+           d="m 600,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_14_0"
+           d="m 560,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_13_0"
+           d="m 520,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_12_0"
+           d="m 480,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_11_0"
+           d="m 440,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_10_0"
+           d="m 400,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
+           id="gmark_9_0"
+           d="m 360,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
+           inkscape:connector-curvature="0" />
+        <path
            id="gmark_8_0"
-           d="m 320,5 0,110"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="m 320,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
         <path
            id="gmark_7_0"
-           d="m 280,5 0,110"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="m 280,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
         <path
            id="gmark_6_0"
-           d="m 240,5 0,110"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="m 240,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
         <path
            id="gmark_5_0"
-           d="m 200,5 0,110"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="m 200,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
         <path
            id="gmark_4_0"
-           d="m 160,5 0,110"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="m 160,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
         <path
            id="gmark_3_0"
-           d="m 120,5 0,110"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="m 120,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
         <path
            id="gmark_2_0"
-           d="m 80,5 0,110"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="m 80,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
         <path
            id="gmark_1_0"
-           d="m 40,5 0,110"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="m 40,5 0,50"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
         <path
            id="gmark_0_0"
-           d="M 0,5 0,115"
-           style="stroke:#888888;stroke-width:0.50331128;stroke-dasharray:2.01324512, 2.01324512"
+           d="M 0,5 0,55"
+           style="stroke:#888888;stroke-width:0.59701908;stroke-dasharray:2.3880764, 2.3880764"
            inkscape:connector-curvature="0" />
-      </g>
-      <g
-         id="wavelane_2_0"
-         transform="translate(0,70)">
-        <g
-           id="wavelane_draw_2_0">
-          <use
-             id="use_15_2_0"
-             xlink:href="#vvv-3"
-             transform="translate(300,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_14_2_0"
-             xlink:href="#vmv-2-3"
-             transform="translate(280,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_13_2_0"
-             xlink:href="#vvv-2"
-             transform="translate(260,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_12_2_0"
-             xlink:href="#vmv-5-2"
-             transform="translate(240,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_11_2_0"
-             xlink:href="#vvv-5"
-             transform="translate(220,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_10_2_0"
-             xlink:href="#vmv-4-5"
-             transform="translate(200,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_9_2_0"
-             xlink:href="#vvv-4"
-             transform="translate(180,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_8_2_0"
-             xlink:href="#vmv-3-4"
-             transform="translate(160,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_7_2_0"
-             xlink:href="#vvv-3"
-             transform="translate(140,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_6_2_0"
-             xlink:href="#vmv-2-3"
-             transform="translate(120,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_5_2_0"
-             xlink:href="#vvv-2"
-             transform="translate(100,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_4_2_0"
-             xlink:href="#vmv-5-2"
-             transform="translate(80,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_3_2_0"
-             xlink:href="#vvv-5"
-             transform="translate(60,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_2_2_0"
-             xlink:href="#vmv-4-5"
-             transform="translate(40,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_1_2_0"
-             xlink:href="#vvv-4"
-             transform="translate(20,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_0_2_0"
-             xlink:href="#vvv-4"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <text
-             x="306"
-             y="15"
-             id="text961"
-             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">1</text>
-          <text
-             x="266"
-             y="15"
-             id="text963"
-             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">0</text>
-          <text
-             x="226"
-             y="15"
-             id="text965"
-             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">3</text>
-          <text
-             x="186"
-             y="15"
-             id="text967"
-             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">2</text>
-          <text
-             x="146"
-             y="15"
-             id="text969"
-             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">1</text>
-          <text
-             x="106"
-             y="15"
-             id="text971"
-             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">0</text>
-          <text
-             x="66"
-             y="15"
-             id="text973"
-             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">3</text>
-          <text
-             x="16"
-             y="15"
-             id="text975"
-             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">2</text>
-        </g>
-        <text
-           x="-10"
-           y="15"
-           id="text977"
-           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:end;fill:#0041c4;fill-opacity:1;font-family:Helvetica">phase</text>
-      </g>
-      <g
-         id="wavelane_1_0"
-         transform="translate(0,40)">
-        <g
-           id="wavelane_draw_1_0">
-          <use
-             id="use_15_1_0"
-             xlink:href="#111"
-             transform="translate(300,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_14_1_0"
-             xlink:href="#0m1"
-             transform="translate(280,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_13_1_0"
-             xlink:href="#000"
-             transform="translate(260,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_12_1_0"
-             xlink:href="#000"
-             transform="translate(240,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_11_1_0"
-             xlink:href="#000"
-             transform="translate(220,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_10_1_0"
-             xlink:href="#1m0"
-             transform="translate(200,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_9_1_0"
-             xlink:href="#111"
-             transform="translate(180,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_8_1_0"
-             xlink:href="#111"
-             transform="translate(160,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_7_1_0"
-             xlink:href="#111"
-             transform="translate(140,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_6_1_0"
-             xlink:href="#0m1"
-             transform="translate(120,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_5_1_0"
-             xlink:href="#000"
-             transform="translate(100,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_4_1_0"
-             xlink:href="#000"
-             transform="translate(80,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_3_1_0"
-             xlink:href="#000"
-             transform="translate(60,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_2_1_0"
-             xlink:href="#1m0"
-             transform="translate(40,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_1_1_0"
-             xlink:href="#111"
-             transform="translate(20,0)"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-          <use
-             id="use_0_1_0"
-             xlink:href="#111"
-             x="0"
-             y="0"
-             width="420"
-             height="120" />
-        </g>
-        <text
-           x="-10"
-           y="15"
-           id="text997"
-           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:end;fill:#0041c4;fill-opacity:1;font-family:Helvetica">B</text>
       </g>
       <g
          id="wavelane_0_0"
@@ -3201,150 +3133,666 @@
         <g
            id="wavelane_draw_0_0">
           <use
-             id="use_15_0_0"
+             id="use_65_0_0"
+             xlink:href="#111"
+             transform="translate(1300,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_64_0_0"
+             xlink:href="#vm1-5"
+             transform="translate(1280,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_63_0_0"
+             xlink:href="#vvv-5"
+             transform="translate(1260,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_62_0_0"
+             xlink:href="#vmv-5-5"
+             transform="translate(1240,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_61_0_0"
+             xlink:href="#vvv-5"
+             transform="translate(1220,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_60_0_0"
+             xlink:href="#vmv-5-5"
+             transform="translate(1200,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_59_0_0"
+             xlink:href="#vvv-5"
+             transform="translate(1180,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_58_0_0"
+             xlink:href="#vmv-5-5"
+             transform="translate(1160,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_57_0_0"
+             xlink:href="#vvv-5"
+             transform="translate(1140,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_56_0_0"
+             xlink:href="#vmv-5-5"
+             transform="translate(1120,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_55_0_0"
+             xlink:href="#vvv-5"
+             transform="translate(1100,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_54_0_0"
+             xlink:href="#vmv-5-5"
+             transform="translate(1080,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_53_0_0"
+             xlink:href="#vvv-5"
+             transform="translate(1060,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_52_0_0"
+             xlink:href="#vmv-5-5"
+             transform="translate(1040,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_51_0_0"
+             xlink:href="#vvv-5"
+             transform="translate(1020,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_50_0_0"
+             xlink:href="#0mv-5"
+             transform="translate(1000,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_49_0_0"
              xlink:href="#000"
+             transform="translate(980,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_48_0_0"
+             xlink:href="#000"
+             transform="translate(960,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_47_0_0"
+             xlink:href="#000"
+             transform="translate(940,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_46_0_0"
+             xlink:href="#1m0"
+             transform="translate(920,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_45_0_0"
+             xlink:href="#111"
+             transform="translate(900,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_44_0_0"
+             xlink:href="#111"
+             transform="translate(880,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_43_0_0"
+             xlink:href="#111"
+             transform="translate(860,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_42_0_0"
+             xlink:href="#vm1-4"
+             transform="translate(840,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_41_0_0"
+             xlink:href="#vvv-4"
+             transform="translate(820,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_40_0_0"
+             xlink:href="#vmv-4-4"
+             transform="translate(800,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_39_0_0"
+             xlink:href="#vvv-4"
+             transform="translate(780,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_38_0_0"
+             xlink:href="#vmv-4-4"
+             transform="translate(760,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_37_0_0"
+             xlink:href="#vvv-4"
+             transform="translate(740,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_36_0_0"
+             xlink:href="#vmv-4-4"
+             transform="translate(720,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_35_0_0"
+             xlink:href="#vvv-4"
+             transform="translate(700,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_34_0_0"
+             xlink:href="#vmv-4-4"
+             transform="translate(680,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_33_0_0"
+             xlink:href="#vvv-4"
+             transform="translate(660,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_32_0_0"
+             xlink:href="#vmv-4-4"
+             transform="translate(640,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_31_0_0"
+             xlink:href="#vvv-4"
+             transform="translate(620,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_30_0_0"
+             xlink:href="#vmv-4-4"
+             transform="translate(600,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_29_0_0"
+             xlink:href="#vvv-4"
+             transform="translate(580,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_28_0_0"
+             xlink:href="#0mv-4"
+             transform="translate(560,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_27_0_0"
+             xlink:href="#000"
+             transform="translate(540,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_26_0_0"
+             xlink:href="#000"
+             transform="translate(520,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_25_0_0"
+             xlink:href="#000"
+             transform="translate(500,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_24_0_0"
+             xlink:href="#1m0"
+             transform="translate(480,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_23_0_0"
+             xlink:href="#111"
+             transform="translate(460,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_22_0_0"
+             xlink:href="#111"
+             transform="translate(440,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_21_0_0"
+             xlink:href="#111"
+             transform="translate(420,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_20_0_0"
+             xlink:href="#vm1-3"
+             transform="translate(400,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_19_0_0"
+             xlink:href="#vvv-3"
+             transform="translate(380,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_18_0_0"
+             xlink:href="#vmv-3-3"
+             transform="translate(360,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_17_0_0"
+             xlink:href="#vvv-3"
+             transform="translate(340,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_16_0_0"
+             xlink:href="#vmv-3-3"
+             transform="translate(320,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="use_15_0_0"
+             xlink:href="#vvv-3"
              transform="translate(300,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_14_0_0"
-             xlink:href="#000"
+             xlink:href="#vmv-3-3"
              transform="translate(280,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_13_0_0"
-             xlink:href="#000"
+             xlink:href="#vvv-3"
              transform="translate(260,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_12_0_0"
-             xlink:href="#1m0"
+             xlink:href="#vmv-3-3"
              transform="translate(240,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_11_0_0"
-             xlink:href="#111"
+             xlink:href="#vvv-3"
              transform="translate(220,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_10_0_0"
-             xlink:href="#111"
+             xlink:href="#vmv-3-3"
              transform="translate(200,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_9_0_0"
-             xlink:href="#111"
+             xlink:href="#vvv-3"
              transform="translate(180,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_8_0_0"
-             xlink:href="#0m1"
+             xlink:href="#vmv-3-3"
              transform="translate(160,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_7_0_0"
-             xlink:href="#000"
+             xlink:href="#vvv-3"
              transform="translate(140,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_6_0_0"
-             xlink:href="#000"
+             xlink:href="#1mv-3"
              transform="translate(120,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_5_0_0"
-             xlink:href="#000"
+             xlink:href="#111"
              transform="translate(100,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_4_0_0"
-             xlink:href="#1m0"
+             xlink:href="#0m1"
              transform="translate(80,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_3_0_0"
-             xlink:href="#111"
+             xlink:href="#000"
              transform="translate(60,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_2_0_0"
-             xlink:href="#111"
+             xlink:href="#1m0"
              transform="translate(40,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_1_0_0"
              xlink:href="#111"
              transform="translate(20,0)"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
           <use
              id="use_0_0_0"
              xlink:href="#111"
              x="0"
              y="0"
-             width="420"
-             height="120" />
+             width="1400"
+             height="60" />
+          <text
+             x="1266"
+             y="15"
+             id="text1086"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">V0</text>
+          <text
+             x="1226"
+             y="15"
+             id="text1088"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">V1</text>
+          <text
+             x="1186"
+             y="15"
+             id="text1090"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">V2</text>
+          <text
+             x="1146"
+             y="15"
+             id="text1092"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">V3</text>
+          <text
+             x="1106"
+             y="15"
+             id="text1094"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">V4</text>
+          <text
+             x="1066"
+             y="15"
+             id="text1096"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">V5</text>
+          <text
+             x="1026"
+             y="15"
+             id="text1098"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">V6</text>
+          <text
+             x="826"
+             y="15"
+             id="text1100"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">I0</text>
+          <text
+             x="786"
+             y="15"
+             id="text1102"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">I1</text>
+          <text
+             x="746"
+             y="15"
+             id="text1104"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">I2</text>
+          <text
+             x="706"
+             y="15"
+             id="text1106"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">I3</text>
+          <text
+             x="666"
+             y="15"
+             id="text1108"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">I4</text>
+          <text
+             x="626"
+             y="15"
+             id="text1110"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">I5</text>
+          <text
+             x="586"
+             y="15"
+             id="text1112"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">I6</text>
+          <text
+             x="386"
+             y="15"
+             id="text1114"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">C0</text>
+          <text
+             x="346"
+             y="15"
+             id="text1116"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">C1</text>
+          <text
+             x="306"
+             y="15"
+             id="text1118"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">C2</text>
+          <text
+             x="266"
+             y="15"
+             id="text1120"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">C3</text>
+          <text
+             x="226"
+             y="15"
+             id="text1122"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">T0</text>
+          <text
+             x="186"
+             y="15"
+             id="text1124"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">T1</text>
+          <text
+             x="146"
+             y="15"
+             id="text1126"
+             style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;fill-opacity:1;font-family:Helvetica">T2</text>
         </g>
         <text
            x="-10"
            y="15"
-           id="text1017"
-           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:end;fill:#0041c4;fill-opacity:1;font-family:Helvetica">A</text>
+           id="text1128"
+           style="font-size:13.75px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:end;fill:#0041c4;fill-opacity:1;font-family:Helvetica">MIDI</text>
       </g>
       <g
          id="wavegaps_0">
         <g
-           id="wavegap_2_0"
-           transform="translate(0,70)" />
-        <g
-           id="wavegap_1_0"
-           transform="translate(0,40)" />
-        <g
            id="wavegap_0_0"
-           transform="translate(0,10)" />
+           transform="translate(0,10)">
+          <use
+             id="guse_22_0_0"
+             xlink:href="#gap"
+             transform="translate(900,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+          <use
+             id="guse_11_0_0"
+             xlink:href="#gap"
+             transform="translate(460,0)"
+             x="0"
+             y="0"
+             width="1400"
+             height="60" />
+        </g>
       </g>
     </g>
     <g

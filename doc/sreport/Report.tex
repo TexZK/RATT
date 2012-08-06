@@ -27,6 +27,8 @@
 \usepackage{epstopdf}
 \usepackage{mdwlist}
 \usepackage{hyperref}
+\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \input{tcilatex}
 %-----------------------------------------------------------------------------
 % Page Setup
@@ -77,8 +79,8 @@
 \newcommand{\citef}[1]{\textbf{Figure~\ref{#1}}}
 
 
-\begin{mytitle}RATT	- Relatiely Accurate TurnTable\end{mytitle}
-\begin{mysubtitle}Relative turntable motion detection with mouse sensors\end{mysubtitle}
+\begin{mytitle}RATT	- Relatively Accurate TurnTable\end{mytitle}
+\begin{mysubtitle}Relative turntable motion detection through mouse sensors\end{mysubtitle}
 % Please do not insert a line here
 \\
 Zoppi Andrea\\
@@ -182,7 +184,7 @@ decently enough.
 \paragraph{System architecture}
 The basic architecture of these controllers is shown is \citef{fig:hercules_mp3e2_schematic}.
 The controller commonly has a set of input devices -- buttons, knobs,
-sliders, \textit{etc.} -- so that the user can \emph{map}\footnote{
+sliders, \emph{etc.} -- so that the user can \emph{map}\footnote{
 	Assign a triggered action to an input event
 } these inputs to some software parameters, such as the play/stop events, or
 the desired volume level.
@@ -200,14 +202,14 @@ messages from the latter.
 
 The communication between the controller and the software is often performed
 through an USB bus with HID/USB or MIDI/USB protocols, but some controllers
-still rely on the plain old MIDI port (see Section~\CITEME).
+still rely on the plain old MIDI port (see Section~\ref{sec:controller_protocols}).
 
 \begin{figurehere}
 	\centering
 	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/hercules_mp3e2_schematic.pdf}
-	\caption{\emph{Hercules DJ Control MP3 e2}\cite{hercules_djcmp3e2}
-	intereface schematic with buttons (cyan), incremental encoders (red),
-	sliders and knobs (lime)}
+	\caption{\emph{Hercules DJ Control MP3 e2} \cite{hercules_djcmp3e2}
+	intereface schematic with \textcolor{cyan}{buttons}, \textcolor{red}{incremental encoders},
+	\textcolor{green}{sliders and knobs}}
 	\label{fig:hercules_mp3e2_schematic}
 \end{figurehere}
 
@@ -250,13 +252,13 @@ as seen in \citef{fig:quad_wave}.
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=0.8\columnwidth]{images/quad_wave.pdf}
+	\includegraphics[keepaspectratio=true,width=0.9\columnwidth]{images/quad_wave.pdf}
 	\caption{Quadrature pattern, going forward left-to-right}
 	\label{fig:quad_wave}
 \end{figurehere}
 
 An example of jogwheel internals can be seen in \citef{fig:vestax_vci400_jogwheel}.
-It is a close-up of the \emph{Vestax VCI-400}\cite{vestax_vci400} jogwheel
+It is a close-up of the \emph{Vestax VCI-400} \cite{vestax_vci400} jogwheel
 architecture, with a high-resolution wheel -- segments can be barely seen --
 and an \emph{Agilent HEDS-9700} quadrature encoder.
 
@@ -342,7 +344,7 @@ exceed \$3000.
 
 
 \paragraph{System architecture}
-A common commercial architecture \cite{rane_ssl}\cite{ni_tsp} can be seen in
+A common commercial architecture \cite{rane_ssl} \cite{ni_tsp} can be seen in
 \citef{fig:serato_setup}. The existing turntables or CD players are connected
 to the appropriate soundcard inputs.
 
@@ -377,7 +379,7 @@ half-wave of the same sign is slightly modulated with a proprietary digital
 code, which represents the absolute position inside the whole timecoded track.
 
 In \citef{fig:serato_timecode_slice} it is possible to see a slice of the
-\emph{Serato Scratch Live}\cite{rane_ssl} timecode signal (aka
+\emph{Serato Scratch Live} \cite{rane_ssl} timecode signal (aka
 \emph{noisemap}), with some amplitude-modulated bits at the sine wave top
 peaks.
 
@@ -438,7 +440,7 @@ are difficult to process with timecode, and need high resolution jogwheels.
 As seen in the previous section, this is not possible with cheap designs.
 Slow local motions are common when scratching or trying to reposition the
 virtual needle of the emulated turntable, for example when the DJ is searching
-for a good point where to start playing from (\textit{cue} point).
+for a good point where to start playing from (\emph{cue} point).
 
 When the disc is spinning at cruise speed, or when the rotation is fast
 enough, the classic methods can be used to keep track of the position.
@@ -471,9 +473,10 @@ with the sensor, for further experiments with other hardware configurations.
 
 \paragraph{Controller board}
 The controller board in \citef{fig:board_photo} hosts the MCU, a
-\emph{PIC18LF14K50}\CITEME by \emph{Microchip}, which is a 8-bits MCU running
-at 48~MHz (16 MIPS). It is fast enough to handle a single wheel, but nothing
-more advanced such as DSP, which is left to the user software application.
+\emph{PIC18LF14K50} \cite{microchip_pic18lf14k50} by \emph{Microchip}, which
+is a 8-bits MCU running at 48~MHz (16 MIPS). It is fast enough to handle a
+single wheel, but nothing more advanced such as DSP, which is left to the
+user software application.
 
 This board also mounts the voltage regulator, to get 3.3~V from the standard
 5~V provided by the USB host. Bulk capacitors keep it stable.
@@ -498,8 +501,8 @@ signals, and a half-duplex serial port are provided.
 
 
 \paragraph{Sensor board}
-The sensor board in \citef{fig:sensor_photo} simply hosts the mouse sensor
-and the surface illumination LED. The sensor is an \emph{ADNS-2080}
+The sensor board in \citef{fig:sensor_photo} simply hosts the mouse sensor,
+the surface illumination LED, and the lens. The sensor is an \emph{ADNS-2080}
 \cite{avago_adns2080} by \emph{Avago}. It is a sensor aimed at office users,
 with average performance and low cost. As for the MCU, higher performance
 modules are on the market, but the challenge of this proposal was to find a
@@ -511,7 +514,7 @@ latencies, because the clock speed is variable.
 \begin{figurehere}
 	\centering
 	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/sensor_photo.pdf}
-	\caption{The optical motion sensor prototype baord}
+	\caption{The optical motion sensor prototype board}
 	\label{fig:sensor_photo}
 \end{figurehere}
 
@@ -781,7 +784,7 @@ Dimmed lights are more complex to handle, and need to be connected to PWM
 outputs to give an intensity effect to the human eye, proportional to the
 PWM duty cycle. Due to scarcity of such outputs, this feature is often not
 implemented at all, or applied to simple behaviors -- for example, the
-\emph{M-Audio Torq Xponent}\cite{maudio_xponent} gives the so-called
+\emph{M-Audio Torq Xponent} \cite{maudio_xponent} gives the so-called
 \emph{Christmas tree} effect, with all LEDs beign modulated by the music tempo.
 
 
@@ -909,7 +912,7 @@ ones. The tracking performance is suited for professionals.
 
 
 \paragraph{DSP}
-The frame impressed on the CCD is then processed by an \textit{ad-hoc}
+The frame impressed on the CCD is then processed by an \emph{ad-hoc}
 \emph{DSP}, which computes the distance -- in $(x,y)$ frame coordinates --
 from the previously acquired frame. The DSP must be fast enough to reach the
 10x-in/s maximum detected velocity in both directions.
@@ -951,21 +954,44 @@ mode at 400~kb/s.
 
 \paragraph{SSP/SPI}
 When requiring slightly higher speed and lower latency, it is possible to
-adopt \emph{Synchronous Serial Port} / \emph{Serial Peripheral Interface}
-(respectively, half-duplex and full-duplex) interfaced sensors.
-They usually do not require handhaking, even though some control pins are
+adopt \emph{Synchronous Serial Port} in both \emph{Serial Peripheral Interface}
+(\emph{SPI}) or \emph{3-wire}, respectively with full-duplex and half-duplex
+capabilites, to communicate with motion sensors.
+
+They usually do not require handshaking, even though some control pins are
 often used in such a way (e.g. the common \emph{shutdown} pin).
 Also, the bit rate is often higher -- from 1~MHz to some tens -- even though
 pratically not much higher than I2C.
 
-\INSFIG
+An example of \emph{write} operation over a 3-wire SSP is shown in
+\citef{fig:ssp_write}. The master device signals an incoming \emph{write}
+operation, tells the register address and its value.
+
+An example of \emph{read} operation over the same hardware is shown in
+\citef{fig:ssp_read}. The master signals an incoming \emph{read} operation
+and tells the address. After that, it lets the slave drive the SDIO line,
+then eventually reads the addressed register value.
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[keepaspectratio=true,height=1.8cm]{images/ssp_write.pdf}
+	\caption{A write operation through an half-duplex, 3-wire SSP}
+	\label{fig:ssp_write}
+\end{figure*}
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[keepaspectratio=true,height=1.8cm]{images/ssp_read.pdf}
+	\caption{A read operation through an half-duplex, 3-wire SSP}
+	\label{fig:ssp_read}
+\end{figure*}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Appendix B - Controller communication protocol comparison}
 \label{sec:controller_protocols}
 
-When developing a music-oriented controller, there's always a debate on which
+When developing a music-oriented controller, there is always a debate on which
 communication standard is most suitable for the application. The most common
 standard are described in the following.
 
@@ -980,12 +1006,13 @@ complete for standard music production, with some degree of freedom for
 sub-protocols developed by manufacturers. It is still widely supported by
 nowadays digital music equipment.
 
-The hardware architecture can be seen in \CITEME. Basically, it is a standard
-serial point-to-point connection based on common UARTs. Data transmitted by
-the UART is converted into current bursts, which light the optocoupler at the
-receiver. The optocoupler provides galvanic isolation, so that no
-\emph{current loops} can create audible noise in the target device (which
-used to be a synthesizer in the first place).
+Common output and input circuits can be seen respectively in \citef{fig:midi_out}
+and \citef{fig:midi_in}. Basically, it is a standard serial point-to-point
+connection based on common UARTs. Data transmitted by the UART is converted
+into current bursts, which light the optocoupler at the receiver. The
+optocoupler provides galvanic isolation, so that no \emph{current loops} can
+create audible noise in the target device, which used to be a synthesizer in
+the first place.
 
 Each MIDI connection can handle up to 16 \emph{channels}, i.e. virtual music
 devices. This is enough for common synthesizers, but not to drive an entire
@@ -1006,28 +1033,52 @@ for retransmission. Also, the relatively slow baud rate can generate small
 delays between sound generation/control events, which can be detected by
 the human brain, which is very sensitive in audio timing.
 
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=0.6\columnwidth]{images/midi_out.pdf}
+	\caption{MIDI output circuit, UART sends \emph{OUT} signal}
+	\label{fig:midi_out}
+\end{figurehere}
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/midi_in.pdf}
+	\caption{MIDI input circuit, UART receives \emph{IN} signal}
+	\label{fig:midi_in}
+\end{figurehere}
+
 
 \paragraph{Basic protocol}
-The serial protocol is 8-bits per message word, with one start and one stop
-bits (low), MSb first, 31250 baud. The protocol is message-driven, with
+The serial protocol is 8-bits per message word, with one start (low) and one
+stop (high) bits, MSb first, 31250 baud. The protocol is message-driven, with
 standard messages 3 bytes long. Special messages are 1 to 3 bytes long, while
 manufacturer-defined \emph{System Exclusive} (\emph{SysEx}) messages can be
 arbitrarily long. Most of the messages were associated to common synthesizer
-features \CITEME, even tough manufacturers often interpret them freely
-(e.g. through \emph{remapping}).
+features \cite{midi_messages}, even tough manufacturers often interpret them
+freely (e.g. through \emph{remapping}).
 
 The first word of a message (control word) is always identified by the MSb
 set to 1, while it is always 0 for data words, which are always 7 bits wide.
 
 Standard messages are those referred to the actual music content, such as
-\emph{Note On/Off}, \emph{Control Change}, \emph{Pitch Change} and so on.
+\emph{Note On/Off}, \emph{Control Change}, \emph{Pitch Change} and so on,
+also called \emph{voice messages}. A timing diagram of a voice message is
+shown in \citef{fig:midi_voice_msg}.
+
 The control word identifies the message type and the channel number. The
 second word is usually the identifier of the control (key, knob, slider,
-wheel, etc.) being actioned, and the third one its value or velocity.
+wheel, etc.) being actioned, and the third word tells its value or velocity.
 
 Special messages include transport control (time, position), program selection,
 system messages, etc. These are advanced messages, often only partially
 supported, if not at all, by cheap controllers.
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[keepaspectratio=true,width=\textwidth]{images/midi_voice_msg.pdf}
+	\caption{Timing diagram of a MIDI voice message}
+	\label{fig:midi_voice_msg}
+\end{figure*}
 
 
 \paragraph{Pros}
@@ -1050,8 +1101,8 @@ supported, if not at all, by cheap controllers.
 %-----------------------------------------------------------------------------
 \subsection{MIDI/USB}
 
-The \emph{Universal Serial Bus} (\emph{USB}) \CITEME is probabily the most
-available nowadays for consumer electronics interfacing. Its multipurpose
+The \emph{Universal Serial Bus} (\emph{USB}) \cite{usb_docs} is probabily the
+most available for consumer electronics interfacing nowadays. Its multipurpose
 nature, speed, and robustness, made it the \emph{de-facto} standard for
 connecting an actual \emph{universe} of devices. Among this huge load of
 devices, also the digital music related ones can be found.
@@ -1081,8 +1132,8 @@ transfers.
 
 USB devices can also show many indipendent behaviors, by choosing different
 application protocols per each USB endpoint. For example, this allows to have
-a MIDI/USB device with an integrated HID/USB trackpad \CITEME, by using a
-single USB cable.
+a MIDI/USB device with an integrated HID/USB trackpad,
+by using a single USB cable, like the \emph{Torq Xponent} \cite{maudio_xponent}.
 
 All the MIDI drawbacks are kept, except for the baud rate and flow control.
 The USB, by its time-shared nature, always introduces some delays -- at
