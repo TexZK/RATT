@@ -467,8 +467,9 @@ the only wheel.
 The simplified prototype has a very crude hardware architecture. It is split
 into three modules: the \emph{controller board} (aka \emph{main board}), the
 \emph{sensor board} and an optional \emph{timecode preamp board} for the use
-with timecode media. This subdivision was done just to decouple the controller
-with the sensor, for further experiments with other hardware configurations.
+with timecoded media. This subdivision was done just to decouple the
+controller with the sensor, for further experiments with other hardware
+configurations.
 
 
 \paragraph{Controller board}
@@ -508,8 +509,8 @@ with average performance and low cost. As for the MCU, higher performance
 modules are on the market, but the challenge of this proposal was to find a
 basic average solution, which can be improved with further research. Briefly,
 the sensor can reach an interesting resolution of up to 2000~DPI, and motion
-speed up to 30~in/s (76.2~cm/s). There is no guarantee of minimum or maximum
-latencies, because the clock speed is variable.
+speed up to 30~in/s (76.2~cm/s). There is no guarantee of constant latencies,
+because the clock speed is variable.
 
 \begin{figurehere}
 	\centering
@@ -582,7 +583,7 @@ chosen MCU. The comparators have an internal reference (positive input)
 voltage fed by the internal DAC module at $V_{DD}/2$, with a small hysteresis.
 
 Whenever the quadrature signal (A or B) crosses the reference voltage, an
-high-priority interrupt is generated. The ISR detects the current quadrature
+high priority interrupt is generated. The ISR detects the current quadrature
 phase and accumulates the single step into a global delta counter.
 
 The delta counter can then be collected by the (slower) HID report generator,
@@ -698,7 +699,7 @@ high-level description of the target architecture can drive the development
 of an actual device.
 
 Basically, the advanced approach exploits the computational power of the most
-recent MCUs in order to provide faster motion detection and processing rate,
+recent MCUs, in order to provide faster motion detection and processing rate,
 as well as the opportunity to handle tasks outside those for the motion
 detection.
 
@@ -724,14 +725,13 @@ into a few chips.
 The most basic type of inputs is \emph{discrete-state} (\emph{digital)} input
 devices, such as buttons, switches, toggles, and so on. In order to handle
 them, a \emph{matrix} topology often suffices, such as the one seen in
-\citef{fig:keypad}. Such matrix can be scanned row-by-row through row
-(de)multiplexing, and then processed by the \emph{digital inputs task} of the
-firmware \CITEME.
+\citef{fig:keypad}. Such matrix can be scanned row-by-row, active low logic,
+with full support for multiple elements active at the same time.
 
 \begin{figurehere}
 	\centering
 	\includegraphics[keepaspectratio=true,width=0.8\columnwidth]{images/keypad.pdf}
-	\caption{A $ 4 \times 4 $ matrix keypad driven by an 8-bits port}
+	\caption{$ 3 \times 3 $ keypad, active low, multiple key presses}
 	\label{fig:keypad}
 \end{figurehere}
 
@@ -742,7 +742,7 @@ continuous values range. Such values are provided through knobs and sliders.
 Electrically, these devices are all potentiometers connected to the ADC module
 of the MCU through its analog multiplexer, as shown in \citef{fig:pots_mcu}.
 The analog values will then be converted by the ADC and processed by the
-\emph{analog inputs task} of the firmware \CITEME.
+\emph{analog inputs task} of the firmware.
 
 \begin{figurehere}
 	\centering
@@ -975,14 +975,14 @@ then eventually reads the addressed register value.
 \begin{figure*}[t]
 	\centering
 	\includegraphics[keepaspectratio=true,height=1.8cm]{images/ssp_write.pdf}
-	\caption{A write operation through an half-duplex, 3-wire SSP}
+	\caption{A typical write operation over a half-duplex, 3-wire SSP}
 	\label{fig:ssp_write}
 \end{figure*}
 
 \begin{figure*}[t]
 	\centering
 	\includegraphics[keepaspectratio=true,height=1.8cm]{images/ssp_read.pdf}
-	\caption{A read operation through an half-duplex, 3-wire SSP}
+	\caption{A typical read operation over a half-duplex, 3-wire SSP}
 	\label{fig:ssp_read}
 \end{figure*}
 
@@ -1031,7 +1031,7 @@ The protocol does not support any kind of flow control. Massages can be lost,
 partially received (ignored), contain errors, without being corrected or asked
 for retransmission. Also, the relatively slow baud rate can generate small
 delays between sound generation/control events, which can be detected by
-the human brain, which is very sensitive in audio timing.
+the human brain, which is very sensitive to audio timing.
 
 \begin{figurehere}
 	\centering
@@ -1145,9 +1145,9 @@ the bus, introducing even more delay.
 
 \paragraph{Basic protocol}
 The MIDI/USB protocol is a \emph{sub-class} of the \emph{Audio class}, defined
-by the USB standard \CITEME. This parent class is oriented to audio equipment
-communication and control -- speakers, microphones, keyboards, controllers,
-synthesizers, DSPs can all be driven by this class.
+by the USB standard \cite{usb_docs}. This parent class is oriented to audio
+equipment communication and control -- speakers, microphones, keyboards,
+controllers, synthesizers, DSPs can all be driven by this class.
 
 The packet is composed by a \emph{header byte}, and the remaining 3 bytes are
 the encapsulated MIDI packet -- all but the SysEx messages, which have variable
