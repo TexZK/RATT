@@ -220,11 +220,11 @@ full rotation is divided into equally-spaced angle slices. Each slice is
 assigned a code.
 
 Usually, the code is marked on the wheel with holes aligned on circles (see
-\citef{fig:encoder_wheels}), so that holes can be detected by
-light-detector sensors mounted on the chassis. The light-detector sensor is
-almost always made with a LED which points towards the disc, and on the other
-side the light is detected by a fast phototransistor. These light sensors are
-positioned so that they can detect one and only one code per slice.
+\citef{fig:encoder_wheels}), so that holes can be detected by light detectors
+mounted on the chassis. The light detector is almost always made with a LED
+which points towards the disc, and on the other side the light is detected by
+a fast phototransistor. These light sensors are positioned so that they can
+detect one and only one code per slice.
 
 \begin{figurehere}
 	\centering
@@ -235,11 +235,11 @@ positioned so that they can detect one and only one code per slice.
 
 The code is either abolute or relative. Absolute encoders assign a unique code
 to each slice, so that it is always possible to know the current wheel angle
-by just reading the light-detector sensors outputs. Due to the need to have a
-high number of bits, the number of holes can also grow exponentially (usually
-as the power of two), and the production of precisely aligned marks and
-sensors is expensive -- misaligned ones can provide misdetections of the
-angle, even with robust codes such as the \emph{Gray code}.
+by just reading the light detector outputs. Due to the need to have a high
+number of bits, the number of holes can also grow exponentially (usually as
+the power of two), and the production of precisely aligned marks and sensors
+is expensive -- misaligned ones can provide misdetections of the angle, even
+with robust codes such as the \emph{Gray code}.
 
 Instead, relative encoders just need the two least significant bits of an
 absolute code, thus cheaper to manufacture. On the other hand, it is not
@@ -271,11 +271,10 @@ and an \emph{Agilent HEDS-9700} quadrature encoder.
 
 
 \paragraph{Motion detection}
-When the user turns the wheel, the light-detector sensors can convert the
-sight of light into the code assigned to the focused disc slice. The digital
-code is then triggered by the MCU through some interrupts, and a message
-containing the motion (or even the absolute angle) is sent to the user
-software.
+When the user turns the wheel, the light detectors can convert the sight of
+light into the code assigned to the focused disc slice. The digital code is
+then triggered by the MCU through some interrupts, and a message containing
+the motion (or even the absolute angle) is sent to the user software.
 
 \paragraph{Pros}
 \begin{itemize*}
@@ -333,9 +332,9 @@ impossible to use some features -- effects, precise loops, track preview, etc.
 
 When the disc spins at low speed, the intrinsic high-pass filter of needles
 and soundcards will fade the signal, and it can become difficult to find the
-zero-crossings while decoding (described further). This issue makes slow
-scartches difficult to emulate because of jitter and corruption, and will be
-mitigated with the work devolped in the rest of this document.
+zero-crossings while decoding. This issue makes slow scartches difficult to
+emulate because of jitter and corruption, and will be mitigated with the work
+devolped in the rest of this document.
 
 Finally, a novice DJ would hardly choose this approach, because the overall
 price of the equipment can be rather high -- turntables/players + good
@@ -409,6 +408,12 @@ rather high for audio manipulation by a human. Advanced codes would still
 correctly read the first 20 half-waves, but then each subsequent bit is
 sufficient to get the adjacent code, with only 1~ms delay at 1~kHz.
 
+Some problems arise when the turntable is turning slowly. Due to the bandpass
+behavior of the needle and active input/output stages of the whole signal
+chain, slow transitions have a small amplitude. As it is well known in
+communication technology field, slow and small transitions make zero-crossings
+much harder to be tracked correctly, thus generating jitter or missing codes.
+This is where optical motion sensors show their best performance instead.
 
 \paragraph{Pros}
 \begin{itemize*}
@@ -425,6 +430,382 @@ sufficient to get the adjacent code, with only 1~ms delay at 1~kHz.
 	\item Signal subsceptible to corruption
 	\item Bad tracking at low speeds
 	\item Expensive signal processing
+\end{itemize*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Optical motion sensors}
+\label{sec:mouse_sensors}
+
+Optical motion sensors are commonly found in computer pointing devices called
+\emph{mouses}. The job of such sensors is to capture a \emph{photograph}
+(i.e. a \emph{frame}) of what is beneath, compare it with the previous one,
+and finally compute the motion (i.e. the distance) from the previous relative
+position.
+
+Their main strength is the achievement of very high resolution comparisons, in
+the order of hundreds, if not thousands, \emph{Dots Per Inch} (\emph{DPI}), at
+a very low price -- less than a dollar for average sensors, or a few dollars
+for high performance (\emph{gaming}) mouse sensors. Also, the maximum
+detectable speed is in the order of some tens inches per second, compatible
+with human and motion.
+
+As a drawback, the absolute accuracy is poor, as they are designed to capture
+the slow relative movements of a screen cursor. It can be repositioned by
+the software, or its relative motion is exploited for some games (e.g.
+\emph{First Person Shooters}), thus making absolute motion tracking clueless.
+
+As can be inferred from the previous statements, mouse sensors come in
+different classes, based on their main applications. The most common sensors
+are for office or home use, and provide average accuracy and speed. Other
+sensors are designed for wireless devices, and can provide automatic switching
+between average (or high) and low performance, based on the amount of
+interaction of the user in the last time window. The most advanced sensors are
+for those professionals or enthusiasts who need very high speed and precise
+motion detection, for example for pro-gamers.
+
+
+%-----------------------------------------------------------------------------
+\subsection{Architecture and operation}
+
+A generic mouse sensor is composed by components of various nature, as seen
+in \citef{fig:sensor_assembly}.
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,height=5cm]{images/sensor_assembly.pdf}
+	\caption{Common motion sensor assembly}
+	\label{fig:sensor_assembly}
+\end{figurehere}
+
+
+\paragraph{Light source}
+A light source, typically a LED, or a laser for the most advanced models,
+illuminates the small surface to be captured.
+
+
+\paragraph{Lens}
+A lens focuses the surface to get the best resolution at detector side.
+The lens also increases the effectiveness of the light source on the surface,
+when correctly focused on the surface beneath through a mirror.
+
+Usually the lens is placed at a few millimiters from the surface, and
+it is quite important to keep the nominal distance for the best perofrmance.
+
+
+\paragraph{CCD}
+The actual light sensor is a common \emph{Charge-Coupled Device}
+(\emph{CCD}). It is designed to be very fast, to achieve a high frame rate.
+It is also sensitive to a very small light spectrum, e.g. the infrared one,
+so that environmental light noise is rejected, and image artifacts are acquired
+better.
+
+There are also some considerations based on the light type. LED-based devices
+work well with all the bumpy surfaces, even the dark ones, but cannot work
+on trasparent ones, where the reflection is very bad. They are suited for
+everyday use.
+Instead, laser-based give a way better tracking on all surfaces but the dark
+ones. The tracking performance is suited for professionals.
+
+
+\paragraph{DSP}
+The frame impressed on the CCD is then processed by an \emph{ad-hoc}
+\emph{DSP}, which computes the distance -- in $(x,y)$ frame coordinates --
+from the previously acquired frame. The DSP must be fast enough to reach the
+10x-in/s maximum detected velocity in both directions.
+
+
+\paragraph{Controller}
+Finally, the controller accumulates the DSP deltas. Some configuration
+parameters and device properties, along with deltas, can be accessed through
+an interface to an external controller.
+
+
+%-----------------------------------------------------------------------------
+\subsection{Communication}
+
+Optical motion sensors communicate with an external processor through an
+interface which often belongs to standard I/F types, even though some pins
+are frequently added for faster or ad-hoc operation -- chip shutdown, chip
+selection, flow control, and so on.
+
+
+\paragraph{Quadrature}
+Sensors with only quadrature wave outputs (see \citef{fig:quad_wave}) are now
+outdated, because they do not offer any advanced features, and require an
+interrupt-driven counter at controller side. On the other hand, quadrature
+outputs can be used with any device which natively accepts such signals.
+
+
+\paragraph{SSP}
+When requiring some more flexibility, it is possible to adopt a
+\emph{Synchronous Serial Port} in both \emph{Serial Peripheral Interface}
+(\emph{SPI}) or \emph{3-wire}, respectively with full-duplex and half-duplex
+capabilites, to communicate with motion sensors.
+
+They usually do not require handshaking, even though some control pins are
+often used in such a way (e.g. the common \emph{shutdown} pin). Also, the
+bit rate is often high enough for simple and fast communication -- from
+1~MHz to some tens.
+
+Due to its message-based nature, it is possible not only to read internal
+counters, but also to get and set configuration parameters of the target
+device.
+
+They can often support multi-master/multi-slave topologies, even though the
+most common is single-master/multi-slave. Slaves are usually chosen by a
+demultiplexed selection signal, one per slave.
+
+An example of \emph{write} operation over a 3-wire SSP bus is shown in
+\citef{fig:ssp_write}. The single master device signals to the single slave
+an incoming \emph{write} operation, tells the register address and its value.
+
+An example of \emph{read} operation over the same hardware is shown in
+\citef{fig:ssp_read}. The master signals an incoming \emph{read} operation
+and tells the address. After that, it lets the slave drive the SDIO line,
+then eventually reads the addressed register value.
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[keepaspectratio=true,height=1.8cm]{images/ssp_write.pdf}
+	\caption{A typical write operation over a half-duplex, 3-wire SSP}
+	\label{fig:ssp_write}
+\end{figure*}
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[keepaspectratio=true,height=1.8cm]{images/ssp_read.pdf}
+	\caption{A typical read operation over a half-duplex, 3-wire SSP}
+	\label{fig:ssp_read}
+\end{figure*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Controller communication protocol comparison}
+\label{sec:controller_protocols}
+
+When developing a music-oriented controller, there is always a debate on which
+communication standard is most suitable for the application. The most common
+standard are described in the following.
+
+
+%-----------------------------------------------------------------------------
+\subsection{Plain MIDI}
+
+The truly \emph{de-facto} standard in music-oriented communication is the
+\emph{Musical Instrument Digital Interface} (\emph{MIDI}). This was
+developed in the '80s to be easy and cheap to manufacture, robust and rather
+complete for standard music production, with some degree of freedom for
+sub-protocols developed by manufacturers. It is still widely supported by
+nowadays digital music equipment.
+
+Common output and input circuits can be seen respectively in \citef{fig:midi_out}
+and \citef{fig:midi_in}. Basically, it is a standard serial point-to-point
+connection based on a common UART powered at TTL levels. Data transmitted by
+the UART is converted into current bursts, which light the optocoupler at the
+receiver. The optocoupler provides galvanic isolation, so that no
+\emph{current loops} can create audible noise in the target device, which used
+to be a synthesizer in the first place.
+
+Each MIDI connection can handle up to 16 \emph{channels}, i.e. virtual music
+devices. This is enough for common synthesizers, but not to drive an entire
+production studio.
+
+The event-based nature of the protocol makes it suitable for most of the
+situations, but for events which could be accumulated, or state streaming.
+For example, jogwheels could generate way too many motion delta events, usually
+as Control Change messages, which would easily flood the entire bus. A packed
+streaming state would be better suited in such cases.
+Also, when transmitting to a host computer, its operating system (often
+time-shared), software buffers can saturate while processing too many events
+at a time, or complex sound textures.
+
+The protocol does not support any kind of flow control. Massages can be lost,
+partially received (ignored), contain errors, without being corrected or asked
+for retransmission. Also, the relatively slow baud rate can generate small
+delays between sound generation/control events, which can be detected by
+the human brain, which is very sensitive to audio timing.
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=0.6\columnwidth]{images/midi_out.pdf}
+	\caption{MIDI output circuit, UART sends \emph{OUT} signal}
+	\label{fig:midi_out}
+\end{figurehere}
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/midi_in.pdf}
+	\caption{MIDI input circuit, UART receives \emph{IN} signal}
+	\label{fig:midi_in}
+\end{figurehere}
+
+
+\paragraph{Basic protocol}
+The serial protocol is 8-bits per message word, with one start (low) and one
+stop (high) bits, MSb first, 31250 baud. The protocol is message-driven, with
+standard messages 3 bytes long. Special messages are 1 to 3 bytes long, while
+manufacturer-defined \emph{System Exclusive} (\emph{SysEx}) messages can be
+arbitrarily long. Most of the messages were associated to common synthesizer
+features \cite{midi_messages}, even tough manufacturers often interpret them
+freely (e.g. through \emph{remapping}).
+
+The first word of a message (control word) is always identified by the MSb
+set to 1, while it is always 0 for data words, which are always 7 bits wide.
+
+Standard messages are those referred to the actual music content, such as
+\emph{Note On/Off}, \emph{Control Change}, \emph{Pitch Change} and so on,
+also called \emph{voice messages}. A timing diagram of a voice message is
+shown in \citef{fig:midi_voice_msg}.
+
+The control word identifies the message type and the channel number. The
+second word is usually the identifier of the control (key, knob, slider,
+wheel, etc.) being actioned, and the third word tells its value or velocity.
+
+Special messages include transport control (time, position), program selection,
+system messages, etc. These are advanced messages, often only partially
+supported, if not at all, by cheap controllers.
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[keepaspectratio=true,width=\textwidth]{images/midi_voice_msg.pdf}
+	\caption{Timing diagram of a MIDI voice message}
+	\label{fig:midi_voice_msg}
+\end{figure*}
+
+
+\paragraph{Pros}
+\begin{itemize*}
+	\item \emph{De-facto} standard for digital music equipment
+	\item Intuitive message semantics
+	\item Simple, robust, noise-free, cheap hardware
+\end{itemize*}
+
+
+\paragraph{Cons}
+\begin{itemize*}
+	\item Slow communication
+	\item No flow control
+	\item Low resolution controls
+	\item No streaming state support
+\end{itemize*}
+
+
+%-----------------------------------------------------------------------------
+\subsection{MIDI/USB}
+
+The \emph{Universal Serial Bus} (\emph{USB}) \cite{usb_docs} is probabily the
+most available for consumer electronics interfacing nowadays. Its multipurpose
+nature, speed, and robustness, made it the \emph{de-facto} standard for
+connecting an actual \emph{universe} of devices. Among this huge load of
+devices, also the digital music related ones can be found.
+
+Since the MIDI standard was the most common digital music standard at the time
+USB was released, it was convenient to encapsulate it inside USB packets.
+So, an \emph{application protocol} was developed over the USB protocol: the
+\emph{MIDI over USB} (\emph{MIDI/USB}).
+
+This way, compatibility with standard MIDI interfaces was kept. Production
+software and hardware devices kept using it, an so did music production
+people. USB is simply the low-level interface, which can be found on all
+consumer computers.
+
+MIDI/USB has some advantages over the plain MIDI protocol. Since USB has a
+higher baud rate than MIDI, it is possible to reduce delays when handling
+many messages in a short interval.
+
+Also, MIDI/USB introduces the concept of \emph{cable}. It supports up to 16
+cables, which are 16 virtual plain MIDI devices. This makes theoretically
+possible to drive up to 16 hardware synthesizers through a single USB cable,
+by displatching the 16 virtual cables to as many real plain MIDI devices.
+
+The MIDI/USB protocol exploits the features of \emph{bulk} transfers. This
+way, packets will not be lost, thanks to the flow control of USB bulk
+transfers.
+
+USB devices can also show many indipendent behaviors, by choosing different
+application protocols per each USB endpoint. For example, this allows to have
+a MIDI/USB device with an integrated HID/USB trackpad,
+by using a single USB cable, like the \emph{Torq Xponent} \cite{maudio_xponent}.
+
+All the MIDI drawbacks are kept, except for the baud rate and flow control.
+The USB, by its time-shared nature, always introduces some delays -- at
+least 1~ms per query, and a few milliseconds for software stack processing.
+As a drawback of bulk transfers, the delivering time is uncertain, because
+many retansmissions can be issued, or there is not enough free bandwidth on
+the bus, introducing even more delay.
+
+
+\paragraph{Basic protocol}
+The MIDI/USB protocol is a \emph{sub-class} of the \emph{Audio class}, defined
+by the USB standard \cite{usb_docs}. This parent class is oriented to audio
+equipment communication and control -- speakers, microphones, keyboards,
+controllers, synthesizers, DSPs can all be driven by this class.
+
+The packet is composed by a \emph{header byte}, and the remaining 3 bytes are
+the encapsulated MIDI packet -- all but the SysEx messages, which have variable
+length. The header byte indexes the cable, and defines the following MIDI
+message type -- some bytes can be unused, and thus ignored by the USB parser.
+SysEx messages are simply split into 3-bytes chunks, merged by the USB parser
+when the trailing byte(s) are received.
+
+The protocol supports \emph{bulk} USB transfers. They add flow control to bare
+USB streams, which in order adds flow control to the encapsulated MIDI stream.
+Bulk packets have the lowest priority over the USB bus, which could introduce
+delays when the bus is saturated by \emph{interrupt} and \emph{isochronous}
+endpoint transfers. Also, packet handshaking and retransmission may add
+some delay too.
+
+
+\paragraph{Pros}
+\begin{itemize*}
+	\item USB is \emph{de-facto} standard for consumer electronics
+	\item Much higher bandwidth than plain MIDI
+	\item Up to 16 virtual cables
+	\item Multi-purpose device through a single USB cable
+\end{itemize*}
+
+
+\paragraph{Cons}
+\begin{itemize*}
+	\item All the MIDI drawbacks, except for baud rate and flow control
+	\item Delays introduced by USB time-sharing and bulk transfers
+\end{itemize*}
+
+
+%-----------------------------------------------------------------------------
+\subsection{HID/USB}
+
+Besides MIDI/USB, another application protocol was developed to handle those
+devices which interface with human beings, and is much widely implemented.
+The \emph{Human Interface Device} (\emph{HID}), in fact, is an USB class
+with huge flexibility and support -- it can be found in almost any USB device
+with keys, knobs, sliders, simple displays, LEDs, control wheels and so on.
+
+The flexibility of HID is justified by the way its sub-protocol is developed.
+HID messages, called \emph{reports}, have a fixed structure, defined at the
+moment the HID configuration of the device is sent to the host.
+
+\TODO
+
+
+\paragraph{Basic protocol}
+\TODO
+
+
+\paragraph{Pros}
+\begin{itemize*}
+	\item Highest USB priority
+	\item State streaming
+	\item \TODO
+\end{itemize*}
+
+
+\paragraph{Cons}
+\begin{itemize*}
+	\item Sill some USB delays
+	\item Custom HID reports to parse
+	\item \TODO
 \end{itemize*}
 
 
@@ -748,7 +1129,7 @@ The analog values will then be converted by the ADC and processed by the
 	\centering
 	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/pots_mcu.pdf}
 	\caption{4 potentiometers connected to a MCU, through its built-in analog
-	MUX and ADC}
+	multiplexer and ADC}
 	\label{fig:pots_mcu}
 \end{figurehere}
 
@@ -837,395 +1218,14 @@ SPI buses is enough.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Appendix A - Optical motion (mouse) sensors}
-\label{sec:mouse_sensors}
-
-Optical motion sensors are commonly found in computer pointing devices called
-\emph{mouses}. The job of such sensors is to capture a \emph{photograph}
-(i.e. a \emph{frame}) of what is beneath, compare it with the previous one,
-and finally compute the motion (i.e. the distance) from the previous relative
-position.
-
-Their main strength is the achievement of very high resolution comparisons, in
-the order of hundreds, if not thousands, \emph{Dots Per Inch} (\emph{DPI}), at
-a very low price -- less than a dollar for average sensors, or a few dollars
-for high performance (\emph{gaming}) mouse sensors. Also, the maximum
-detectable speed is in the order of some tens inches per second, compatible
-with human and motion.
-
-As a drawback, the absolute accuracy is poor, as they are designed to capture
-the slow relative movements of a screen cursor. It can be repositioned by
-the software, or its relative motion is exploited for some games (e.g.
-\emph{First Person Shooters}), thus making absolute motion tracking clueless.
-
-As can be inferred from the previous statements, mouse sensors come in
-different classes, based on their main applications. The most common sensors
-are for office or home use, and provide average accuracy and speed. Other
-sensors are designed for wireless devices, and can provide automatic switching
-between average (or high) and low performance, based on the amount of
-interaction of the user in the last time window. The most advanced sensors are
-for those professionals or enthusiasts who need very high speed and precise
-motion detection, for example for pro-gamers.
-
-
-%-----------------------------------------------------------------------------
-\subsection{Architecture and operation}
-
-A generic mouse sensor is composed by components of various nature, as seen
-in \citef{fig:sensor_assembly}.
-
-\begin{figurehere}
-	\centering
-	\includegraphics[keepaspectratio=true,height=5cm]{images/sensor_assembly.pdf}
-	\caption{Common motion sensor assembly}
-	\label{fig:sensor_assembly}
-\end{figurehere}
-
-
-\paragraph{Light source}
-A light source, typically a LED, or a laser for the most advanced models,
-illuminates the small surface to be captured.
-
-
-\paragraph{Lens}
-A lens focuses the surface to get the best resolution at detector side.
-The lens also increases the effectiveness of the light source on the surface,
-when correctly focused on the surface beneath through a mirror.
-
-Usually the lens is placed at a few millimiters from the surface, and
-it is quite important to keep the nominal distance for the best perofrmance.
-
-
-\paragraph{CCD}
-The actual light sensor is a common \emph{Charge-Coupled Device}
-(\emph{CCD}). It is designed to be very fast, to achieve a high frame rate.
-It is also sensitive to a very small light spectrum, e.g. the infrared one,
-so that environmental light noise is rejected, and image artifacts are acquired
-better.
-
-There are also some considerations based on the light type. LED-based devices
-work well with all the bumpy surfaces, even the dark ones, but cannot work
-on trasparent ones, where the reflection is very bad. They are suited for
-everyday use.
-Instead, laser-based give a way better tracking on all surfaces but the dark
-ones. The tracking performance is suited for professionals.
-
-
-\paragraph{DSP}
-The frame impressed on the CCD is then processed by an \emph{ad-hoc}
-\emph{DSP}, which computes the distance -- in $(x,y)$ frame coordinates --
-from the previously acquired frame. The DSP must be fast enough to reach the
-10x-in/s maximum detected velocity in both directions.
-
-
-\paragraph{Controller}
-Finally, the controller accumulates the DSP deltas. Some configuration
-parameters and device properties, along with deltas, can be accessed through
-an interface to an external controller.
-
-
-%-----------------------------------------------------------------------------
-\subsection{Communication}
-
-Optical motion sensors communicate with an external processor through an
-interface which often belongs to standard I/F types, even though some pins
-are frequently added for faster or ad-hoc operation -- chip shutdown, chip
-selection, flow control, and so on.
-
-
-\paragraph{Quadrature}
-Sensors with only quadrature wave outputs (see \citef{fig:quad_wave}) are now
-outdated, because they do not offer any advanced features, and require an
-interrupt-driven counter at controller side. On the other hand, quadrature
-outputs can be used with any device which natively accepts such signals.
-
-
-\paragraph{I2C}
-When requiring some more flexibility, an I2C bus is already enough for average
-sensors. Due to its message-based nature, it is possible not only to read
-internal counters, but also to get and set come configuration parameters.
-
-On the other hand, the I2C protocol introduces some unnecessary latencies
-due to handshaking and baud rate -- standard I2C is only at 100~kb/s, fast
-mode at 400~kb/s.
-
-\INSFIG
-
-
-\paragraph{SSP/SPI}
-When requiring slightly higher speed and lower latency, it is possible to
-adopt \emph{Synchronous Serial Port} in both \emph{Serial Peripheral Interface}
-(\emph{SPI}) or \emph{3-wire}, respectively with full-duplex and half-duplex
-capabilites, to communicate with motion sensors.
-
-They usually do not require handshaking, even though some control pins are
-often used in such a way (e.g. the common \emph{shutdown} pin).
-Also, the bit rate is often higher -- from 1~MHz to some tens -- even though
-pratically not much higher than I2C.
-
-An example of \emph{write} operation over a 3-wire SSP is shown in
-\citef{fig:ssp_write}. The master device signals an incoming \emph{write}
-operation, tells the register address and its value.
-
-An example of \emph{read} operation over the same hardware is shown in
-\citef{fig:ssp_read}. The master signals an incoming \emph{read} operation
-and tells the address. After that, it lets the slave drive the SDIO line,
-then eventually reads the addressed register value.
-
-\begin{figure*}[t]
-	\centering
-	\includegraphics[keepaspectratio=true,height=1.8cm]{images/ssp_write.pdf}
-	\caption{A typical write operation over a half-duplex, 3-wire SSP}
-	\label{fig:ssp_write}
-\end{figure*}
-
-\begin{figure*}[t]
-	\centering
-	\includegraphics[keepaspectratio=true,height=1.8cm]{images/ssp_read.pdf}
-	\caption{A typical read operation over a half-duplex, 3-wire SSP}
-	\label{fig:ssp_read}
-\end{figure*}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Appendix B - Controller communication protocol comparison}
-\label{sec:controller_protocols}
-
-When developing a music-oriented controller, there is always a debate on which
-communication standard is most suitable for the application. The most common
-standard are described in the following.
-
-
-%-----------------------------------------------------------------------------
-\subsection{Plain MIDI}
-
-The truly \emph{de-facto} standard in music-oriented communication is the
-\emph{Musical Instrument Digital Interface} (\emph{MIDI}). This was
-developed in the '80s to be easy and cheap to manufacture, robust and rather
-complete for standard music production, with some degree of freedom for
-sub-protocols developed by manufacturers. It is still widely supported by
-nowadays digital music equipment.
-
-Common output and input circuits can be seen respectively in \citef{fig:midi_out}
-and \citef{fig:midi_in}. Basically, it is a standard serial point-to-point
-connection based on common UARTs. Data transmitted by the UART is converted
-into current bursts, which light the optocoupler at the receiver. The
-optocoupler provides galvanic isolation, so that no \emph{current loops} can
-create audible noise in the target device, which used to be a synthesizer in
-the first place.
-
-Each MIDI connection can handle up to 16 \emph{channels}, i.e. virtual music
-devices. This is enough for common synthesizers, but not to drive an entire
-production studio.
-
-The event-based nature of the protocol makes it suitable for most of the
-situations, but for events which could be accumulated, or state streaming.
-For example, jogwheels could generate way too many motion delta events, usually
-as Control Change messages, which would easily flood the entire bus. A packed
-streaming state would be better suited in such cases.
-Also, when transmitting to a host computer, its operating system (often
-time-shared), software buffers can saturate while processing too many events
-at a time, or complex sound textures.
-
-The protocol does not support any kind of flow control. Massages can be lost,
-partially received (ignored), contain errors, without being corrected or asked
-for retransmission. Also, the relatively slow baud rate can generate small
-delays between sound generation/control events, which can be detected by
-the human brain, which is very sensitive to audio timing.
-
-\begin{figurehere}
-	\centering
-	\includegraphics[keepaspectratio=true,width=0.6\columnwidth]{images/midi_out.pdf}
-	\caption{MIDI output circuit, UART sends \emph{OUT} signal}
-	\label{fig:midi_out}
-\end{figurehere}
-
-\begin{figurehere}
-	\centering
-	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/midi_in.pdf}
-	\caption{MIDI input circuit, UART receives \emph{IN} signal}
-	\label{fig:midi_in}
-\end{figurehere}
-
-
-\paragraph{Basic protocol}
-The serial protocol is 8-bits per message word, with one start (low) and one
-stop (high) bits, MSb first, 31250 baud. The protocol is message-driven, with
-standard messages 3 bytes long. Special messages are 1 to 3 bytes long, while
-manufacturer-defined \emph{System Exclusive} (\emph{SysEx}) messages can be
-arbitrarily long. Most of the messages were associated to common synthesizer
-features \cite{midi_messages}, even tough manufacturers often interpret them
-freely (e.g. through \emph{remapping}).
-
-The first word of a message (control word) is always identified by the MSb
-set to 1, while it is always 0 for data words, which are always 7 bits wide.
-
-Standard messages are those referred to the actual music content, such as
-\emph{Note On/Off}, \emph{Control Change}, \emph{Pitch Change} and so on,
-also called \emph{voice messages}. A timing diagram of a voice message is
-shown in \citef{fig:midi_voice_msg}.
-
-The control word identifies the message type and the channel number. The
-second word is usually the identifier of the control (key, knob, slider,
-wheel, etc.) being actioned, and the third word tells its value or velocity.
-
-Special messages include transport control (time, position), program selection,
-system messages, etc. These are advanced messages, often only partially
-supported, if not at all, by cheap controllers.
-
-\begin{figure*}[t]
-	\centering
-	\includegraphics[keepaspectratio=true,width=\textwidth]{images/midi_voice_msg.pdf}
-	\caption{Timing diagram of a MIDI voice message}
-	\label{fig:midi_voice_msg}
-\end{figure*}
-
-
-\paragraph{Pros}
-\begin{itemize*}
-	\item \emph{De-facto} standard for digital music equipment
-	\item Intuitive message semantics
-	\item Simple, robust, noise-free, cheap hardware
-\end{itemize*}
-
-
-\paragraph{Cons}
-\begin{itemize*}
-	\item Slow communication
-	\item No flow control
-	\item Low resolution controls
-	\item No streaming state support
-\end{itemize*}
-
-
-%-----------------------------------------------------------------------------
-\subsection{MIDI/USB}
-
-The \emph{Universal Serial Bus} (\emph{USB}) \cite{usb_docs} is probabily the
-most available for consumer electronics interfacing nowadays. Its multipurpose
-nature, speed, and robustness, made it the \emph{de-facto} standard for
-connecting an actual \emph{universe} of devices. Among this huge load of
-devices, also the digital music related ones can be found.
-
-Since the MIDI standard was the most common digital music standard at the time
-USB was released, it was convenient to encapsulate it inside USB packets.
-So, an \emph{application protocol} was developed over the USB protocol: the
-\emph{MIDI over USB} (\emph{MIDI/USB}).
-
-This way, compatibility with standard MIDI interfaces was kept. Production
-software and hardware devices kept using it, an so did music production
-people. USB is simply the low-level interface, which can be found on all
-consumer computers.
-
-MIDI/USB has some advantages over the plain MIDI protocol. Since USB has a
-higher baud rate than MIDI, it is possible to reduce delays when handling
-many messages in a short interval.
-
-Also, MIDI/USB introduces the concept of \emph{cable}. It supports up to 16
-cables, which are 16 virtual plain MIDI devices. This makes theoretically
-possible to drive up to 16 hardware synthesizers through a single USB cable,
-by displatching the 16 virtual cables to as many real plain MIDI devices.
-
-The MIDI/USB protocol exploits the features of \emph{bulk} transfers. This
-way, packets will not be lost, thanks to the flow control of USB bulk
-transfers.
-
-USB devices can also show many indipendent behaviors, by choosing different
-application protocols per each USB endpoint. For example, this allows to have
-a MIDI/USB device with an integrated HID/USB trackpad,
-by using a single USB cable, like the \emph{Torq Xponent} \cite{maudio_xponent}.
-
-All the MIDI drawbacks are kept, except for the baud rate and flow control.
-The USB, by its time-shared nature, always introduces some delays -- at
-least 1~ms per query, and a few milliseconds for software stack processing.
-As a drawback of bulk transfers, the delivering time is uncertain, because
-many retansmissions can be issued, or there is not enough free bandwidth on
-the bus, introducing even more delay.
-
-
-\paragraph{Basic protocol}
-The MIDI/USB protocol is a \emph{sub-class} of the \emph{Audio class}, defined
-by the USB standard \cite{usb_docs}. This parent class is oriented to audio
-equipment communication and control -- speakers, microphones, keyboards,
-controllers, synthesizers, DSPs can all be driven by this class.
-
-The packet is composed by a \emph{header byte}, and the remaining 3 bytes are
-the encapsulated MIDI packet -- all but the SysEx messages, which have variable
-length. The header byte indexes the cable, and defines the following MIDI
-message type -- some bytes can be unused, and thus ignored by the USB parser.
-SysEx messages are simply split into 3-bytes chunks, merged by the USB parser
-when the trailing byte(s) are received.
-
-The protocol supports \emph{bulk} USB transfers. They add flow control to bare
-USB streams, which in order adds flow control to the encapsulated MIDI stream.
-Bulk packets have the lowest priority over the USB bus, which could introduce
-delays when the bus is saturated by \emph{interrupt} and \emph{isochronous}
-endpoint transfers. Also, packet handshaking and retransmission may add
-some delay too.
-
-
-\paragraph{Pros}
-\begin{itemize*}
-	\item USB is \emph{de-facto} standard for consumer electronics
-	\item Much higher bandwidth than plain MIDI
-	\item Up to 16 virtual cables
-	\item Multi-purpose device through a single USB cable
-\end{itemize*}
-
-
-\paragraph{Cons}
-\begin{itemize*}
-	\item All the MIDI drawbacks, except for baud rate and flow control
-	\item Delays introduced by USB time-sharing and bulk transfers
-\end{itemize*}
-
-
-%-----------------------------------------------------------------------------
-\subsection{HID/USB}
-
-Besides MIDI/USB, another application protocol was developed to handle those
-devices which interface with human beings, and is much widely implemented.
-The \emph{Human Interface Device} (\emph{HID}), in fact, is an USB class
-with huge flexibility and support -- it can be found in almost any USB device
-with keys, knobs, sliders, simple displays, LEDs, control wheels and so on.
-
-The flexibility of HID is justified by the way its sub-protocol is developed.
-HID messages, called \emph{reports}, have a fixed structure, defined at the
-moment the HID configuration of the device is sent to the host.
-
-\TODO
-
-
-\paragraph{Basic protocol}
-\TODO
-
-
-\paragraph{Pros}
-\begin{itemize*}
-	\item Highest USB priority
-	\item State streaming
-	\item \TODO
-\end{itemize*}
-
-
-\paragraph{Cons}
-\begin{itemize*}
-	\item Sill some USB delays
-	\item Custom HID reports to parse
-	\item \TODO
-\end{itemize*}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Conclusions}
-\label{Conclusions}
+\label{sec:conclusions}
 
 \TODO
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% We suggest the use of JabRef for editing your bibliography file (Report.bib)
 \bibliographystyle{splncs}
 \bibliography{Report}
 
