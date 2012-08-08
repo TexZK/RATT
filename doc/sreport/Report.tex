@@ -29,6 +29,8 @@
 \usepackage{mdwlist}
 \usepackage{color}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{listings}
+\usepackage{mdframed}
 \input{tcilatex}
 %-----------------------------------------------------------------------------
 % Page Setup
@@ -65,12 +67,9 @@
 %\end{figure*}
 
 \makeatletter
-\newenvironment{tablehere}{\def\@captype{table}}{}
+\newenvironment{tablehere}{\def\@captype{table}\vspace{2ex}}{\vspace{2ex}}
 \newenvironment{figurehere}{\def\@captype{figure}\vspace{2ex}}{\vspace{2ex}}
 \makeatother
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{document}
 
 \newcommand{\TODO}{\textbf{TODO\dots\ }}
 \newcommand{\CITEME}{\textbf{[CITEME]}}
@@ -79,6 +78,29 @@
 \newcommand{\citef}[1]{\textbf{Figure~\ref{#1}}}
 \newcommand{\citet}[1]{\textbf{Table~\ref{#1}}}
 
+\definecolor{darkred}{rgb}{0.5,0.0,0.0}
+\definecolor{darkgreen}{rgb}{0.0,0.5,0.0}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.5}
+\definecolor{lightyellow}{rgb}{1.0,1.0,0.9}
+
+\lstdefinelanguage{simpleXML}
+{
+	tabsize=2,
+	breaklines=true,
+	basicstyle=\scriptsize\ttfamily\color{darkblue},
+	keywordstyle=\color{blue},
+	stringstyle=\color{darkred},
+	commentstyle=\color{darkgreen},
+	showstringspaces=false,	
+	morestring=[b]",
+	morecomment=[s]{<!--}{-->},
+	morecomment=[s]{<?}{?>},
+	morekeywords={}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
 
 \begin{mytitle}RATT	- Relatively Accurate TurnTable\end{mytitle}
 \begin{mysubtitle}Relative turntable motion detection through mouse sensors\end{mysubtitle}
@@ -821,6 +843,7 @@ performance both at high and low speeds, without introducing expensive parts.
 The main idea is to use a mouse sensor to measure slow local motions, which
 are difficult to process with timecode, and need high resolution jogwheels.
 As seen in the previous section, this is not possible with cheap designs.
+
 Slow local motions are common when scratching or trying to reposition the
 virtual needle of the emulated turntable, for example when the DJ is searching
 for a good point where to start playing from (\emph{cue} point).
@@ -830,6 +853,7 @@ enough, the classic methods can be used to keep track of the position.
 Mouse sensors, in fact, are not able to keep track of absolute movements,
 especially when they are very fast. Anyway, even cheap sensors have a
 resolution in the order of several hundreds, if not thousands, DPIs nowadays.
+
 As proven later, the disc can theoretically be divided in thousands slices,
 thus providing a local resolution higher than the most expensive encoders on
 the market -- obviously in the set of those affordable for a DJ, not the
@@ -837,11 +861,7 @@ state-of-the-art encoders for hi-end industrial machineries.
 
 In the following, a simplified prototype will be presented. A low-end MCU and
 a standard COTS mouse sensor were chosen, just to see if it is possible to
-achieve good performance with a simple circuit. Unfortunately, the performance
-was not that good, mainly because of latencies in both the MCU and the sensor.
-This is why an advanced approach will be proposed in the next section, which
-should provide a much better response and could handle more peripherals then
-the only wheel.
+achieve good performance with a simple circuit.
 
 
 %-----------------------------------------------------------------------------
@@ -967,7 +987,7 @@ host it is a standard USB 2.0 device, with its vendor and product identifiers
 are a manufacturer and product name strings to be received and indexed later.
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -997,7 +1017,7 @@ tells the host that the device is powered by the USB bus at 100~mA maximum,
 and there is only one interface for this configuration.
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1021,7 +1041,7 @@ indicates that it is a HID device. All the other options are ignored for this
 device.
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1046,7 +1066,7 @@ the HID 1.11 protocol, no country-specific address, with a single HID report
 descriptor 48 bytes long.
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1072,7 +1092,7 @@ sensor (16 bytes per report), these settings are optimal for the device
 being developed.
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1090,7 +1110,7 @@ being developed.
 \end{tablehere}
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1113,14 +1133,14 @@ descriptors shown in \citet{tab:usb_lang_desc}, \citet{tab:usb_manuf_desc},
 and \citet{tab:usb_prod_desc}.
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
 \hline
 0	& bLength				& 1	& Number	& 4				\\
 1	& bDescriptorType		& 1	& Constant	& 0x03			\\
-2	& wLanguageCode			& 2	& Number	& 0x0409		\\
+2	& wString				& 2	& Unicode	& 0x0409		\\
 \hline
 \end{tabular}
 \caption{USB Language Code string descriptor}
@@ -1128,7 +1148,7 @@ and \citet{tab:usb_prod_desc}.
 \end{tablehere}
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1143,7 +1163,7 @@ and \citet{tab:usb_prod_desc}.
 \end{tablehere}
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1163,7 +1183,7 @@ the custom semantics, the descriptor simply indicates 16 bytes for both
 input and output transfers.
 
 \begin{tablehere}
-\centering \scriptsize\bigskip
+\centering \scriptsize
 \begin{tabular}{|rl|rl|}
 \hline
 \textbf{Field} & & \textbf{Value} &		\\
@@ -1285,19 +1305,130 @@ communication events, which are slower, are processed by the low-priority ISR.
 %-----------------------------------------------------------------------------
 \subsection{Software architecture}
 
-\TODO
+Thanks to the adoption of the HID standard, host software can communicate with
+the device easily. In fact, all the major operating systems have full support
+for the USB stack, including the HID application protocol.
+
+The target software for RATT is a \emph{vinyl emulation software}. There is a
+huge load of programs to emulate traditional DJ consoles, but not so many 
+support HID controllers, and fewer let the user define his own mappings. Among
+all of them, the reference software is \emph{Virtual~DJ} by \emph{Atomix
+Productions} \cite{atomix_vdj}, available for both Microsoft Windows and Apple
+MacOSX.
 
 
 \paragraph{HID/USB connectivity}
-\TODO
+Connection between Virtual~DJ and RATT is straightforward. This software has
+native support for HID devices, which are \emph{plug and play} and
+\emph{hot-pluggable}.
+
+After connection, Virtual~DJ searches for a valid mapping for the device. If
+found, it is immediately loaded, otherwise the invalid device is simply
+ignored.
 
 
 \paragraph{Device description}
-\TODO
+In order to be considered, a device must supply the device definition to
+Virtual~DJ, in this case for a HID device \cite{vdj_hiddef} as seen in
+\citef{fig:vdj_device_def}. The VID and PID are the actual HID device
+identifier, and the HID report size is specified. The device supports only one
+deck at a time.
+
+The device description is divided in four pages. The \emph{init} and
+\emph{exit} pages should contain information for both initialization and
+deinitialization respectively, and are ignored. The \emph{out} page is ignored
+too, because the device does not receive any meaningful messages from the
+host software.
+
+Instead, the \emph{in} page contains the description of the two motion
+sources. They are both interpreted as jogwheels, with full 16-bit unsigned
+counters which keep track of the accumulated position. The \emph{full}
+attribute tells the jogwheel CPR, and needs to be calibrated with geometrical
+parameters of the wheel itself.
+
+On Windows, the XML text must be saved in:\\
+{\ttfamily\small {\%}UserProfile{\%}/Documents/VirtualDJ/Devices/}
+while on MacOSX in:\\
+{\ttfamily\small {\textasciitilde}/Documents/VirtualDJ/Devices/}\\
+for example as {\ttfamily\small ratt{\_}device.xml}.
+
+\begin{figurehere}
+\begin{mdframed}[
+	backgroundcolor=lightyellow,
+	hidealllines=true,
+	innerleftmargin=2pt,
+	innerrightmargin=2pt
+]
+\begin{lstlisting}[language=simpleXML]
+<?xml version="1.0" encoding="UTF-8"?>
+<device name="RATT" author="TexZK" decks="1"
+ type="HID" vid="0xDEAD" pid="0xBEEF"
+ reportsize="16">
+  <page type="init">
+    <!-- Nothing to initialize -->
+  </page>
+  <page type="in">
+    <!-- Optical motion sensor input -->
+    <jog name="SENSOR"
+     byte="8" size="word" endian="little"
+     full="24000" min="0" max="65535"/>
+    <!-- Quadrature encoder input -->
+    <jog name="QUADRATURE"
+     byte="12" size="word" endian="little"
+     full="4000" min="0" max="65535"/>
+  </page>
+  <page type="out">
+    <!-- No outputs -->
+  </page>
+  <page type="exit">
+    <!-- Nothing to deinitialize -->
+  </page>
+</device>
+\end{lstlisting}
+\end{mdframed}
+\caption{Virtual~DJ device definition for RATT}
+\label{fig:vdj_device_def}
+\end{figurehere}
 
 
 \paragraph{Device mapping}
-\TODO
+Once the device is recognized by Virtual~DJ, it needs to be \emph{mapped}
+\cite{vdj_mapping}. The mapping process associates a control event, declared
+by the device definition, to some actions. These actions are executed by
+parsing the \emph{VDJscript} syntax \cite{vdj_script}.
+
+For demonstration purposes, only the optical motion sensor counter will be
+processed as jogwheel position by the software, while the quadrature counter
+will be ignored.
+
+The XML text in \citef{fig:vdj_device_map} summarizes the actions being
+mapped. On Windows, it must be saved in:\\
+{\ttfamily\small {\%}UserProfile{\%}/Documents/VirtualDJ/Mappers/}
+while on MacOSX in:\\
+{\ttfamily\small {\textasciitilde}/Documents/VirtualDJ/Mappers/}\\
+for example as {\ttfamily\small ratt{\_}mapping.xml}.
+
+\begin{figurehere}
+\begin{mdframed}[
+	backgroundcolor=lightyellow,
+	hidealllines=true,
+	innerleftmargin=2pt,
+	innerrightmargin=2pt
+]
+\begin{lstlisting}[language=simpleXML]
+<?xml version="1.0" encoding="UTF-8"?>
+<mapper device="RATT" author="TexZK"
+ description="RATT" version="704" date="02/08/2012">
+  <!-- Use the sensor as a jogwheel -->
+  <map value="SENSOR" action="jogwheel"/>
+  <!-- Ignore the quadrature input -->
+  <map value="QUADRATURE" action="nothing"/>
+</mapper>
+\end{lstlisting}
+\end{mdframed}
+\caption{Virtual~DJ device mapping for RATT}
+\label{fig:vdj_device_map}
+\end{figurehere}
 
 
 %-----------------------------------------------------------------------------
