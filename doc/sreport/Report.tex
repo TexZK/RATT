@@ -17,7 +17,8 @@
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
 %\usepackage{ngerman} % in german language if required
-\usepackage[nooneline,bf,hypcap]{caption} % Figure descriptions from left margin
+\usepackage{hyperref}
+\usepackage[nooneline,bf,hypcap,font=small]{caption} % Figure descriptions from left margin
 \usepackage{times}
 \usepackage{multicol}
 \usepackage{amsmath}
@@ -26,7 +27,6 @@
 \usepackage{epsfig}
 \usepackage{epstopdf}
 \usepackage{mdwlist}
-\usepackage{hyperref}
 \usepackage{color}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \input{tcilatex}
@@ -77,6 +77,7 @@
 \newcommand{\INSFIG}{\textbf{Figure PLACEHOLDER}}
 \renewcommand{\thefigure}{\arabic{figure}}
 \newcommand{\citef}[1]{\textbf{Figure~\ref{#1}}}
+\newcommand{\citet}[1]{\textbf{Table~\ref{#1}}}
 
 
 \begin{mytitle}RATT	- Relatively Accurate TurnTable\end{mytitle}
@@ -585,8 +586,8 @@ then eventually reads the addressed register value.
 \label{sec:controller_protocols}
 
 When developing a music-oriented controller, there is always a debate on which
-communication standard is most suitable for the application. The most common
-standard are described in the following.
+communication standard is the most suitable for the application. The most
+common standard are described in the following.
 
 
 %-----------------------------------------------------------------------------
@@ -717,7 +718,7 @@ many messages in a short interval.
 Also, MIDI/USB introduces the concept of \emph{cable}. It supports up to 16
 cables, which are 16 virtual plain MIDI devices. This makes theoretically
 possible to drive up to 16 hardware synthesizers through a single USB cable,
-by displatching the 16 virtual cables to as many real plain MIDI devices.
+by dispatching the 16 virtual cables to as many real plain MIDI devices.
 
 The MIDI/USB protocol exploits the features of \emph{bulk} transfers. This
 way, packets will not be lost, thanks to the flow control of USB bulk
@@ -726,7 +727,8 @@ transfers.
 USB devices can also show many indipendent behaviors, by choosing different
 application protocols per each USB endpoint. For example, this allows to have
 a MIDI/USB device with an integrated HID/USB trackpad,
-by using a single USB cable, like the \emph{Torq Xponent} \cite{maudio_xponent}.
+by using a single USB cable, like the \emph{M-Audio Torq Xponent}
+\cite{maudio_xponent}.
 
 All the MIDI drawbacks are kept, except for the baud rate and flow control.
 The USB, by its time-shared nature, always introduces some delays -- at
@@ -744,7 +746,7 @@ controllers, synthesizers, DSPs can all be driven by this class.
 
 The packet is composed by a \emph{header byte}, and the remaining 3 bytes are
 the encapsulated MIDI packet -- all but the SysEx messages, which have variable
-length. The header byte indexes the cable, and defines the following MIDI
+length. The header byte addresses the cable, and defines the following MIDI
 message type -- some bytes can be unused, and thus ignored by the USB parser.
 SysEx messages are simply split into 3-bytes chunks, merged by the USB parser
 when the trailing byte(s) are received.
@@ -861,7 +863,7 @@ single wheel, but nothing more advanced such as DSP, which is left to the
 user software application.
 
 This board also mounts the voltage regulator, to get 3.3~V from the standard
-5~V provided by the USB host. Bulk capacitors keep it stable.
+5~V sourced by the USB host. Bulk capacitors keep it stable.
 
 There are also a user button for input, and three LEDs for user interactions.
 
@@ -871,8 +873,11 @@ There are also two pins dedicated for an additional quadrature encoder input.
 They can be configured to be directly coupled with the MCU comparator
 interrupts, in order to trigger encoder changes.
 
-Finally, to communicate with the sensor module some control and interrupt
-signals, and a half-duplex serial port are provided.
+To communicate with the sensor module some control and interrupt signals, and
+a half-duplex serial port are provided.
+
+The USB bus is directly connected to the MCU, which has an internal
+\emph{Serial Interface Engine} configured for \emph{Full speed} transfers.
 
 \begin{figurehere}
 	\centering
@@ -946,7 +951,245 @@ program memory of the MCU.
 
 
 \paragraph{HID/USB module}
-\TODO
+The HID/USB module was devloped over the \emph{HID Simple Custom Demo}
+provided with the \emph{Microchip Application Libraries} \cite{microchip_mal}.
+The code itself is almost the same, so please refer to the documentation
+delivered by Microchip for more information, as the topic is very complex and
+cannot be described in a few words here.
+
+RATT is a simple I/O HID device, which uses the endpoint 1 for both input and
+output transfers. In the following, the descriptors used by HID/USB will be
+described briefly.
+
+\citet{tab:usb_device_desc} shows the \emph{Device} descriptor. It tells the
+host it is a standard USB 2.0 device, with its vendor and product identifiers
+(dummy in this case), with only one configuration. It also indicates there
+are a manufacturer and product name strings to be received and indexed later.
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1	& Number	& 18		\\
+1	& bDescriptorType		& 1	& Constant	& 0x01		\\
+2	& bcdUSB				& 2	& BCD		& 0x0200	\\
+4	& bDeviceClass			& 1	& Class		& 0x00		\\
+5	& bDeviceSubClass		& 1	& SubClass	& 0x00		\\
+6	& bDeviceProtocol		& 1	& Protocol	& 0x00		\\
+7	& bMaxPacketSize		& 1	& Number	& 8			\\
+8	& idVendor				& 2	& ID		& 0xDEAD	\\
+10	& idProduct				& 2	& ID		& 0xBEEF	\\
+12	& bcdDevice				& 2	& BCD		& 0x0002	\\
+14	& iManufacturer			& 1	& Index		& 1			\\
+15	& iProduct				& 1	& Index		& 2			\\
+16	& iSerialNumber			& 1	& Index		& 0			\\
+17	& bNumConfigurations	& 1	& Integer	& 1			\\
+\hline
+\end{tabular}
+\caption{USB Device descriptor}
+\label{tab:usb_device_desc}
+\end{tablehere}
+
+The single \emph{Configuration} descriptor in \citet{tab:usb_config_desc}
+tells the host that the device is powered by the USB bus at 100~mA maximum,
+and there is only one interface for this configuration.
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1	& Number	& 9				\\
+1	& bDescriptorType		& 1	& Constant	& 0x02			\\
+2	& wTotalLength			& 2	& Number	& 41			\\
+4	& bNumInterfaces		& 1	& Number	& 1				\\
+5	& bConfigurationValue	& 1	& Number	& 1				\\
+6	& iConfiguration		& 1	& Index		& 0				\\
+7	& bmAttributes			& 1	& Bitmap	& 0b11000000	\\
+8	& bMaxPower				& 1	& mA/2		& 50			\\
+\hline
+\end{tabular}
+\caption{USB Configuration descriptor}
+\label{tab:usb_config_desc}
+\end{tablehere}
+
+The single \emph{Interface} descriptor in \citet{tab:usb_intf_desc} simply
+indicates that it is a HID device. All the other options are ignored for this
+device.
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1	& Number	& 9			\\
+1	& bDescriptorType		& 1	& Constant	& 0x04		\\
+2	& bInterfaceNumber		& 1	& Number	& 0			\\
+3	& bAlternateSetting		& 1	& Number	& 0			\\
+4	& bNumEndpoints			& 1	& Number	& 2			\\
+5	& bInterfaceClass		& 1	& Class		& 0x03		\\
+6	& bInterfaceSubClass	& 1	& SubClass	& 0			\\
+7	& bInterfaceProtocol	& 1	& Protocol	& 0			\\
+8	& iInterface			& 1	& Index		& 0			\\
+\hline
+\end{tabular}
+\caption{USB Interface descriptor}
+\label{tab:usb_intf_desc}
+\end{tablehere}
+
+The \emph{HID Class-specific} descriptor in \citet{tab:hid_class_desc} is for
+the HID 1.11 protocol, no country-specific address, with a single HID report
+descriptor 48 bytes long.
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1	& Number	& 9			\\
+1	& bDescriptorType		& 1	& Constant	& 0x21		\\
+2	& bcdHID				& 2	& BCD		& 0x0111	\\
+4	& bCountryCode			& 1	& Number	& 0x00		\\
+5	& bNumDescriptors		& 1	& Number	& 1			\\
+6	& bDescriptorType		& 1	& Constant	& 0x22		\\
+7	& wDescriptorLength		& 2	& Number	& 48		\\
+\hline
+\end{tabular}
+\caption{HID Class-specific descriptor}
+\label{tab:hid_class_desc}
+\end{tablehere}
+
+The USB \emph{Endpoint} descriptors in \citet{tab:usb_ep1i_desc} and
+\citet{tab:usb_ep1i_desc} refer to the bidirectional endpoint 1, used to
+handle HID transfers, polled each 1~ms with \emph{interrupt} scheduling.
+Since the user needs very fast responses for very few data from the motion
+sensor (16 bytes per report), these settings are optimal for the device
+being developed.
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1	& Number	& 7				\\
+1	& bDescriptorType		& 1	& Constant	& 0x05			\\
+2	& bEndpointAddress		& 1	& Number	& 0x81			\\
+4	& bmAttributes			& 1	& Bitmap	& 0b00000011	\\
+5	& wMaxPacketSize		& 2	& Number	& 16			\\
+6	& bInterval				& 1	& ms		& 1				\\
+\hline
+\end{tabular}
+\caption{USB IN Endpoint 1 descriptor}
+\label{tab:usb_ep1i_desc}
+\end{tablehere}
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1	& Number	& 7				\\
+1	& bDescriptorType		& 1	& Constant	& 0x05			\\
+2	& bEndpointAddress		& 1	& Number	& 0x01			\\
+4	& bmAttributes			& 1	& Bitmap	& 0b00000011	\\
+5	& wMaxPacketSize		& 2	& Number	& 16			\\
+6	& bInterval				& 1	& ms		& 1				\\
+\hline
+\end{tabular}
+\caption{USB OUT Endpoint 1 descriptor}
+\label{tab:usb_ep1o_desc}
+\end{tablehere}
+
+As told before, manufacturer and product names were indexed inside the Device
+descriptor. The language code and those names, are shown in the \emph{String}
+descriptors shown in \citet{tab:usb_lang_desc}, \citet{tab:usb_manuf_desc},
+and \citet{tab:usb_prod_desc}.
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1	& Number	& 4				\\
+1	& bDescriptorType		& 1	& Constant	& 0x03			\\
+2	& wLanguageCode			& 2	& Number	& 0x0409		\\
+\hline
+\end{tabular}
+\caption{USB Language Code string descriptor}
+\label{tab:usb_lang_desc}
+\end{tablehere}
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1		& Number	& 12			\\
+1	& bDescriptorType		& 1		& Constant	& 0x03			\\
+2	& wString				& 10	& Unicode	& "TexZK"		\\
+\hline
+\end{tabular}
+\caption{USB Manufacturer string descriptor}
+\label{tab:usb_manuf_desc}
+\end{tablehere}
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|r|l|c|l|r|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
+\hline
+0	& bLength				& 1	& Number	& 10			\\
+1	& bDescriptorType		& 1	& Constant	& 0x03			\\
+2	& wString				& 8	& Unicode	& "RATT"		\\
+\hline
+\end{tabular}
+\caption{USB Product string descriptor}
+\label{tab:usb_prod_desc}
+\end{tablehere}
+
+Finally, the \emph{HID Report} descriptor describes the syntax and semantics
+of the actual data being transferred by the device application. Because of
+the custom semantics, the descriptor simply indicates 16 bytes for both
+input and output transfers.
+
+\begin{tablehere}
+\centering \scriptsize\bigskip
+\begin{tabular}{|rl|rl|}
+\hline
+\textbf{Field} & & \textbf{Value} &		\\
+\hline
+0x06	& Usage Page		& 0xFF00	& Vendor Defined Page 1		\\
+0x09	& Usage				& 0x01		& Vendor Usage 1			\\
+0xA1	& Collection		& 0x01		& Application				\\
+\hline
+0x19	& Usage Minimum		& 16		& 							\\
+0x29	& Usage Maximum		& 16		&							\\
+0x15	& Logical Minimum	& 0x00		&							\\
+0x25	& Logical Maximum	& 0xFF		&							\\
+0x75	& Report Size		& 8			& field bits				\\
+0x95	& Report Count		& 16		& 							\\
+0x81	& Input				& 0x00		& Data, Array, Abs			\\
+0x19	& Usage Minimum		& 16		& 							\\
+0x29	& Usage Maximum		& 16		&							\\
+0x95	& Report Count		& 16		& 							\\
+0x91	& Output			& 0x00		& Data, Array, Abs			\\
+\hline
+0xC0	& End Collection	&			&							\\
+\hline
+\end{tabular}
+\caption{HID Report descriptor}
+\label{tab:hid_rpt_desc}
+\end{tablehere}
 
 
 \paragraph{LED module}
@@ -1096,10 +1339,10 @@ sliders, lights, displays, external connections, audio piping to DSP, and so
 on.
 
 By choosing a fully-featured MCU of nowadays, such as the \emph{STM32~F4}
-family, it is possible to handle almost all these devices with only one MCU,
-at reduced overall price. Obviously, some additional chips are still needed
--- motion sensors \emph{in primis} -- but the whole architecture can be shrunk
-into a few chips.
+series \cite{st_stm32f4}, it is possible to handle almost all these devices
+with only one MCU, at reduced overall price. Obviously, some additional chips
+are still needed -- motion sensors \emph{in primis} -- but the whole
+architecture can be shrunk into a few chips.
 
 
 \paragraph{Digital inputs}
