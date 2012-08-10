@@ -299,6 +299,7 @@ light into the code assigned to the focused disc slice. The digital code is
 then triggered by the MCU through some interrupts, and a message containing
 the motion (or even the absolute angle) is sent to the user software.
 
+
 \paragraph{Pros}
 \begin{itemize*}
 	\item Easy to manufacture
@@ -437,6 +438,7 @@ chain, slow transitions have a small amplitude. As it is well known in
 communication technology field, slow and small transitions make zero-crossings
 much harder to be tracked correctly, thus generating jitter or missing codes.
 This is where optical motion sensors show their best performance instead.
+
 
 \paragraph{Pros}
 \begin{itemize*}
@@ -806,10 +808,6 @@ The \emph{Human Interface Device} (\emph{HID}), in fact, is an USB class
 with huge flexibility and support -- it can be found in almost any USB device
 with keys, knobs, sliders, simple displays, LEDs, control wheels and so on.
 
-The flexibility of HID is justified by the way its sub-protocol is developed.
-HID messages, called \emph{reports}, have a fixed structure, defined at the
-moment the HID configuration of the device is sent to the host.
-
 \TODO
 
 
@@ -1177,10 +1175,11 @@ and \citet{tab:usb_prod_desc}.
 \label{tab:usb_prod_desc}
 \end{tablehere}
 
-Finally, the \emph{HID Report} descriptor describes the syntax and semantics
-of the actual data being transferred by the device application. Because of
-the custom semantics, the descriptor simply indicates 16 bytes for both
-input and output transfers.
+Finally, the \emph{HID Report} descriptor in \citet{tab:hid_rpt_desc}
+describes the syntax and semantics of the actual data being transferred by the
+device application. Because of the custom semantics, the descriptor simply
+indicates 16 bytes for both input and output transfers. Its semantics are
+listed in \citef{fig:hid_rpt_struct}
 
 \begin{tablehere}
 \centering \scriptsize
@@ -1210,6 +1209,40 @@ input and output transfers.
 \caption{HID Report descriptor}
 \label{tab:hid_rpt_desc}
 \end{tablehere}
+
+\begin{figurehere}
+\begin{mdframed}[
+	backgroundcolor=lightyellow,
+	hidealllines=true,
+	innerleftmargin=2pt,
+	innerrightmargin=2pt
+]
+\begin{lstlisting}[
+	language=C,
+	basicstyle=\scriptsize\ttfamily,
+	keywordstyle=\color{darkblue},
+	identifierstyle=\color{darkred},
+	commentstyle=\color{darkgreen}
+]
+typedef struct {
+    unsigned long   timestamp;
+    struct {
+        signed short    dx;
+        signed short    dy;
+    }               sensorMotion;
+    struct {
+        unsigned short  x;
+        unsigned short  y;
+    }               sensorPos;
+    signed short    incencMotion;
+    unsigned short  incencPos;
+} APP_HID_TX_REPORT;
+\end{lstlisting}
+\end{mdframed}
+\caption{HID report semantics}
+\label{fig:hid_rpt_struct}
+\end{figurehere}
+
 
 
 \paragraph{LED module}
@@ -1340,8 +1373,8 @@ deinitialization respectively, and are ignored. The \emph{out} page is ignored
 too, because the device does not receive any meaningful messages from the
 host software.
 
-Instead, the \emph{in} page contains the description of the two motion
-sources. They are both interpreted as jogwheels, with full 16-bit unsigned
+Instead, the \emph{in} page contains the description of the three motion
+sources. They are all interpreted as jogwheels, with full 16-bit unsigned
 counters which keep track of the accumulated position. The \emph{full}
 attribute tells the jogwheel CPR, and needs to be calibrated with geometrical
 parameters of the wheel itself.
@@ -1356,25 +1389,29 @@ for example as {\ttfamily\small ratt{\_}device.xml}.
 \begin{mdframed}[
 	backgroundcolor=lightyellow,
 	hidealllines=true,
-	innerleftmargin=2pt,
-	innerrightmargin=2pt
+	innerleftmargin=4pt,
+	innerrightmargin=4pt
 ]
 \begin{lstlisting}[language=simpleXML]
 <?xml version="1.0" encoding="UTF-8"?>
 <device name="RATT" author="TexZK" decks="1"
  type="HID" vid="0xDEAD" pid="0xBEEF"
- reportsize="16">
+ reportsize="16" date="10/08/2012">
   <page type="init">
     <!-- Nothing to initialize -->
   </page>
   <page type="in">
-    <!-- Optical motion sensor input -->
-    <jog name="SENSOR"
+    <!-- Optical motion sensor X position -->
+    <jog name="SENSOR_POS_X"
      byte="8" size="word" endian="little"
      full="24000" min="0" max="65535"/>
+    <!-- Optical motion sensor Y position -->
+    <jog name="SENSOR_POS_Y"
+     byte="10" size="word" endian="little"
+     full="24000" min="0" max="65535"/>
     <!-- Quadrature encoder input -->
-    <jog name="QUADRATURE"
-     byte="12" size="word" endian="little"
+    <jog name="QUAD_POS"
+     byte="14" size="word" endian="little"
      full="4000" min="0" max="65535"/>
   </page>
   <page type="out">
@@ -1397,9 +1434,9 @@ Once the device is recognized by Virtual~DJ, it needs to be \emph{mapped}
 by the device definition, to some actions. These actions are executed by
 parsing the \emph{VDJscript} syntax \cite{vdj_script}.
 
-For demonstration purposes, only the optical motion sensor counter will be
-processed as jogwheel position by the software, while the quadrature counter
-will be ignored.
+For demonstration purposes, only the optical motion sensor X position will be
+processed as jogwheel position by the software, while the Y position and the
+quadrature position will be ignored.
 
 The XML text in \citef{fig:vdj_device_map} summarizes the actions being
 mapped. On Windows, it must be saved in:\\
@@ -1412,17 +1449,19 @@ for example as {\ttfamily\small ratt{\_}mapping.xml}.
 \begin{mdframed}[
 	backgroundcolor=lightyellow,
 	hidealllines=true,
-	innerleftmargin=2pt,
-	innerrightmargin=2pt
+	innerleftmargin=4pt,
+	innerrightmargin=4pt
 ]
 \begin{lstlisting}[language=simpleXML]
 <?xml version="1.0" encoding="UTF-8"?>
 <mapper device="RATT" author="TexZK"
- description="RATT" version="704" date="02/08/2012">
-  <!-- Use the sensor as a jogwheel -->
-  <map value="SENSOR" action="jogwheel"/>
+ description="RATT" version="704" date="10/08/2012">
+  <!-- Use the sensor X position as a jogwheel -->
+  <map value="SENSOR_POS_X" action="jogwheel"/>
+  <!-- Ignore the sensor Y position -->
+  <map value="SENSOR_POS_Y" action="nothing"/>
   <!-- Ignore the quadrature input -->
-  <map value="QUADRATURE" action="nothing"/>
+  <map value="QUAD_POS" action="nothing"/>
 </mapper>
 \end{lstlisting}
 \end{mdframed}
@@ -1549,8 +1588,6 @@ displays. There are so many display types on the market, that it is difficult
 to suggest one. Anyway, for pure text displays, or generally soft-realtime
 information visualization, the connection to one among the common UART, I2C,
 SPI buses is enough.
-
-\TODO
 
 
 %-----------------------------------------------------------------------------

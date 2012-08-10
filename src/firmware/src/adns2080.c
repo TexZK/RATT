@@ -43,7 +43,7 @@
 // LOCAL VARIABLES
 #pragma udata data_adns_local
 
-volatile ADNS_DELTAS	adns_deltas;				///< Deltas accumulator
+volatile ADNS_DELTA		adns_delta;					///< Cached deltas
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
@@ -283,8 +283,8 @@ void Adns_Initialize( void )
 	adns_status.motionInt = 0;
 	adns_status.dataReady = 0;
 	
-	adns_deltas.dx = 0L;
-	adns_deltas.dy = 0L;
+	adns_delta.dx = 0;
+	adns_delta.dy = 0;
 	
 	Adns_PowerUpDelay();
 	Debug_PrintConst_Ok();
@@ -455,7 +455,7 @@ void Adns_BurstReadMotionDeltasBlocking( void )
 			unsigned char	lo;
 			unsigned char	hi;
 		} bytes;
-		signed long			value;
+		ADNS_DELTA_TYPE	value;
 	} split;
 	static unsigned char	dx, dy, dxyh;
 	
@@ -476,7 +476,7 @@ void Adns_BurstReadMotionDeltasBlocking( void )
 	if ( split.bytes.hi & 0x08 ) {
 		split.bytes.hi |= 0xF0;				// Sign extension
 	}
-	adns_deltas.dx += split.value;			// Accumulate
+	adns_delta.dx += split.value;			// Accumulate
 	
 	// Compute Delta Y as a 16-bits signed integer
 	split.bytes.lo = dy;
@@ -484,7 +484,7 @@ void Adns_BurstReadMotionDeltasBlocking( void )
 	if ( split.bytes.hi & 0x08 ) {
 		split.bytes.hi |= 0xF0;				// Sign extension
 	}
-	adns_deltas.dy += split.value;			// Accumulate
+	adns_delta.dy += split.value;			// Accumulate
 }	
 
 
@@ -521,8 +521,8 @@ void Adns_ReadSubsequentDelay( void )
 void Adns_ClearDeltas( void )
 {
 	Adns_DisableInterrupt();
-	adns_deltas.dx = 0;
-	adns_deltas.dy = 0;
+	adns_delta.dx = 0;
+	adns_delta.dy = 0;
 	adns_status.dataReady = 0;
 	Adns_EnableInterrupt();
 }

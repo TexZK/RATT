@@ -237,23 +237,32 @@ typedef union {
 // Aggregate types of the driver
 
 typedef struct {
-	unsigned		motionInt	: 1;	///< Motion flag (interrupt sets, service clears)
-	unsigned		dataReady	: 1;	///< Data ready flag
+	unsigned		motionInt	: 1;		///< Motion flag (interrupt sets, service clears)
+	unsigned		dataReady	: 1;		///< Data ready flag
 	unsigned					: 6;
-} ADNS_STATUS;							///< Device status
+} ADNS_STATUS;								///< Device status
+
+
+typedef	signed short	ADNS_DELTA_TYPE;	///< Motion type
+typedef	unsigned short	ADNS_POS_TYPE;		///< Position type
+
+typedef struct {
+	ADNS_DELTA_TYPE		dx;					///< X motion since last motion read
+	ADNS_DELTA_TYPE		dy;					///< Y motion since last motion read
+} ADNS_DELTA;								///< Motion sensor deltas
 
 
 typedef struct {
-	signed short		dx;				///< X movement since last motion read
-	signed short		dy;				///< Y movement since last motion read
-} ADNS_DELTAS;							///< Motion deltas
+	ADNS_POS_TYPE		x;					///< X absolute position
+	ADNS_POS_TYPE		y;					///< Y absolute position
+} ADNS_POS;									///< Motion sensor absolute position
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//
 // GLOBAL VARIABLES
 
 extern near ADNS_STATUS			adns_status;		///< ADNS module status
-extern volatile ADNS_DELTAS		adns_deltas;		///< Cached short deltas
+extern volatile ADNS_DELTA		adns_delta;			///< Cached deltas
 
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//

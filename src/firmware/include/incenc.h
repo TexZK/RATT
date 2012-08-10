@@ -48,6 +48,7 @@
 
 // Types
 typedef signed short			INCENC_DELTA;		///< Incremental encoder delta
+typedef	unsigned short			INCENC_POS;			///< Absolute position
 
 typedef union {
 	struct {
@@ -65,7 +66,6 @@ typedef union {
 // GLOBAL VARIABLES
 
 extern near volatile INCENC_STATUS	incenc_status;		///< Incremental encoder module status
-
 extern volatile INCENC_DELTA		incenc_delta;		///< Cached delta accumulator
 
 

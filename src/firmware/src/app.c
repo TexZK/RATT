@@ -291,6 +291,14 @@ void InitializeSystem( void )
     YELLOW_LED = LED_OFF;
     RED_LED = LED_OFF;
     
+    app_hidTxReport.timestamp = 0;
+    app_hidTxReport.sensorMotion.dx = 0;
+    app_hidTxReport.sensorMotion.dy = 0;
+    app_hidTxReport.sensorPos.x = 0;
+    app_hidTxReport.sensorPos.y = 0;
+    app_hidTxReport.incencMotion = 0;
+    app_hidTxReport.incencPos = 0;
+    
     #ifdef USB_INTERRUPT
     // Attach USB device
     USBDeviceAttach();
@@ -334,13 +342,15 @@ void ProcessIO( void )
 	if ( (incenc_status.bits.dataReady || adns_status.dataReady) && Usb_TxReady() ) {
 		app_hidTxReport.timestamp = app_timestamp;
 		App_Unlock();
-		++app_hidTxReport.id;
 		
-		app_hidTxReport.mouseMotion.dx -= adns_deltas.dx;
-		app_hidTxReport.mouseMotion.dy -= adns_deltas.dy;
+		app_hidTxReport.sensorMotion.dx = adns_delta.dx;
+		app_hidTxReport.sensorPos.x -= (ADNS_POS_TYPE)app_hidTxReport.sensorMotion.dx;
+		app_hidTxReport.sensorMotion.dy = adns_delta.dy;
+		app_hidTxReport.sensorPos.y -= (ADNS_POS_TYPE)app_hidTxReport.sensorMotion.dy;
 		Adns_ClearDeltas();
 		
-		app_hidTxReport.incencMotion += incenc_delta;
+		app_hidTxReport.incencMotion = incenc_delta;
+		app_hidTxReport.incencPos += (INCENC_POS)app_hidTxReport.incencMotion;
 		IncEnc_ClearDelta();
 		
 		*(APP_HID_TX_REPORT *)usb_txBuffer = app_hidTxReport;
