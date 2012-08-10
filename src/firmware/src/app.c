@@ -291,6 +291,7 @@ void InitializeSystem( void )
     YELLOW_LED = LED_OFF;
     RED_LED = LED_OFF;
     
+    app_timestamp = 0;
     app_hidTxReport.timestamp = 0;
     app_hidTxReport.sensorMotion.dx = 0;
     app_hidTxReport.sensorMotion.dy = 0;
@@ -343,10 +344,10 @@ void ProcessIO( void )
 		app_hidTxReport.timestamp = app_timestamp;
 		App_Unlock();
 		
-		app_hidTxReport.sensorMotion.dx = adns_delta.dx;
-		app_hidTxReport.sensorPos.x -= (ADNS_POS_TYPE)app_hidTxReport.sensorMotion.dx;
-		app_hidTxReport.sensorMotion.dy = adns_delta.dy;
-		app_hidTxReport.sensorPos.y -= (ADNS_POS_TYPE)app_hidTxReport.sensorMotion.dy;
+		app_hidTxReport.sensorMotion.dx = -adns_delta.dx;
+		app_hidTxReport.sensorPos.x += (ADNS_POS_TYPE)app_hidTxReport.sensorMotion.dx;
+		app_hidTxReport.sensorMotion.dy = -adns_delta.dy;
+		app_hidTxReport.sensorPos.y += (ADNS_POS_TYPE)app_hidTxReport.sensorMotion.dy;
 		Adns_ClearDeltas();
 		
 		app_hidTxReport.incencMotion = incenc_delta;

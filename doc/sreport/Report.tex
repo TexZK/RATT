@@ -1214,8 +1214,10 @@ listed in \citef{fig:hid_rpt_struct}
 \begin{mdframed}[
 	backgroundcolor=lightyellow,
 	hidealllines=true,
-	innerleftmargin=2pt,
-	innerrightmargin=2pt
+	innerleftmargin=4pt,
+	innerrightmargin=4pt,
+	innertopmargin=0pt,
+	innerbottommargin=0pt
 ]
 \begin{lstlisting}[
 	language=C,
@@ -1225,17 +1227,17 @@ listed in \citef{fig:hid_rpt_struct}
 	commentstyle=\color{darkgreen}
 ]
 typedef struct {
-    unsigned long   timestamp;
-    struct {
-        signed short    dx;
-        signed short    dy;
-    }               sensorMotion;
-    struct {
-        unsigned short  x;
-        unsigned short  y;
-    }               sensorPos;
-    signed short    incencMotion;
-    unsigned short  incencPos;
+  unsigned long   timestamp;    // milliseconds
+  struct {
+    signed short    dx;         // X motion
+    signed short    dy;         // Y motion
+  }               sensorMotion; // sensor motion
+  struct {
+    unsigned short  x;          // X position
+    unsigned short  y;          // Y position
+  }               sensorPos;    // sensor position
+  signed short    incencMotion; // encoder motion
+  unsigned short  incencPos;    // encoder position
 } APP_HID_TX_REPORT;
 \end{lstlisting}
 \end{mdframed}
@@ -1390,7 +1392,9 @@ for example as {\ttfamily\small ratt{\_}device.xml}.
 	backgroundcolor=lightyellow,
 	hidealllines=true,
 	innerleftmargin=4pt,
-	innerrightmargin=4pt
+	innerrightmargin=4pt,
+	innertopmargin=0pt,
+	innerbottommargin=0pt
 ]
 \begin{lstlisting}[language=simpleXML]
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1409,8 +1413,8 @@ for example as {\ttfamily\small ratt{\_}device.xml}.
     <jog name="SENSOR_POS_Y"
      byte="10" size="word" endian="little"
      full="24000" min="0" max="65535"/>
-    <!-- Quadrature encoder input -->
-    <jog name="QUAD_POS"
+    <!-- Incremental encoder position -->
+    <jog name="INCENC_POS"
      byte="14" size="word" endian="little"
      full="4000" min="0" max="65535"/>
   </page>
@@ -1450,7 +1454,9 @@ for example as {\ttfamily\small ratt{\_}mapping.xml}.
 	backgroundcolor=lightyellow,
 	hidealllines=true,
 	innerleftmargin=4pt,
-	innerrightmargin=4pt
+	innerrightmargin=4pt,
+	innertopmargin=0pt,
+	innerbottommargin=0pt
 ]
 \begin{lstlisting}[language=simpleXML]
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1460,8 +1466,8 @@ for example as {\ttfamily\small ratt{\_}mapping.xml}.
   <map value="SENSOR_POS_X" action="jogwheel"/>
   <!-- Ignore the sensor Y position -->
   <map value="SENSOR_POS_Y" action="nothing"/>
-  <!-- Ignore the quadrature input -->
-  <map value="QUAD_POS" action="nothing"/>
+  <!-- Ignore the incremental encoder input -->
+  <map value="INCENC_POS" action="nothing"/>
 </mapper>
 \end{lstlisting}
 \end{mdframed}
