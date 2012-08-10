@@ -201,7 +201,7 @@ or precise motion tracking. For example, with a 720 CPR encoder it is possible
 to detect only motions of half degrees, that for a 12 inches wide wheel is
 still low -- keep in mind that a vinyl spins at roughly 150 degrees per second,
 and good sampling should require at least 1500 samples per second to track it
-decently enough.
+decently enough at nominal speed.
 
 
 \paragraph{System architecture}
@@ -376,7 +376,7 @@ Internal soundcards are very fast in transfering data from the incoming audio
 signal to the CPU, thanks to the fast system bus (PCI or PCI-E).
 
 However, as internal soundacards are almost always designed for desktop
-computers but notebook computers are much easier to carry, the choice of an
+computers, while notebook computers are much easier to carry, the choice of an
 external soundcard is the very most common.
 
 External soundcards are mostly connected through an USB bus, but some
@@ -622,7 +622,7 @@ The truly \emph{de-facto} standard in music-oriented communication is the
 developed in the '80s to be easy and cheap to manufacture, robust and rather
 complete for standard music production, with some degree of freedom for
 sub-protocols developed by manufacturers. It is still widely supported by
-nowadays digital music equipment.
+digital music equipment nowadays.
 
 Common output and input circuits can be seen respectively in \citef{fig:midi_out}
 and \citef{fig:midi_in}. Basically, it is a standard serial point-to-point
@@ -667,7 +667,7 @@ the human brain, which is very sensitive to audio timing.
 
 
 \paragraph{Basic protocol}
-The serial protocol is 8-bits per message word, with one start (low) and one
+The serial protocol message word is 8 bits long, with one start (low) and one
 stop (high) bits, MSb first, 31250 baud. The protocol is message-driven, with
 standard messages 3 bytes long. Special messages are 1 to 3 bytes long, while
 manufacturer-defined \emph{System Exclusive} (\emph{SysEx}) messages can be
@@ -804,30 +804,64 @@ some delay too.
 
 Besides MIDI/USB, another application protocol was developed to handle those
 devices which interface with human beings, and is much widely implemented.
-The \emph{Human Interface Device} (\emph{HID}), in fact, is an USB class
-with huge flexibility and support -- it can be found in almost any USB device
-with keys, knobs, sliders, simple displays, LEDs, control wheels and so on.
+The \emph{Human Interface Device} (\emph{HID}) \cite{hid_info}, in fact, is an
+USB class with huge flexibility and support -- it can be found in almost any
+USB device with keys, knobs, sliders, simple displays, LEDs, control wheels,
+and so on.
 
-\TODO
+USB endpoints for HID applications are scheduled with \emph{interrupt}
+priority. This means that HID is suitable for low-latency devices, but does
+not offer high bandwidth.
+
+A strength of the HID protocol is that it is highly available. Any decent host
+OS has full native support for it. Also, HID reports are described upon
+connection, and the host can actually parse not only the bare syntax, but also
+its semantics for some common cases -- keyboards, joysticks, gloves,
+\emph{etc}. This often makes the device immediately available to the user,
+without the need of custom device drivers.
+
+Being developed over the USB protocol, HID packets suffer from USB scheduling
+delays. This means that a \emph{USB full speed} device has a minimum latency
+of 1~ms between its packets -- the minimum \emph{interrupt} latency.
 
 
 \paragraph{Basic protocol}
-\TODO
+The HID protocol is based on the exchange of \emph{report} packets. A report
+has a structure described in the setup phase of the USB HID class interface.
+Its size is constrained by that of USB \emph{interrupt} packets, so it cannot
+contain too much data. By the way, it is big enough to support \emph{state
+streaming} of a small set of data, or to describe a few events per packet.
+
+State streaming becomes handy when tracking the status of some critical or
+rapidly changing data sent by the device. In the case of the simplified RATT
+prototype (see Section~\ref{sec:simplified_approach}), deltas and absolute
+positions of both the mouse sensor and the incremental encoder are
+continuously streamed. This optimizes the USB bandwidth usage. In fact, those
+devices would generate a huge number of motion events if sent with an
+event-based protocol, like MIDI/USB, wasting the available bandwidth and
+introducing queuing delays.
+
+The exchange of HID reports is straightforward, but the report definitions
+need some attention. As told before, the HID report structure must be
+communicated when configuring the HID connection, with a \emph{Report}
+descriptor. This descriptor is written in a dedicated language
+\cite{hid_docs}, which might be tricky -- some tools are available to help the
+design of such descriptors.
 
 
 \paragraph{Pros}
 \begin{itemize*}
-	\item Highest USB priority
-	\item State streaming
-	\item \TODO
+	\item Natively supported by most operating systems
+	\item USB \emph{interrupt} priority
+	\item Suitable for small state streaming
+	\item Common semantics automatically inferred
 \end{itemize*}
 
 
 \paragraph{Cons}
 \begin{itemize*}
 	\item Sill some USB delays
-	\item Custom HID reports to parse
-	\item \TODO
+	\item Custom HID reports to design
 \end{itemize*}
 
 
@@ -970,10 +1004,11 @@ program memory of the MCU.
 
 \paragraph{HID/USB module}
 The HID/USB module was devloped over the \emph{HID Simple Custom Demo}
-provided with the \emph{Microchip Application Libraries} \cite{microchip_mal}.
-The code itself is almost the same, so please refer to the documentation
-delivered by Microchip for more information, as the topic is very complex and
-cannot be described in a few words here.
+provided with the \emph{Microchip Application Libraries} \cite{microchip_mal},
+using the \emph{USB Framework} version \emph{2.9d}. The code itself is almost
+the same, so please refer to the documentation delivered by Microchip for more
+information, as the topic is very complex and cannot be described in a few
+words here.
 
 RATT is a simple I/O HID device, which uses the endpoint 1 for both input and
 output transfers. In the following, the descriptors used by HID/USB will be
@@ -1006,7 +1041,7 @@ are a manufacturer and product name strings to be received and indexed later.
 17	& bNumConfigurations	& 1	& Integer	& 1			\\
 \hline
 \end{tabular}
-\caption{USB Device descriptor}
+\caption{USB \emph{Device} descriptor}
 \label{tab:usb_device_desc}
 \end{tablehere}
 
@@ -1030,7 +1065,7 @@ and there is only one interface for this configuration.
 8	& bMaxPower				& 1	& mA/2		& 50			\\
 \hline
 \end{tabular}
-\caption{USB Configuration descriptor}
+\caption{USB \emph{Configuration} descriptor}
 \label{tab:usb_config_desc}
 \end{tablehere}
 
@@ -1055,7 +1090,7 @@ device.
 8	& iInterface			& 1	& Index		& 0			\\
 \hline
 \end{tabular}
-\caption{USB Interface descriptor}
+\caption{USB \emph{Interface} descriptor}
 \label{tab:usb_intf_desc}
 \end{tablehere}
 
@@ -1078,7 +1113,7 @@ descriptor 48 bytes long.
 7	& wDescriptorLength		& 2	& Number	& 48		\\
 \hline
 \end{tabular}
-\caption{HID Class-specific descriptor}
+\caption{HID \emph{Class-specific} descriptor}
 \label{tab:hid_class_desc}
 \end{tablehere}
 
@@ -1103,7 +1138,7 @@ being developed.
 6	& bInterval				& 1	& ms		& 1				\\
 \hline
 \end{tabular}
-\caption{USB IN Endpoint 1 descriptor}
+\caption{USB IN \emph{Endpoint} 1 descriptor}
 \label{tab:usb_ep1i_desc}
 \end{tablehere}
 
@@ -1121,12 +1156,12 @@ being developed.
 6	& bInterval				& 1	& ms		& 1				\\
 \hline
 \end{tabular}
-\caption{USB OUT Endpoint 1 descriptor}
+\caption{USB OUT \emph{Endpoint} 1 descriptor}
 \label{tab:usb_ep1o_desc}
 \end{tablehere}
 
 As told before, manufacturer and product names were indexed inside the Device
-descriptor. The language code and those names, are shown in the \emph{String}
+descriptor. The language code and those names are defined by the \emph{String}
 descriptors shown in \citet{tab:usb_lang_desc}, \citet{tab:usb_manuf_desc},
 and \citet{tab:usb_prod_desc}.
 
@@ -1141,7 +1176,7 @@ and \citet{tab:usb_prod_desc}.
 2	& wString				& 2	& Unicode	& 0x0409		\\
 \hline
 \end{tabular}
-\caption{USB Language Code string descriptor}
+\caption{USB \emph{Language Code} string descriptor}
 \label{tab:usb_lang_desc}
 \end{tablehere}
 
@@ -1156,7 +1191,7 @@ and \citet{tab:usb_prod_desc}.
 2	& wString				& 10	& Unicode	& "TexZK"		\\
 \hline
 \end{tabular}
-\caption{USB Manufacturer string descriptor}
+\caption{USB \emph{Manufacturer} string descriptor}
 \label{tab:usb_manuf_desc}
 \end{tablehere}
 
@@ -1171,15 +1206,16 @@ and \citet{tab:usb_prod_desc}.
 2	& wString				& 8	& Unicode	& "RATT"		\\
 \hline
 \end{tabular}
-\caption{USB Product string descriptor}
+\caption{USB \emph{Product} string descriptor}
 \label{tab:usb_prod_desc}
 \end{tablehere}
 
-Finally, the \emph{HID Report} descriptor in \citet{tab:hid_rpt_desc}
+Finally, the HID \emph{Report} descriptor in \citet{tab:hid_rpt_desc}
 describes the syntax and semantics of the actual data being transferred by the
 device application. Because of the custom semantics, the descriptor simply
-indicates 16 bytes for both input and output transfers. Its semantics are
-listed in \citef{fig:hid_rpt_struct}
+indicates 16 bytes for both input and output transfers. Semantics of the
+\emph{IN} (device-to-host) report are listed in \citef{fig:hid_rpt_struct},
+while that of the \emph{OUT} report is currently reserved.
 
 \begin{tablehere}
 \centering \scriptsize
@@ -1206,7 +1242,7 @@ listed in \citef{fig:hid_rpt_struct}
 0xC0	& End Collection	&			&							\\
 \hline
 \end{tabular}
-\caption{HID Report descriptor}
+\caption{HID IN \emph{Report} descriptor}
 \label{tab:hid_rpt_desc}
 \end{tablehere}
 
@@ -1241,7 +1277,7 @@ typedef struct {
 } APP_HID_TX_REPORT;
 \end{lstlisting}
 \end{mdframed}
-\caption{HID report semantics}
+\caption{HID IN report semantics}
 \label{fig:hid_rpt_struct}
 \end{figurehere}
 
@@ -1333,10 +1369,6 @@ Fast and simple interrupt events are processed by the high-priority ISR, while
 communication events, which are slower, are processed by the low-priority ISR.
 
 
-\paragraph{Remarks}
-\TODO
-
-
 %-----------------------------------------------------------------------------
 \subsection{Software architecture}
 
@@ -1400,7 +1432,7 @@ for example as {\ttfamily\small ratt{\_}device.xml}.
 <?xml version="1.0" encoding="UTF-8"?>
 <device name="RATT" author="TexZK" decks="1"
  type="HID" vid="0xDEAD" pid="0xBEEF"
- reportsize="16" date="10/08/2012">
+ reportsize="16">
   <page type="init">
     <!-- Nothing to initialize -->
   </page>
