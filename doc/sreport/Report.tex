@@ -1020,7 +1020,7 @@ host it is a standard USB 2.0 device, with its vendor and product identifiers
 are a manufacturer and product name strings to be received and indexed later.
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1050,7 +1050,7 @@ tells the host that the device is powered by the USB bus at 100~mA maximum,
 and there is only one interface for this configuration.
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1070,11 +1070,11 @@ and there is only one interface for this configuration.
 \end{tablehere}
 
 The single \emph{Interface} descriptor in \citet{tab:usb_intf_desc} simply
-indicates that it is a HID device. All the other options are ignored for this
-device.
+indicates that it is a HID device (HID class). All the other options are
+ignored for this device.
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1099,7 +1099,7 @@ the HID 1.11 protocol, no country-specific address, with a single HID report
 descriptor 48 bytes long.
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1118,14 +1118,14 @@ descriptor 48 bytes long.
 \end{tablehere}
 
 The USB \emph{Endpoint} descriptors in \citet{tab:usb_ep1i_desc} and
-\citet{tab:usb_ep1i_desc} refer to the bidirectional endpoint 1, used to
+\citet{tab:usb_ep1o_desc} refer to the bidirectional endpoint 1, used to
 handle HID transfers, polled each 1~ms with \emph{interrupt} scheduling.
 Since the user needs very fast responses for very few data from the motion
 sensor (16 bytes per report), these settings are optimal for the device
 being developed.
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1143,7 +1143,7 @@ being developed.
 \end{tablehere}
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1166,7 +1166,7 @@ descriptors shown in \citet{tab:usb_lang_desc}, \citet{tab:usb_manuf_desc},
 and \citet{tab:usb_prod_desc}.
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1181,7 +1181,7 @@ and \citet{tab:usb_prod_desc}.
 \end{tablehere}
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1195,8 +1195,9 @@ and \citet{tab:usb_prod_desc}.
 \label{tab:usb_manuf_desc}
 \end{tablehere}
 
+\newpage	%FIXME: bad caption placement
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
 \hline
 \textbf{Offset} & \textbf{Field} & \textbf{Size} & \textbf{Type} & \textbf{Value}	\\
@@ -1218,7 +1219,7 @@ indicates 16 bytes for both input and output transfers. Semantics of the
 while that of the \emph{OUT} report is currently reserved.
 
 \begin{tablehere}
-\centering \scriptsize
+\centering \footnotesize
 \begin{tabular}{|rl|rl|}
 \hline
 \textbf{Field} & & \textbf{Value} &		\\
@@ -1511,13 +1512,81 @@ for example as {\ttfamily\small ratt{\_}mapping.xml}.
 %-----------------------------------------------------------------------------
 \subsection{Sizing and computations}
 
-\TODO
+The device must be able to keep track of turntable movements. This can be
+achieved only if the platter is moving at less than the maximum speed that
+the optical motion sensor can reach. Given this constraint, it is possible to
+determine the radius at which the center of the sensor can be placed. In the
+following, some computations will lead to the expected radius.
+
+\TODO equations
+
+\TODO latex variables
+
+
+\begin{tablehere}
+\centering \footnotesize
+\begin{tabular}{|l|l|rl|}
+\hline
+\textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
+\hline
+ttDiscDiam		& Disc diameter			& 12		& in			\\
+ttNomAngSpeed	& Nominal angular speed	& 33		& rot/min		\\
+ttPitchOff		& Pitch offset			& 0.00		& \%			\\
+\hline
+ttDiscPerim		& Disc perimeter		& 37.7		& in			\\
+ttAngSpeed		& Angular speed			& 33		& rot/min		\\
+ttRevRate		& Revolution rate		& 0.55		& Hz			\\
+ttRevTime		& Revolution time		& 1.818		& s				\\
+ttTgSpeed		& Tangential speed		& 20.73		& in/s			\\
+\hline
+\end{tabular}
+\caption{Nominal turntable data}
+\label{tab:tt_data_nom}
+\end{tablehere}
+
+\begin{tablehere}
+\centering \footnotesize
+\begin{tabular}{|l|l|rl|}
+\hline
+\textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
+\hline
+ssRes			& Resolution			& 2000		& dot/in		\\
+ssMaxSpeed		& Maximum speed			& 30		& in/s			\\
+\hline	
+ssMaxDotRate	& Maximum dots rate		& 60000		& dot/s			\\
+ssMaxDot1ms		& Maximum dots in 1~ms	& 60		& dot			\\
+\hline
+\end{tabular}
+\caption{Optical motion sensor data}
+\label{tab:ss_data}
+\end{tablehere}
+
+\begin{tablehere}
+\centering \footnotesize
+\begin{tabular}{|l|l|rl|}
+\hline
+\textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
+\hline
+mmRadius		& Radius				& 4.00		& in			\\
+mmAngleOff		& Angle offset			& 0.00		& $^{\circ}$	\\
+\hline
+mmRadiusCm		& Radius [cm]			& 10.16		& cm			\\
+mmSpeed			& Speed					& 13.82		& in/s			\\
+mmDotRate		& Dots rate				& 27646		& dot/s			\\
+mmRevDots		& Revolution dots		& 50265		& dot			\\
+\hline
+\end{tabular}
+\caption{Nominal measurement data}
+\label{tab:mm_data_nom}
+\end{tablehere}
 
 
 %-----------------------------------------------------------------------------
 \subsection{Field results}
 
-\TODO
+\TODO latency by DSO
+
+\TODO feeling
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1667,14 +1736,13 @@ SPI buses is enough.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Conclusions}
+\section{Conclusions}
 \label{sec:conclusions}
 
 \TODO
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \bibliographystyle{splncs}
 \bibliography{Report}
 
