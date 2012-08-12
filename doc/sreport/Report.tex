@@ -31,6 +31,7 @@
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
 \usepackage{listings}
 \usepackage{mdframed}
+\usepackage{inconsolata}
 \input{tcilatex}
 %-----------------------------------------------------------------------------
 % Page Setup
@@ -101,6 +102,30 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
+
+% Computation results
+\newcommand{\ttDiscDiam}{12.00}
+\newcommand{\ttNomAngSpeed}{33.00}
+\newcommand{\ttPitchOff}{0.00}
+\newcommand{\ttDiscPerim}{37.70}
+\newcommand{\ttAngSpeed}{33.00}
+\newcommand{\ttRevRate}{0.550}
+\newcommand{\ttRevTime}{1.818}
+\newcommand{\ttTgSpeed}{20.73}
+		
+\newcommand{\ssRes}{2000}
+\newcommand{\ssMaxSpeed}{30}
+\newcommand{\ssMaxDotRate}{60000}
+\newcommand{\ssMaxDotsOneMs}{60}
+		
+\newcommand{\mmRadius}{4.00}
+\newcommand{\mmAngleOff}{0.00}
+\newcommand{\mmRadiusCm}{10.16}
+\newcommand{\mmSpeed}{13.82}
+\newcommand{\mmDotRate}{27646}
+\newcommand{\mmRevDots}{50265}
+
+
 
 \begin{mytitle}RATT	- Relatively Accurate TurnTable\end{mytitle}
 \begin{mysubtitle}Relative turntable motion detection through mouse sensors\end{mysubtitle}
@@ -1249,8 +1274,8 @@ while that of the \emph{OUT} report is currently reserved.
 
 \begin{figurehere}
 \begin{mdframed}[
-	backgroundcolor=lightyellow,
-	hidealllines=true,
+%	backgroundcolor=lightyellow,
+%	hidealllines=true,
 	innerleftmargin=4pt,
 	innerrightmargin=4pt,
 	innertopmargin=0pt,
@@ -1415,15 +1440,15 @@ attribute tells the jogwheel CPR, and needs to be calibrated with geometrical
 parameters of the wheel itself.
 
 On Windows, the XML text must be saved in:\\
-{\ttfamily\small {\%}UserProfile{\%}/Documents/VirtualDJ/Devices/}
+{\ttfamily\small {\%}UserProfile{\%}/Documents/VirtualDJ/Devices/}\\
 while on MacOSX in:\\
 {\ttfamily\small {\textasciitilde}/Documents/VirtualDJ/Devices/}\\
 for example as {\ttfamily\small ratt{\_}device.xml}.
 
 \begin{figurehere}
 \begin{mdframed}[
-	backgroundcolor=lightyellow,
-	hidealllines=true,
+%	backgroundcolor=lightyellow,
+%	hidealllines=true,
 	innerleftmargin=4pt,
 	innerrightmargin=4pt,
 	innertopmargin=0pt,
@@ -1431,7 +1456,7 @@ for example as {\ttfamily\small ratt{\_}device.xml}.
 ]
 \begin{lstlisting}[language=simpleXML]
 <?xml version="1.0" encoding="UTF-8"?>
-<device name="RATT" author="TexZK" decks="1"
+<device name="RATT" author="Andrea Zoppi" decks="1"
  type="HID" vid="0xDEAD" pid="0xBEEF"
  reportsize="16">
   <page type="init">
@@ -1477,15 +1502,15 @@ quadrature position will be ignored.
 
 The XML text in \citef{fig:vdj_device_map} summarizes the actions being
 mapped. On Windows, it must be saved in:\\
-{\ttfamily\small {\%}UserProfile{\%}/Documents/VirtualDJ/Mappers/}
+{\ttfamily\small {\%}UserProfile{\%}/Documents/VirtualDJ/Mappers/}\\
 while on MacOSX in:\\
 {\ttfamily\small {\textasciitilde}/Documents/VirtualDJ/Mappers/}\\
 for example as {\ttfamily\small ratt{\_}mapping.xml}.
 
 \begin{figurehere}
 \begin{mdframed}[
-	backgroundcolor=lightyellow,
-	hidealllines=true,
+%	backgroundcolor=lightyellow,
+%	hidealllines=true,
 	innerleftmargin=4pt,
 	innerrightmargin=4pt,
 	innertopmargin=0pt,
@@ -1493,7 +1518,7 @@ for example as {\ttfamily\small ratt{\_}mapping.xml}.
 ]
 \begin{lstlisting}[language=simpleXML]
 <?xml version="1.0" encoding="UTF-8"?>
-<mapper device="RATT" author="TexZK"
+<mapper device="RATT" author="Andrea Zoppi"
  description="RATT" version="704" date="10/08/2012">
   <!-- Use the sensor X position as a jogwheel -->
   <map value="SENSOR_POS_X" action="jogwheel"/>
@@ -1516,12 +1541,15 @@ The device must be able to keep track of turntable movements. This can be
 achieved only if the platter is moving at less than the maximum speed that
 the optical motion sensor can reach. Given this constraint, it is possible to
 determine the radius at which the center of the sensor can be placed. In the
-following, some computations will lead to the expected radius.
+following, some computations will lead to the expected results.
 
-\TODO equations
 
-\TODO latex variables
+\paragraph{Turntable}
+Nominal turntable data can be found in \citet{tab:tt_data_nom}. Nominal
+settings are for a \ttDiscDiam\ inches disc, spinning at \ttNomAngSpeed\ 
+rotations per minute, with no pitch correction.
 
+Computations are done with well-known basic equations.
 
 \begin{tablehere}
 \centering \footnotesize
@@ -1529,37 +1557,33 @@ following, some computations will lead to the expected radius.
 \hline
 \textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
 \hline
-ttDiscDiam		& Disc diameter			& 12		& in			\\
-ttNomAngSpeed	& Nominal angular speed	& 33		& rot/min		\\
-ttPitchOff		& Pitch offset			& 0.00		& \%			\\
+ttDiscDiam		& Disc diameter			& $\ttDiscDiam$		& in			\\
+ttNomAngSpeed	& Nominal angular speed	& $\ttNomAngSpeed$	& rot/min		\\
+ttPitchOff		& Pitch offset			& $\ttPitchOff$		& \%			\\
 \hline
-ttDiscPerim		& Disc perimeter		& 37.7		& in			\\
-ttAngSpeed		& Angular speed			& 33		& rot/min		\\
-ttRevRate		& Revolution rate		& 0.55		& Hz			\\
-ttRevTime		& Revolution time		& 1.818		& s				\\
-ttTgSpeed		& Tangential speed		& 20.73		& in/s			\\
+ttDiscPerim		& Disc perimeter		& $\ttDiscPerim$	& in			\\
+ttAngSpeed		& Angular speed			& $\ttAngSpeed$		& rot/min		\\
+ttRevRate		& Revolution rate		& $\ttRevRate$		& Hz			\\
+ttRevTime		& Revolution time		& $\ttRevTime$		& s				\\
+ttTgSpeed		& Tangential speed		& $\ttTgSpeed$		& in/s			\\
 \hline
 \end{tabular}
 \caption{Nominal turntable data}
 \label{tab:tt_data_nom}
 \end{tablehere}
 
-\begin{tablehere}
-\centering \footnotesize
-\begin{tabular}{|l|l|rl|}
-\hline
-\textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
-\hline
-ssRes			& Resolution			& 2000		& dot/in		\\
-ssMaxSpeed		& Maximum speed			& 30		& in/s			\\
-\hline	
-ssMaxDotRate	& Maximum dots rate		& 60000		& dot/s			\\
-ssMaxDot1ms		& Maximum dots in 1~ms	& 60		& dot			\\
-\hline
-\end{tabular}
-\caption{Optical motion sensor data}
-\label{tab:ss_data}
-\end{tablehere}
+
+\paragraph{Sensor}
+Optical motion sensor computations are very easy. Given the sensor resolution
+and maximum speed, it is possible to know the maximum theoretical dots count
+per second.
+
+Also, the HID configuration of the device indicates a polling interval of
+1~ms, so it is useful to know the maximum counter value in that that time
+interval. Since RATT is using a 12-bits report count, counters will never be
+saturated even with some jitter in the main loop of the firmware.
+
+Data can be found in \citet{tab:ss_data}.
 
 \begin{tablehere}
 \centering \footnotesize
@@ -1567,13 +1591,55 @@ ssMaxDot1ms		& Maximum dots in 1~ms	& 60		& dot			\\
 \hline
 \textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
 \hline
-mmRadius		& Radius				& 4.00		& in			\\
-mmAngleOff		& Angle offset			& 0.00		& $^{\circ}$	\\
+ssRes			& Resolution			& $\ssRes$			& dot/in		\\
+ssMaxSpeed		& Maximum speed			& $\ssMaxSpeed$		& in/s			\\
+\hline	
+ssMaxDotRate	& Maximum dots rate		& $\ssMaxDotRate$	& dot/s			\\
+ssMaxDotOneMs	& Maximum dots in 1~ms	& $\ssMaxDotsOneMs$	& dot			\\
 \hline
-mmRadiusCm		& Radius [cm]			& 10.16		& cm			\\
-mmSpeed			& Speed					& 13.82		& in/s			\\
-mmDotRate		& Dots rate				& 27646		& dot/s			\\
-mmRevDots		& Revolution dots		& 50265		& dot			\\
+\end{tabular}
+\caption{Optical motion sensor data}
+\label{tab:ss_data}
+\end{tablehere}
+
+
+\paragraph{Measurement}
+Finally, it is possible to definethe measurement environment. The center of
+the motion sensor must be placed at an appropriate distance from the disc
+center, so that motion can always be detected correctly. This means that the
+speed of the disc below the sensor is always lower than the maximum speed
+detectable by the sensor itself.
+
+First consider the case of the Y direction of the sensor being perpendicular
+to the tangential velocity. The X counter represents the number of virtual
+dots been measured by the sensor until that time, while the Y counter should
+always be clear.
+
+The disc is supposed to spin at nominal angular speed, so after a single full
+revolution the X counter tells how many dots make the perimeter at that
+radius.
+
+By choosing a measurement radius of \mmRadius\  inches, even when spinning at
+twice the nominal speed the sensor should measure the speed correctly. In
+fact, the speed is less than half of the maximum reachable by the sensor.
+
+Results are shown in \citet{tab:mm_data_nom}.
+
+\TODO picture of displacement
+
+\begin{tablehere}
+\centering \footnotesize
+\begin{tabular}{|l|l|rl|}
+\hline
+\textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
+\hline
+mmRadius		& Radius				& $\mmRadius$		& in			\\
+mmAngleOff		& Angle offset			& $\mmAngleOff$		& $^{\circ}$	\\
+\hline
+mmRadiusCm		& Radius [cm]			& $\mmRadiusCm$		& cm			\\
+mmSpeed			& Speed					& $\mmSpeed$		& in/s			\\
+mmDotRate		& Dots rate				& $\mmDotRate$		& dot/s			\\
+mmRevDots		& Revolution dots		& $\mmRevDots$		& dot			\\
 \hline
 \end{tabular}
 \caption{Nominal measurement data}
