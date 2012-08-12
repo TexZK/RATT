@@ -1,3 +1,5 @@
+// http://wavedrom.googlecode.com
+
 { "signal" : [
   {
     "name": "MIDI",

@@ -14,6 +14,8 @@
 % "tcilatex.tex" can be found at (December 2005):
 % http://www.mackichan.com/techtalk/v30/UsingFloat.htm
 % Not all packets are necessarily needed:
+\usepackage{lmodern}
+\usepackage{textcomp}
 \usepackage[T1]{fontenc}
 \usepackage[latin1]{inputenc}
 %\usepackage{ngerman} % in german language if required
@@ -32,6 +34,7 @@
 \usepackage{listings}
 \usepackage{mdframed}
 \usepackage{inconsolata}
+\usepackage[greek,english]{babel}
 \input{tcilatex}
 %-----------------------------------------------------------------------------
 % Page Setup
@@ -254,7 +257,7 @@ still rely on the plain old MIDI port (see Section~\ref{sec:controller_protocols
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/hercules_mp3e2_schematic.pdf}
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/hercules_mp3e2_schematic.png}
 	\caption{\emph{Hercules DJ Control MP3 e2} \cite{hercules_djcmp3e2}
 	intereface schematic with \textcolor{cyan}{buttons}, \textcolor{red}{incremental encoders},
 	\textcolor{green}{sliders and knobs}}
@@ -276,7 +279,7 @@ detect one and only one code per slice.
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=0.9\columnwidth]{images/encoder_wheels.pdf}
+	\includegraphics[keepaspectratio=true,width=0.9\columnwidth]{images/encoder_wheels.jpg}
 	\caption{A set of incremental (quadrature) rotary encoder wheels}
 	\label{fig:encoder_wheels}
 \end{figurehere}
@@ -312,7 +315,7 @@ and an \emph{Agilent HEDS-9700} quadrature encoder.
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=0.8\columnwidth]{images/vestax_vci400_jogwheel.pdf}
+	\includegraphics[keepaspectratio=true,width=0.8\columnwidth]{images/vestax_vci400_jogwheel.jpg}
 	\caption{A \emph{Vestax VCI-400} jogwheel being disassembled}
 	\label{fig:vestax_vci400_jogwheel}
 \end{figurehere}
@@ -958,7 +961,7 @@ The USB bus is directly connected to the MCU, which has an internal
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/board_photo.pdf}
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/board_photo.jpg}
 	\caption{The controller prototype board}
 	\label{fig:board_photo}
 \end{figurehere}
@@ -977,7 +980,7 @@ because the clock speed is variable.
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/sensor_photo.pdf}
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/sensor_photo.jpg}
 	\caption{The optical motion sensor prototype board}
 	\label{fig:sensor_photo}
 \end{figurehere}
@@ -1000,7 +1003,7 @@ signals won't be squared with 50\% duty cycle, which can generate some jitter.
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/preamp_photo.pdf}
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/preamp_photo.jpg}
 	\caption{The timecode preamplifier prototype board}
 	\label{fig:preamp_photo}
 \end{figurehere}
@@ -1010,14 +1013,14 @@ signals won't be squared with 50\% duty cycle, which can generate some jitter.
 \subsection{Firmware architecture}
 
 Due to the lack of a \emph{Real-Time Operating System} (\emph{RTOS}) support
-on the chosen MCU, the application was written in a \emph{while-loop} fashion,
+on the chosen MCU, the application is written in a \emph{while-loop} fashion,
 with \emph{interrupt-driven} tasks at \emph{high priority}.
 
 
 \paragraph{Bootloader}
-In order to simplify firmware deployment, a HID bootloader was added to the
-development prototype. This will occupy the first 2048 words of the program
-space, which is not that small. The bootloader is the one provided by the
+In order to simplify firmware deployment, a HID bootloader is added to the
+development prototype. This fills the first 2048 words of the program space,
+which is not that small. The bootloader is the one provided by the
 \emph{Microchip Application Libraries} \cite{microchip_mal}, and implements
 HID control.
 
@@ -1028,7 +1031,7 @@ program memory of the MCU.
 
 
 \paragraph{HID/USB module}
-The HID/USB module was devloped over the \emph{HID Simple Custom Demo}
+The HID/USB module is devloped over the \emph{HID Simple Custom Demo}
 provided with the \emph{Microchip Application Libraries} \cite{microchip_mal},
 using the \emph{USB Framework} version \emph{2.9d}. The code itself is almost
 the same, so please refer to the documentation delivered by Microchip for more
@@ -1185,7 +1188,7 @@ being developed.
 \label{tab:usb_ep1o_desc}
 \end{tablehere}
 
-As told before, manufacturer and product names were indexed inside the Device
+As told before, manufacturer and product names are indexed inside the Device
 descriptor. The language code and those names are defined by the \emph{String}
 descriptors shown in \citet{tab:usb_lang_desc}, \citet{tab:usb_manuf_desc},
 and \citet{tab:usb_prod_desc}.
@@ -1610,10 +1613,10 @@ center, so that motion can always be detected correctly. This means that the
 speed of the disc below the sensor is always lower than the maximum speed
 detectable by the sensor itself.
 
-First consider the case of the Y direction of the sensor being perpendicular
-to the tangential velocity. The X counter represents the number of virtual
-dots been measured by the sensor until that time, while the Y counter should
-always be clear.
+Consider the case of the Y direction of the sensor being perpendicular to the
+tangential velocity. The X counter represents the number of virtual dots been
+measured by the sensor until that time, while the Y counter should always be
+clear.
 
 The disc is supposed to spin at nominal angular speed, so after a single full
 revolution the X counter tells how many dots make the perimeter at that
@@ -1650,25 +1653,108 @@ mmRevDots		& Revolution dots		& $\mmRevDots$		& dot			\\
 %-----------------------------------------------------------------------------
 \subsection{Field results}
 
+Some empirical test were performed to check the goodness of the chosen
+approach.
+
+First, some timing tests will determine if the device is rapid enough to
+handle fast changes in speed, without delays noticeable by an average DJ.
+
+Moreover, some space tests will show if the motion sensor alone is capable
+of keeping track of absolute motions, with a small accumulated displacement
+error.
+
+Finally, an opinion about the overall feeling of the device behavior will be
+given.
 
 
-\TODO interrupt rate = 1ms?
+\paragraph{Motion detection rate}
+A first test measures the interval between \emph{MOTION} interrupts called by
+the optical motion sensor. The sensor does not have a fixed acquisition clock,
+but instead it is adapted on the speed of the moving surface beneath.
+
+When moving at a fairly slow speed, the interval between interrupts is around
+3.7~ms (4~ms inside the datasheet) as seen in \citef{fig:motion_delay_slow}.
+
+When the moving surface gets faster, the interrupt generation slows down at
+about half that speed, with an interval around 7.2~ms, as shown in
+\citef{fig:motion_delay_fast}.
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/motion_delay_slow.pdf}
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/motion_delay_slow.png}
 	\caption{\emph{MOTION} interrupt delay for slow steady speed}
 	\label{fig:motion_delay_slow}
 \end{figurehere}
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/motion_delay_fast.pdf}
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/motion_delay_fast.png}
 	\caption{\emph{MOTION} interrupt delay for fast steady speed}
 	\label{fig:motion_delay_fast}
 \end{figurehere}
 
 
+\paragraph{Motion processing time}
+After being issued, the \emph{MOTION} interrupt has to be processed. The
+sensor is configured so that the interrupt signal goes low when motion is
+detected, then is kept low until all the motion counters are read, going back
+high after the reading.
+
+By measuring this delay, it is possible to know how long it takes for the MCU
+to read those counters after the \emph{MOTION} interrupt is reported. As
+captured in \citef{fig:motion_pulse_typ}, the processing takes typically
+30~{\textmu}s, with a maximum of 72~{\textmu}s in \citef{fig:motion_pulse_max}.
+
+This delay is clearly negligible, and does not affact the overall latency nor
+the internal motion sensor counters.
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/motion_pulse_typ.png}
+	\caption{Typical \emph{MOTION} pulse duration}
+	\label{fig:motion_pulse_typ}
+\end{figurehere}
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/motion_pulse_max.png}
+	\caption{Maximum \emph{MOTION} pulse duration}
+	\label{fig:motion_pulse_max}
+\end{figurehere}
+
+
+\paragraph{HID motion processing time}
+A final timing test will prove that the MCU is fast enough to handle HID
+transactions in time.
+
+As an extension of the previous test, the measured delay adds the time needed
+to build and buffer the HID report into the hardware USB RAM. A LED signal was
+used to draw the processing length.
+
+The minimum and maximum delays can be extracted by \citef{fig:motion_tot_min}
+and \citef{fig:motion_tot_max}. The delay is thus in the range of 74~{\textmu}s
+to 110~{\textmu}s, which is still negligible for the purpose.
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/motion_tot_min.png}
+	\caption{Minimum \emph{MOTION} interrupt total time}
+	\label{fig:motion_tot_min}
+\end{figurehere}
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/motion_tot_max.png}
+	\caption{Maximum \emph{MOTION} interrupt total time}
+	\label{fig:motion_tot_max}
+\end{figurehere}
+
+
+\paragraph{Absolute tracking}
+\TODO absolute position after 10 scratches
+
+
+\paragraph{Overall feeling}
 \TODO virtualdj feeling
 
 

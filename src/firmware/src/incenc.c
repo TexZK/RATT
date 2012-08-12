@@ -130,6 +130,7 @@ void IncEnc_ClearDelta( void )
 {
 	IncEnc_DisableInterrupts();
 	incenc_deltaAccum = 0L;
+	RED_LED = LED_OFF;								// DEBUG: Encoder counter clear
 	IncEnc_EnableInterrupts();
 }
 
@@ -139,7 +140,7 @@ void IncEnc_ChangeCallback( void )
 	static volatile unsigned char dummy;
 	static unsigned char state;
 	
-	RED_LED = LED_ON;
+	RED_LED = LED_ON;								// DEBUG: Encoder data available
 	
 	// Sample the current state
 	state = (incenc_status.value >> 2) & 0b0011;	// Old state in bits 1:0
@@ -167,7 +168,6 @@ void IncEnc_ChangeCallback( void )
 			// Going forward
 			++incenc_deltaAccum;
 			incenc_status.bits.direction = 0;
-			YELLOW_LED = LED_OFF;
 			break;
 		}
 		case 0b1000:
@@ -177,7 +177,6 @@ void IncEnc_ChangeCallback( void )
 			// Going backwards
 			--incenc_deltaAccum;
 			incenc_status.bits.direction = 1;
-			YELLOW_LED = LED_ON;
 			break;
 		}
 	}
@@ -185,8 +184,6 @@ void IncEnc_ChangeCallback( void )
 	incenc_status.value &= 0xF0;
 	incenc_status.value |= state;
 	incenc_status.bits.dataReady = 1;
-	
-	RED_LED = LED_OFF;
 }
 
 

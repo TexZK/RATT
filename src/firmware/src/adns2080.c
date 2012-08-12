@@ -324,6 +324,7 @@ void Adns_Service( void )
 	// Poll for motion status
 	if ( ADNS_PIN_MOTION == ADNS_INT_EDGE_VALUE ) {
 		adns_status.motionInt = 1;
+		YELLOW_LED = LED_ON;				// DEBUG: Sensor data available
 	}
 #endif
 	
@@ -344,6 +345,7 @@ void Adns_MotionCallback( void )
 {
 	ADNS_INT_IF = 0;
 	adns_status.motionInt = 1;
+	YELLOW_LED = LED_ON;					// DEBUG: Sensor data available
 }	
 
 
@@ -524,6 +526,7 @@ void Adns_ClearDeltas( void )
 	adns_delta.dx = 0;
 	adns_delta.dy = 0;
 	adns_status.dataReady = 0;
+	YELLOW_LED = LED_OFF;						// DEBUG: Sensor counters clear
 	Adns_EnableInterrupt();
 }
 
