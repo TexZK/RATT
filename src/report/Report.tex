@@ -235,10 +235,8 @@ decently enough at nominal speed.
 \paragraph{System architecture}
 The basic architecture of these controllers is shown is \citef{fig:hercules_mp3e2_schematic}.
 The controller commonly has a set of input devices -- buttons, knobs,
-sliders, \emph{etc.} -- so that the user can \emph{map}\footnote{
-	Assign a triggered action to an input event
-} these inputs to some software parameters, such as the play/stop events, or
-the desired volume level.
+sliders, \emph{etc.} -- so that the user can \emph{map} these inputs to some
+software actions, such as the play/stop events, or the desired volume level.
 
 A special kind of input device focused throughout this work is the optical
 encoder, \TODO which will be described in depth later.
@@ -526,7 +524,7 @@ in \citef{fig:sensor_assembly}.
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,height=5cm]{images/sensor_assembly.pdf}
+	\includegraphics[keepaspectratio=true,height=4cm]{images/sensor_assembly.pdf}
 	\caption{Common motion sensor assembly}
 	\label{fig:sensor_assembly}
 \end{figurehere}
@@ -1607,7 +1605,7 @@ ssMaxDotOneMs	& Maximum dots in 1~ms	& $\ssMaxDotsOneMs$	& dot			\\
 
 
 \paragraph{Measurement}
-Finally, it is possible to definethe measurement environment. The center of
+Finally, it is possible to define the measurement environment. The center of
 the motion sensor must be placed at an appropriate distance from the disc
 center, so that motion can always be detected correctly. This means that the
 speed of the disc below the sensor is always lower than the maximum speed
@@ -1626,9 +1624,8 @@ By choosing a measurement radius of \mmRadius\  inches, even when spinning at
 twice the nominal speed the sensor should measure the speed correctly. In
 fact, the speed is less than half of the maximum reachable by the sensor.
 
-Results are shown in \citet{tab:mm_data_nom}.
-
-\TODO picture of displacement
+Results are shown in \citet{tab:mm_data_nom}, while an example of placement
+can be seen in \citef{fig:ratt_placement}.
 
 \begin{tablehere}
 \centering \footnotesize
@@ -1648,6 +1645,13 @@ mmRevDots		& Revolution dots		& $\mmRevDots$		& dot			\\
 \caption{Nominal measurement data}
 \label{tab:mm_data_nom}
 \end{tablehere}
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=0.6\columnwidth]{images/ratt_placement.pdf}
+	\caption{Placement over a vinyl-sized wheel}
+	\label{fig:ratt_placement}
+\end{figurehere}
 
 
 %-----------------------------------------------------------------------------
