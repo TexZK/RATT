@@ -1014,6 +1014,16 @@ Due to the lack of a \emph{Real-Time Operating System} (\emph{RTOS}) support
 on the chosen MCU, the application is written in a \emph{while-loop} fashion,
 with \emph{interrupt-driven} tasks at \emph{high priority}.
 
+A logical view of the implemented firmware framework is depicted in
+\citef{fig:simplified_framework}.
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/simplified_framework.pdf}
+	\caption{Logical view of the simplified approach firmware}
+	\label{fig:simplified_framework}
+\end{figurehere}
+
 
 \paragraph{Bootloader}
 In order to simplify firmware deployment, a HID bootloader is added to the
@@ -1221,7 +1231,6 @@ and \citet{tab:usb_prod_desc}.
 \label{tab:usb_manuf_desc}
 \end{tablehere}
 
-\newpage	%FIXME: bad caption placement
 \begin{tablehere}
 \centering \footnotesize
 \begin{tabular}{|r|l|c|l|r|}
@@ -1649,7 +1658,7 @@ mmRevDots		& Revolution dots		& $\mmRevDots$		& dot			\\
 \begin{figurehere}
 	\centering
 	\includegraphics[keepaspectratio=true,width=0.6\columnwidth]{images/ratt_placement.pdf}
-	\caption{Sensor placement over a vinyl-sized wheel}
+	\caption{Sensor placement over a 12'' vinyl record}
 	\label{fig:ratt_placement}
 \end{figurehere}
 
@@ -1828,7 +1837,7 @@ The analog values will then be converted by the ADC and processed by the
 
 
 \paragraph{Jogwheels}
-Jogwheels are fundamentally those developed in the simplified approach at
+Jogwheels are fundamentally those developed with the simplified approach at
 Section~\ref{sec:simplified_approach}. Each jogwheel is made by a
 medium-resolution optical quadrature wheel and its encoder, plus an optical
 motion sensor.
@@ -1837,12 +1846,28 @@ The quadrature encoder, thanks to its fairly low speed, can be handled by
 MCU interrupt signals (edge-triggered, both signs).
 
 Instead, motion sensors must be connected to the appropriate digital bus
-(I2C, SSP, SPI), and additional pins to suitable inputs.
+(SSP, SPI), and additional pins to suitable inputs.
 
 Jogwheels should also provide touch-sensitivity, so that a digital signal
 (see above) can be generated when the user puts fingers on the wheel.
 There are different ways to provide touch sensitivity, but will not be
 covered in this document.
+
+In order to shrink the design for low-end controllers, it is possible to
+choose a smaller sensor package. For example, the \emph{ADNS-3550} by
+\emph{Avago} \cite{avago_adns3550} (see \citef{fig:avago_adns3550}) features
+an \emph{ultra slim} design. This may reduce manufacturing costs, because it
+integrates the LED, has a very small size, and is suitable for \emph{SMD}
+soldering. As a drawback, it is addressed to ultra-low-power wireless devices,
+so its performance is worse than the average sensor used for the prototype --
+up to 20~in/s at 1000~DPI instead of 30~in/s at 2000~DPI.
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=0.5\columnwidth]{images/avago_adns3550.jpg}
+	\caption{Avago ADNS-3550, an \emph{ultra slim} motion sensor}
+	\label{fig:avago_adns3550}
+\end{figurehere}
 
 
 \paragraph{Lights}
