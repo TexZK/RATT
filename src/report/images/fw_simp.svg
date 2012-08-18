@@ -26,7 +26,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1"
      inkscape:cx="333.76105"
-     inkscape:cy="113.82631"
+     inkscape:cy="105.32631"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -454,13 +454,13 @@
        inkscape:connector-curvature="0" />
     <path
        style="fill:#cccccc;fill-opacity:1;stroke:#333333;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 1140,-407.63782 10,0 0,54.99999 20,0 -30,15.00001 -30,-15.00001 20,0 0,-54.99999 z"
+       d="m 1170,-407.63782 10,0 0,54.99999 20,0 -30,15.00001 -30,-15.00001 20,0 0,-54.99999 z"
        id="path4145-9-9-4-5"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccc" />
     <path
        style="fill:#cccccc;fill-opacity:1;stroke:#333333;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 1010,-407.63783 10,0 0,5 20,0 -30,15.00001 -30,-15.00001 20,0 0,-5 z"
+       d="m 1040,-407.63783 10,0 0,5 20,0 -30,15.00001 -30,-15.00001 20,0 0,-5 z"
        id="path4145-9-9-7-4"
        inkscape:connector-curvature="0" />
     <path
@@ -485,6 +485,17 @@
        style="fill:#cccccc;fill-opacity:1;stroke:#333333;stroke-width:0.99999988px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 850,-337.63782 10,0 0,-55 20,0 -30,-15 -30,15 20,0 0,55 z"
        id="path4145-4-5-0-8-1-92"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccccc" />
+    <path
+       style="fill:#cccccc;fill-opacity:1;stroke:#333333;stroke-width:0.99999988px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 980,-387.63782 10,0 0,-5 20,0 -30,-15 -30,15 20,0 0,5 z"
+       id="path4145-4-5-0-1"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#cccccc;fill-opacity:1;stroke:#333333;stroke-width:0.99999988px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 1110,-337.63782 10,0 0,-55 20,0 -30,-15 -30,15 20,0 0,55 z"
+       id="path4145-4-5-0-8-1-92-4"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccc" />
   </g>

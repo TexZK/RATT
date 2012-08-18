@@ -147,8 +147,8 @@ Received: <MONTH>, <DAY> 2012\\
 \begin{myabstract} Abstract \end{myabstract}
 Cheap jogwheel encoders for emulated DJ turntables are often inaccurate, due
 to the low CPR in the order of some tens. Precise encoders are rather expensive
-and are not convenient when detecting very fast rotations, because they become
-too much accurate for the purpose.
+and are not convenient to keep track of very fast rotations, because they
+are too much accurate for the purpose.
 
 The presented research tries to improve the detection of at least small and
 slow relative rotations of the jogwheel, by employing a cheap COTS mouse sensor,
@@ -168,10 +168,10 @@ and more features, to match those of a commercial DJ controller.
 \section{Introduction}
 \label{sec:introduction}
 
-In the latest years, the market of digital-DJ related products grew considerably.
-By the way, cheap digtital turntable emulation is still tricky, because the
-design of a cheap yet accurate jogwheel is still a challenge even with the
-technology available today.
+In the latest years, the market of digital-DJ related products has grown
+considerably. By the way, cheap digital turntable emulation is still tricky,
+because the design of a cheap yet accurate jogwheel is still a challenge even
+with the technology available today.
 
 It is true that state-of-the-art processing units are very fast, but there are
 still issues such as those related to protocol latency, precise and fast plate
@@ -205,6 +205,7 @@ There exist also some other ways to emulate turntables, which are currently
 still in a niche. For example, there are some touchscreen-based \cite{sm_emulator}
 \cite{hn_touchosc} or capacitive \cite{stanton_scs3d} controllers, which
 follow the market wave of touchscreen devices.
+
 There are also some evolutions of the optical jogwheels, which are motorized
 \cite{denon_sc3900} \cite{numark_v7} and thus more suitable for professionals,
 but rather expensive.
@@ -1015,13 +1016,13 @@ on the chosen MCU, the application is written in a \emph{while-loop} fashion,
 with \emph{interrupt-driven} tasks at \emph{high priority}.
 
 A logical view of the implemented firmware framework is depicted in
-\citef{fig:simplified_framework}.
+\citef{fig:fw_simp}.
 
 \begin{figurehere}
 	\centering
-	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/simplified_framework.pdf}
-	\caption{Logical view of the simplified approach firmware}
-	\label{fig:simplified_framework}
+	\includegraphics[keepaspectratio=true,scale=0.4]{images/fw_simp.pdf}
+	\caption{Logical view of the simplified firmware architecture}
+	\label{fig:fw_simp}
 \end{figurehere}
 
 
@@ -1860,7 +1861,8 @@ an \emph{ultra slim} design. This may reduce manufacturing costs, because it
 integrates the LED, has a very small size, and is suitable for \emph{SMD}
 soldering. As a drawback, it is addressed to ultra-low-power wireless devices,
 so its performance is worse than the average sensor used for the prototype --
-up to 20~in/s at 1000~DPI instead of 30~in/s at 2000~DPI.
+up to 20~in/s at 1000~DPI instead of 30~in/s at 2000~DPI -- but is still
+very good for medium-sized jogwheels.
 
 \begin{figurehere}
 	\centering
@@ -1898,22 +1900,85 @@ SPI buses is enough.
 %-----------------------------------------------------------------------------
 \subsection{Firmware architecture}
 
-\TODO
+The firmware architecture relies on those capabilities given by an RTOS. With
+such an operating system, it is possible to divide the firmware into isolated
+entities, which collaborate to fulfill the final goal.
+
+Depending on the device being engineered, there is no optimal firmware
+architecture, but a general one will be described.
 
 
-\paragraph{Main module}
+\paragraph{RTOS overview}
+A RTOS-based firmware can be split into the following entities: tasks,
+drivers, and concurrent data structures.
+
+A \emph{task} is a routine which runs continuously. It can receive, process,
+and send data to other entities (tasks or drivers). More tasks can run at the
+same time. If it is not possible to run more tasks contemporaneously, the RTOS
+must be able to approximate this behavior by an appropriate \emph{scheduling}.
+Also, in some scheduling policies a taks is given a \emph{priority}, so that
+those with a higher priority can suspend those with a lower one, and take
+control of the required resources. Suspendable tasks are called
+\emph{preemptive}.
+
+A \emph{driver} is a collection of routines which control peripherals, and
+give a standardized abstract interface to the user. A driver can rely on both
+tasks and \emph{interrupt service routines}, being seen as part of the OS
+-- instead, the user code is always based on tasks, because ISRs are
+always processed by drivers.
+
+\emph{Concurrent data structures} are used to exchange data among tasks and
+drivers. Because of concurrency, tasks and drivers must be able to exchange
+data without corruption, through \emph{atomic} operations. In order to achieve
+atomicity, a \emph{locking system} is implemented by such data structures,
+handled by the RTOS.
+
+A very important feature of a RTOS is its ability to \emph{schedule} tasks
+deterministically. Tasks are often assigned a fixed period, which should
+expire with the lowest uncertainity. By choosing a RTOS scheduling policy,
+and with a compatible workload, such predictability can be achieved.
+
 \TODO
+
+A global logical view of the firmware architecture is depicted in
+\citef{fig:fw_adv}.
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[keepaspectratio=true,scale=0.4]{images/fw_adv.pdf}
+	\caption{Logical view of the advanced firmware framework}
+	\label{fig:fw_adv}
+\end{figure*}
 
 
 \paragraph{HID/USB module}
 \TODO
 
 
-\paragraph{LED module}
-\TODO
+\paragraph{Lights module}
+A module managing lights can be added to the fimware architecture.
+
+A driver will provide a suitable software interface to lights. It might
+support simple on/off lights, but also modulated lights. In the case of lights
+modulated by PWM outputs, it might lean on the PWM driver of the RTOS.
+
+In the case of charlieplexing, but also for modulation, there is a need to
+refresh periodically some hardware peripherals inside a task, to have light
+correctly lit. This task could be given a low priority, because delaying the
+deadline for a few milliseconds is not that critical. Anyway, the refresh rate
+should be high enough to give a smooth transition between light states, around
+60~Hz for the best feeling and user reaction time.
 
 
 \paragraph{Encoder module}
+As for the simplified approach, when requiring absolute jogwheel positioning
+it is possible to add support for incremental encoders. Such encoders output
+quadrature waves, which can be used to increment or decrement some firmware
+counters. Again, edge-triggered interrupts should be used to manage counters.
+
+A driver will handle such interrupts, and it will give access to counters
+atomically.
+
 \TODO
 
 
@@ -1922,6 +1987,24 @@ SPI buses is enough.
 
 
 \paragraph{Debug module}
+A debug module could be added for debug purposes only. By the way, an advanced
+hardware debugger is almost always present in MCUs today, so there is no real
+need for a debug console for a consumer DJ controller.
+
+If the software debug module is added, it needs to be interfaced to the UART
+through a driver provided by the RTOS. It also needs a task with background
+priority in the case of a simple debug console -- if necessary, immediate
+commands can always be issued through the hardware debugger.
+
+\TODO
+
+
+\paragraph{Main module}
+The main module is made by the \emph{controller task}. It collects the status
+of user inputs to generate a HID report, handles incoming commands, sends data
+to be displayed to screens and lights, and so on. It is the core of the whole
+device, which performs all the data processing among the other modules.
+
 \TODO
 
 
@@ -1937,7 +2020,24 @@ SPI buses is enough.
 \section{Conclusions}
 \label{sec:conclusions}
 
-\TODO
+A simplified approach supporting a single jogwheel was developed. Its
+performance is suitable for the average DJ, achieving good tracking even with
+cheap COTS. Initial motion latency is fairly high, due to the power-saving
+states entered by a mouse sensor for wireless appliances, but is still
+accetpable. Motions are tracked with outstanding precision and accuracy.
+Repeatability is on the average, approximating absolute positioning with some
+errors, but still acceptable. An optional incremental encoder can help the
+tracking of absolute movements, through some software data processing.
+Software can be interfaced to the device with ease, thanks to the adoption of
+the HID protocol over the USB bus.
+
+Furthermore, an advanced approach was proposed. It will support not only the
+kind of jogwheel presented in the simplified approach, but also peripherals of
+various nature. The advanced device needs a more powerful MCU to handle all
+those peripherals. In order to make firmware programming more flexible and
+easier to manage, a RTOS should be chosen. Thanks to this advanced approach,
+it is possible to develope a whole commercial DJ controller, with cheap yet
+accurate jogwheels.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
