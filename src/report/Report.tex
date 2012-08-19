@@ -1931,7 +1931,8 @@ always processed by drivers.
 drivers. Because of concurrency, tasks and drivers must be able to exchange
 data without corruption, through \emph{atomic} operations. In order to achieve
 atomicity, a \emph{locking system} is implemented by such data structures,
-handled by the RTOS.
+handled by the RTOS. These data structures can span from simple semaphores
+to complex data queues.
 
 A very important feature of a RTOS is its ability to \emph{schedule} tasks
 deterministically. Tasks are often assigned a fixed period, which should
@@ -1951,8 +1952,31 @@ A global logical view of the firmware architecture is depicted in
 \end{figure*}
 
 
-\paragraph{HID/USB module}
-\TODO
+\paragraph{Digital inputs}
+Digital inputs are very easy to handle. Supposing a matrix hardware topology,
+the \emph{Digital task} simply cycles through all the rows and colums to
+detect changes, operations done by the \emph{Digital driver}.
+
+Since in audio applications timing is critical, this loop has to be fast
+enough so that the user will not notice delays. The Digital task is pretty
+simple, so it can be given high priority, and the cycle period will match
+that of HID packets.
+
+The state of digital inputs is held by a double-buffered record, which is then
+read by the Controller task.
+
+
+\paragraph{Analog inputs}
+Analog inputs require an \emph{ADC driver} to handle the ADC and its analog
+multiplexer.
+
+The \emph{Analog task} polls each analog input for changes. Since human hand
+movements have a dynamic rate lower than 10~Hz, a sampling rate of 200~Hz
+(5~ms) per channel is enough to keep track of smooth motions. Further
+smoothing can be performed with some digital filtering, but is not required.
+
+Like for digital inputs, the state of analog inputs is kept by a
+double-buffered record, read by the Controller task.
 
 
 \paragraph{Lights module}
@@ -1967,7 +1991,10 @@ refresh periodically some hardware peripherals inside a task, to have light
 correctly lit. This task could be given a low priority, because delaying the
 deadline for a few milliseconds is not that critical. Anyway, the refresh rate
 should be high enough to give a smooth transition between light states, around
-60~Hz for the best feeling and user reaction time.
+60~Hz ($\approx$ 16~ms) for the best feeling and user reaction time.
+
+The Controller task tells the state of lights to the Lights task through a
+double-buffered record.
 
 
 \paragraph{Encoder module}
@@ -1976,31 +2003,75 @@ it is possible to add support for incremental encoders. Such encoders output
 quadrature waves, which can be used to increment or decrement some firmware
 counters. Again, edge-triggered interrupts should be used to manage counters.
 
-A driver will handle such interrupts, and it will give access to counters
-atomically.
+The \emph{Encoder driver} will handle such interrupts, and it will give access
+to counters atomically.
 
-\TODO
+The \emph{Encoder task} awaits for interrupt signals by the driver, occurring
+when the quadrature wave performs a transition. The internal counter
+accumulates the step, so that the absolute position is tracked. This task is
+the most critical, because no steps can be lost, and is given the highest
+priority with instant response.
+
+The Encoder task tells the current position and deltas to the Controller task
+by the use of a double-buffered record.
+
+There can be multiple incremental encoders in the design.
 
 
 \paragraph{Sensor module}
-\TODO
+The sensor module will keep track of the position estimated by the optical
+motion sensor.
+
+The \emph{Sensor driver} will communicate to the sensor through the SSP bus,
+which in turn is managed by the \emph{SSP driver}.
+
+The \emph{Sensor task} can have different behaviours, depending on the
+capabilities of the sensor. If it features a motion interrupt, like the one
+chosen for the simplified approach, the sensor awaits for it, then retrieves
+the motion delta. If such an interrupt is not present, the Sensor task has to
+poll continuously for new data at a very fast rate. This case is typical for
+pro-grade sensors, which have a very high framerate, so it is most convenient
+to run a tight polling loop at high speed.
+
+The Sensor task tells the current position and deltas to the Controller task
+by the use of a double-buffered status record.
+
+There can be multiple optical sensors in the design.
 
 
-\paragraph{Debug module}
-A debug module could be added for debug purposes only. By the way, an advanced
-hardware debugger is almost always present in MCUs today, so there is no real
-need for a debug console for a consumer DJ controller.
+\paragraph{HID/USB module}
+In order to communicate with the host the host, HID reports are processed by
+the \emph{HID driver}, which in turn is built on top of the \emph{USB driver}.
+Such drivers will simplify the packet management by the user, also by
+providing a template \emph{HID task}. This task will exchange HID reports
+with the Controller task, in the form of plain data records. Such record will
+be marshalled and sent to the USB host through the aforementioned drivers.
 
-If the software debug module is added, it needs to be interfaced to the UART
-through a driver provided by the RTOS. It also needs a task with background
-priority in the case of a simple debug console -- if necessary, immediate
-commands can always be issued through the hardware debugger.
+HID processing should be faster than the report generation of the Controller
+task, so the HID task has a higher priority. Also, reaction time should be
+minimized.
 
-\TODO
+
+\paragraph{Console module}
+A console module could be added for debug purposes only. By the way, an
+advanced hardware debugger is almost always present in MCUs today, so there is
+no real need for a debug console inside a consumer DJ controller.
+
+If the console module is added, it needs to be interfaced to the UART through
+a driver provided by the RTOS. It also needs a task with low priority in the
+case of a simple debug console -- if necessary, immediate commands can always
+be issued through the hardware debugger. Response time to incoming messages
+should be the shortest possible, as well as outgoing messages should be sent
+immediately.
+
+The \emph{Console task} manages console commands and interactions with the
+\emph{UART driver}. Messages, in the form of user-friendly data structures,
+are exchanged between the Controller and the Console tasks. The latter
+performs marshalling with the UART streams. 
 
 
 \paragraph{Main module}
-The main module is made by the \emph{controller task}. It collects the status
+The main module is made by the \emph{Controller task}. It collects the status
 of user inputs to generate a HID report, handles incoming commands, sends data
 to be displayed to screens and lights, and so on. It is the core of the whole
 device, which performs all the data processing among the other modules.
@@ -2008,12 +2079,42 @@ device, which performs all the data processing among the other modules.
 \TODO
 
 
-\paragraph{Tasks organization}
-\TODO
+\paragraph{Tasks summary}
+The \citet{tab:fw_adv_tasks} summarizes the meaningful settings to be assigned
+to tasks inside the chosen RTOS, as described by the previous paragraphs.
 
+Of each task, its \emph{weight} is extimaed, which is a coarse approximation
+of the complexity of operations it should perform. It is not a RTOS setting,
+but is useful to identify the workload of tasks.
 
-\paragraph{Remarks}
-\TODO
+Moreover, the \emph{priority} is intended for a preemptive and priority-based
+scheduler, which is common for a state-of-the-art RTOS.
+
+At last, the expected \emph{response time} indicates the target period of the
+task routine. For routines heavily based on semaphores -- typically activated
+by interrupt signals or software messages -- no delay is expected, so it is
+marked as \emph{immediate}.
+
+\begin{tablehere}
+\centering \footnotesize
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Task} & \textbf{Weight} & \textbf{Priority} & \textbf{Response time}	\\
+\hline
+Encoder		& 1	& 5	& immediate	\\
+Digital		& 2	& 4	& 1~ms		\\
+HID/USB		& 5	& 4	& immediate	\\
+Controller	& 4	& 3	& 1~ms		\\
+Sensor		& 3	& 3	& immediate	\\
+Analog		& 3	& 2	& 5~ms		\\
+Console		& 4	& 1	& immediate	\\
+Lights		& 2	& 1	& 16~ms		\\
+Display		& 5	& 1	& 16~ms		\\
+\hline
+\end{tabular}
+\caption{RTOS settings of tasks}
+\label{tab:fw_adv_tasks}
+\end{tablehere}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
