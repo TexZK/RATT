@@ -240,7 +240,7 @@ sliders, \emph{etc.} -- so that the user can \emph{map} these inputs to some
 software actions, such as the play/stop events, or the desired volume level.
 
 A special kind of input device focused throughout this work is the optical
-encoder, \TODO which will be described in depth later.
+encoder, which will be described in depth later.
 
 Commonly, there is a also set of output devices -- LEDs, displays -- so that
 the user's sight should not always keep switching switched between the computer
@@ -1719,7 +1719,7 @@ to read those counters after the \emph{MOTION} interrupt is reported. As
 captured in \citef{fig:motion_pulse_typ}, the processing takes typically
 30~{\textmu}s, with a maximum of 72~{\textmu}s in \citef{fig:motion_pulse_max}.
 
-This delay is clearly negligible, and does not affact the overall latency nor
+This delay is clearly negligible, and does not affect the overall latency nor
 the internal motion sensor counters.
 
 \begin{figurehere}
@@ -1769,7 +1769,18 @@ to 110~{\textmu}s, which is still negligible for the purpose.
 
 
 \paragraph{Overall feeling}
-\TODO virtualdj feeling
+The overall feeling is good. The latency is low enough -- comparable to that
+of the soundcard, which is still dominant -- and it is possible to scratch
+with ease, even though very fast scratches feel a bit odd.
+
+Anyway, when trying to reposition the virtual needle the precision is very
+high, altough the absolute tracking of the sensor alone is not as accurate as
+with the help of an incremental encoder. Such a good precision is comes handy
+also when using the jogwheel to push/pull the virtual vinyl -- usually called
+\emph{nudge} operations.
+
+The software seems to handle the workload with no stress on the CPU, even with
+high deltas.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1787,7 +1798,10 @@ recent MCUs, in order to provide faster motion detection and processing rate,
 as well as the opportunity to handle tasks outside those for the motion
 detection.
 
-\TODO
+The whole system will be capable to manage a wide range of input devices --
+buttons, sliders, jogwheels -- and some displayed information. The workload is
+split into simple \emph{tasks}, handled by a \emph{Real-Time Operating System}
+so that it will be easier to develop the firmware.
 
 
 %-----------------------------------------------------------------------------
@@ -1939,8 +1953,6 @@ deterministically. Tasks are often assigned a fixed period, which should
 expire with the lowest uncertainity. By choosing a RTOS scheduling policy,
 and with a compatible workload, such predictability can be achieved.
 
-\TODO
-
 A global logical view of the firmware architecture is depicted in
 \citef{fig:fw_adv}.
 
@@ -2071,12 +2083,19 @@ performs marshalling with the UART streams.
 
 
 \paragraph{Main module}
-The main module is made by the \emph{Controller task}. It collects the status
-of user inputs to generate a HID report, handles incoming commands, sends data
-to be displayed to screens and lights, and so on. It is the core of the whole
-device, which performs all the data processing among the other modules.
+The main module is composed by the \emph{Controller task}. It collects the
+status of user inputs to generate a HID report, handles incoming commands,
+sends data to be displayed to screens and lights, and so on. It is the core of
+the whole device, which performs all the data processing among the other
+modules.
 
-\TODO
+Data collection and HID report generation should occur at most each 1~ms, so
+that the latency is minimized to that of USB \emph{Full Speed} interrupt
+polling.
+
+The Controller task also manages commands of the Console and Debug tasks,
+which must be processed in a very short time -- this is why bare raw data
+structures are used instead of strings to be interpreted.
 
 
 \paragraph{Tasks summary}
