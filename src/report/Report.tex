@@ -124,6 +124,7 @@
 \newcommand{\mmRadius}{4.00}
 \newcommand{\mmAngleOff}{0.00}
 \newcommand{\mmRadiusCm}{10.16}
+\newcommand{\mmPerim}{25.13}
 \newcommand{\mmSpeed}{13.82}
 \newcommand{\mmDotRate}{27646}
 \newcommand{\mmRevDots}{50265}
@@ -1477,11 +1478,11 @@ for example as {\ttfamily\small ratt{\_}device.xml}.
     <!-- Optical motion sensor X position -->
     <jog name="SENSOR_POS_X"
      byte="8" size="word" endian="little"
-     full="24000" min="0" max="65535"/>
+     full="50265" min="0" max="65535"/>
     <!-- Optical motion sensor Y position -->
     <jog name="SENSOR_POS_Y"
      byte="10" size="word" endian="little"
-     full="24000" min="0" max="65535"/>
+     full="50265" min="0" max="65535"/>
     <!-- Incremental encoder position -->
     <jog name="INCENC_POS"
      byte="14" size="word" endian="little"
@@ -1647,6 +1648,7 @@ mmRadius		& Radius				& $\mmRadius$		& in			\\
 mmAngleOff		& Angle offset			& $\mmAngleOff$		& $^{\circ}$	\\
 \hline
 mmRadiusCm		& Radius [cm]			& $\mmRadiusCm$		& cm			\\
+mmPerim			& Measurement perimeter	& $\mmPerim$		& in			\\
 mmSpeed			& Speed					& $\mmSpeed$		& in/s			\\
 mmDotRate		& Dots rate				& $\mmDotRate$		& dot/s			\\
 mmRevDots		& Revolution dots		& $\mmRevDots$		& dot			\\
