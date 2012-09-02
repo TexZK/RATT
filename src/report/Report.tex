@@ -1569,15 +1569,15 @@ Computations are done with well-known basic equations.
 \hline
 \textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
 \hline
-ttDiscDiam		& Disc diameter			& $\ttDiscDiam$		& in			\\
-ttNomAngSpeed	& Nominal angular speed	& $\ttNomAngSpeed$	& rot/min		\\
-ttPitchOff		& Pitch offset			& $\ttPitchOff$		& \%			\\
+ttDiscDiam		& Disc diameter			& \ttDiscDiam		& in			\\
+ttNomAngSpeed	& Nominal angular speed	& \ttNomAngSpeed	& rot/min		\\
+ttPitchOff		& Pitch offset			& \ttPitchOff		& \%			\\
 \hline
-ttDiscPerim		& Disc perimeter		& $\ttDiscPerim$	& in			\\
-ttAngSpeed		& Angular speed			& $\ttAngSpeed$		& rot/min		\\
-ttRevRate		& Revolution rate		& $\ttRevRate$		& Hz			\\
-ttRevTime		& Revolution time		& $\ttRevTime$		& s				\\
-ttTgSpeed		& Tangential speed		& $\ttTgSpeed$		& in/s			\\
+ttDiscPerim		& Disc perimeter		& \ttDiscPerim		& in			\\
+ttAngSpeed		& Angular speed			& \ttAngSpeed		& rot/min		\\
+ttRevRate		& Revolution rate		& \ttRevRate		& Hz			\\
+ttRevTime		& Revolution time		& \ttRevTime		& s				\\
+ttTgSpeed		& Tangential speed		& \ttTgSpeed		& in/s			\\
 \hline
 \end{tabular}
 \caption{Nominal turntable data}
@@ -1603,11 +1603,11 @@ Data can be found in \citet{tab:ss_data}.
 \hline
 \textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
 \hline
-ssRes			& Resolution			& $\ssRes$			& dot/in		\\
-ssMaxSpeed		& Maximum speed			& $\ssMaxSpeed$		& in/s			\\
+ssRes			& Resolution			& \ssRes			& dot/in		\\
+ssMaxSpeed		& Maximum speed			& \ssMaxSpeed		& in/s			\\
 \hline	
-ssMaxDotRate	& Maximum dots rate		& $\ssMaxDotRate$	& dot/s			\\
-ssMaxDotOneMs	& Maximum dots in 1~ms	& $\ssMaxDotsOneMs$	& dot			\\
+ssMaxDotRate	& Maximum dots rate		& \ssMaxDotRate		& dot/s			\\
+ssMaxDotOneMs	& Maximum dots in 1~ms	& \ssMaxDotsOneMs	& dot			\\
 \hline
 \end{tabular}
 \caption{Optical motion sensor data}
@@ -1644,14 +1644,14 @@ can be seen in \citef{fig:ratt_placement}.
 \hline
 \textbf{Name} & \textbf{Description} & \textbf{Value} &	\\
 \hline
-mmRadius		& Radius				& $\mmRadius$		& in			\\
-mmAngleOff		& Angle offset			& $\mmAngleOff$		& $^{\circ}$	\\
+mmRadius		& Radius				& \mmRadius		& in		\\
+mmAngleOff		& Angle offset			& \mmAngleOff	& $^\circ$	\\
 \hline
-mmRadiusCm		& Radius [cm]			& $\mmRadiusCm$		& cm			\\
-mmPerim			& Measurement perimeter	& $\mmPerim$		& in			\\
-mmSpeed			& Speed					& $\mmSpeed$		& in/s			\\
-mmDotRate		& Dots rate				& $\mmDotRate$		& dot/s			\\
-mmRevDots		& Revolution dots		& $\mmRevDots$		& dot			\\
+mmRadiusCm		& Radius [cm]			& \mmRadiusCm	& cm		\\
+mmPerim			& Measurement perimeter	& \mmPerim		& in		\\
+mmSpeed			& Speed					& \mmSpeed		& in/s		\\
+mmDotRate		& Dots rate				& \mmDotRate	& dot/s		\\
+mmRevDots		& Revolution dots		& \mmRevDots	& dot		\\
 \hline
 \end{tabular}
 \caption{Nominal measurement data}
@@ -1681,6 +1681,8 @@ error.
 
 Finally, an opinion about the overall feeling of the device behavior will be
 given.
+
+A video was published on \emph{YouTube} \cite{youtube_ratt}.
 
 
 \paragraph{Motion detection rate}
@@ -1767,7 +1769,34 @@ to 110~{\textmu}s, which is still negligible for the purpose.
 
 
 \paragraph{Absolute tracking}
-\TODO absolute position after 10 scratches
+In order to give a coarse estimate of absolute tracking errors during normal
+operation, a \emph{scratch} test was conducted.
+
+The initial status of the device was recorded, as in \citef{fig:scratch_test_start}.
+Then, 10 scratches were done, with simple forward/backward rotations in a
+range of around 90$^\circ$ each. The final status is finally recorded, as in
+\citef{fig:scratch_test_end}.
+
+The sensor was placed at 3.00~in (7.62~cm) from the center of the wheel,
+thus reaching theoretically 37699 counts per rotations.
+
+The error between the start and the end position was 949 counts, which is an
+error of 9.06$^\circ$. This error is not small, but is still quite acceptable
+for such a long travel ($\approx$1800$^\circ$, total length of $\approx$94~in).
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/scratch_test_start.png}
+	\caption{Status before the absolute tracking test}
+	\label{fig:scratch_test_start}
+\end{figurehere}
+
+\begin{figurehere}
+	\centering
+	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/scratch_test_end.png}
+	\caption{Status after the absolute tracking test}
+	\label{fig:scratch_test_end}
+\end{figurehere}
 
 
 \paragraph{Overall feeling}
