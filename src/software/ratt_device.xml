@@ -3,26 +3,20 @@
  type="HID" vid="0xDEAD" pid="0xBEEF"
  reportsize="16">
   <page type="init">
-    <!-- Nothing to initialize -->
   </page>
   <page type="in">
-    <!-- Optical motion sensor X position -->
     <jog name="SENSOR_POS_X"
      byte="8" size="word" endian="little"
      full="50265" min="0" max="65535"/>
-    <!-- Optical motion sensor Y position -->
     <jog name="SENSOR_POS_Y"
      byte="10" size="word" endian="little"
      full="50265" min="0" max="65535"/>
-    <!-- Incremental encoder position -->
     <jog name="INCENC_POS"
      byte="14" size="word" endian="little"
      full="4000" min="0" max="65535"/>
   </page>
   <page type="out">
-    <!-- No outputs -->
   </page>
   <page type="exit">
-    <!-- Nothing to deinitialize -->
   </page>
 </device>

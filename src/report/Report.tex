@@ -1472,27 +1472,21 @@ for example as {\ttfamily\small ratt{\_}device.xml}.
  type="HID" vid="0xDEAD" pid="0xBEEF"
  reportsize="16">
   <page type="init">
-    <!-- Nothing to initialize -->
   </page>
   <page type="in">
-    <!-- Optical motion sensor X position -->
     <jog name="SENSOR_POS_X"
      byte="8" size="word" endian="little"
      full="50265" min="0" max="65535"/>
-    <!-- Optical motion sensor Y position -->
     <jog name="SENSOR_POS_Y"
      byte="10" size="word" endian="little"
      full="50265" min="0" max="65535"/>
-    <!-- Incremental encoder position -->
     <jog name="INCENC_POS"
      byte="14" size="word" endian="little"
      full="4000" min="0" max="65535"/>
   </page>
   <page type="out">
-    <!-- No outputs -->
   </page>
   <page type="exit">
-    <!-- Nothing to deinitialize -->
   </page>
 </device>
 \end{lstlisting}
@@ -1532,11 +1526,8 @@ for example as {\ttfamily\small ratt{\_}mapping.xml}.
 <?xml version="1.0" encoding="UTF-8"?>
 <mapper device="RATT" author="Andrea Zoppi"
  description="RATT" version="704" date="10/08/2012">
-  <!-- Use the sensor X position as a jogwheel -->
   <map value="SENSOR_POS_X" action="jogwheel"/>
-  <!-- Ignore the sensor Y position -->
   <map value="SENSOR_POS_Y" action="nothing"/>
-  <!-- Ignore the incremental encoder input -->
   <map value="INCENC_POS" action="nothing"/>
 </mapper>
 \end{lstlisting}

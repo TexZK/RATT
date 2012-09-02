@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mapper device="RATT" author="Andrea Zoppi"
  description="RATT" version="704" date="10/08/2012">
-  <!-- Use the sensor X position as a jogwheel -->
   <map value="SENSOR_POS_X" action="jogwheel"/>
-  <!-- Ignore the sensor Y position -->
   <map value="SENSOR_POS_Y" action="nothing"/>
-  <!-- Ignore the incremental encoder input -->
   <map value="INCENC_POS" action="nothing"/>
 </mapper>
