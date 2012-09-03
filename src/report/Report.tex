@@ -135,14 +135,14 @@
 \begin{mysubtitle}Relative turntable motion detection through mouse sensors\end{mysubtitle}
 % Please do not insert a line here
 \\
-Zoppi Andrea\\
-Matr. 765662, (andrea.zoppi@mail.polimi.it)\\
+Andrea Zoppi\\
+Matr. 765662 (andrea.zoppi@mail.polimi.it)\\
 \begin{flushright}
 \emph{Report for the master course of Embedded Systems}\\
 \emph{Reviser: PhD. Patrick Bellasi (bellasi@elet.polimi.it)}
 \end{flushright}
 
-Received: <MONTH>, <DAY> 2012\\
+Received: September, 4th 2012\\
 \hspace{10ex}
 
 \begin{myabstract} Abstract \end{myabstract}
@@ -171,8 +171,8 @@ and more features, to match those of a commercial DJ controller.
 
 In the latest years, the market of digital-DJ related products has grown
 considerably. By the way, cheap digital turntable emulation is still tricky,
-because the design of a cheap yet accurate jogwheel is still a challenge even
-with the technology available today.
+because the design of a cheap yet accurate jogwheel is a challenge even with
+the technology available nowadays.
 
 It is true that state-of-the-art processing units are very fast, but there are
 still issues such as those related to protocol latency, precise and fast plate
@@ -182,14 +182,14 @@ These issues are not a big problem for the average DJ, but they arise when
 requiring a higher performance (e.g. \emph{scratch}) while keeping the costs
 low.
 
-The proposed approach is based on COTS components called \emph{optical motion/mouse
-sensors}, which can provide a very good accuracy when detecting small local
-motions, which is a behavior difficult to obtain with cheap encoders.
+The proposed approach is based on COTS components called \emph{optical mouse
+motion sensors}, which can provide a very good accuracy when detecting small
+local motions, which is a behavior difficult to obtain with cheap encoders.
 
-A simplified verison of the proposal was developed on a crude prototype, just
-to check if it is worth at least for the average DJ -- the most demanding ones
-do not care about the price of products, and still rely on timecoded vinyl
-emulation even tough high CPR optical encoders are available at the same
+A simplified verison of the proposal was developed with a crude prototype,
+just to check if it is worth at least for the average DJ -- the most demanding
+ones do not care about the price of products, and still rely on timecoded
+vinyl emulation even tough high CPR optical encoders are available at the same
 overall price.
 
 
@@ -223,11 +223,11 @@ digital devices used by the DJ to control the user application. Some examples
 of commercial controllers with jogwheels can be found in \cite{eks_op}
 \cite{pioneer_ddjs1} \cite{vestax_vci400}.
 
-Common jogwheels have a resolution (\emph{CPR, Counts Per Revolution}) in the
-order of tens, thus are not suitable for \emph{scratching}, and are usually
-addressed only in coarse track navigation, or \emph{bending}.
+Common jogwheels have a resolution (\emph{CPR}, \emph{Counts Per Revolution})
+in the order of tens, thus are not suitable for \emph{scratching}, and are
+usually addressed only in coarse track navigation, or \emph{bending}.
 Even a resolution in the order of some hundreds cannot be enough for scratch
-or precise motion tracking. For example, with a 720 CPR encoder it is possible
+or precise motion tracking. For example, with a 720~CPR encoder it is possible
 to detect only motions of half degrees, that for a 12 inches wide wheel is
 still low -- keep in mind that a vinyl spins at roughly 150 degrees per second,
 and good sampling should require at least 1500 samples per second to track it
@@ -244,8 +244,8 @@ A special kind of input device focused throughout this work is the optical
 encoder, which will be described in depth later.
 
 Commonly, there is a also set of output devices -- LEDs, displays -- so that
-the user's sight should not always keep switching switched between the computer
-monitor and the controller to see what is going on.
+the user's sight should not always keep looking at both the computer monitor
+and the controller to see what is going on.
 
 All these devices are managed by a MCU, which detects their changes, and
 generates meaningful messages to be sent to the DJ software, or receives
@@ -349,9 +349,9 @@ the motion (or even the absolute angle) is sent to the user software.
 \subsection{Timecoded media turntable emulation}
 
 An alternative way to emulate a turntable in software is to use a
-\emph{timecoded audio track}, which is an audio stream coded so that the
+\emph{timecoded audio track}, which is an audio stream encoded so that the
 software can read the track position just by decoding the incoming audio
-stream.
+stream itself.
 
 This technique makes it possible to use existing turntables or CD players to
 control the user software, which in turn will emulate the turntable behavior.
@@ -367,20 +367,20 @@ software cannot always understand the code thus producing jittered or jerky
 behavior.
 
 In addition, turntable needles must follow tracks almost perfectly, or the
-timecoded signal would degradate at the ADC side, especially the phase
-component which is necessary for the purpose, but almost ignored in audio
-players since the human ear has poor phase sensitivity.
+timecoded signal would degradate at the ADC side. In particular, the phase
+component is necessary for the purpose, but is almost ignored by audio players
+because the human ear has poor phase sensitivity.
 
 Another bad point relates to the overall performance. It is true that with
 this technique the performance is almost the same of a real vinyl, but the
-need of an intermiate sound card, which in turn is often connected through the
-USB bus, just makes low latencies hard to achieve, unless the host computer is
-powerful and well optimised to reach soft-realtime requirements.
+need of an intermediate USB sound card  just makes low latencies hard to
+achieve, unless the host computer is powerful and well optimised to reach
+soft-realtime requirements.
 
-With a timecoded media is only possible to control the track position (phase)
-and pitch (frequency), whihc is good for plain turntable emulation, but it is
-impossible to use some features -- effects, precise loops, track preview, etc.
--- of some professional CD players.
+With a timecoded media it is only possible to control the track position
+(phase) and pitch (frequency), which is good for plain turntable emulation,
+but it is impossible to use some features -- effects, precise loops, track
+preview, etc. -- of some professional CD players.
 
 When the disc spins at low speed, the intrinsic high-pass filter of needles
 and soundcards will fade the signal, and it can become difficult to find the
@@ -405,13 +405,13 @@ signal to the CPU, thanks to the fast system bus (PCI or PCI-E).
 
 However, as internal soundacards are almost always designed for desktop
 computers, while notebook computers are much easier to carry, the choice of an
-external soundcard is the very most common.
+external soundcard is the most common.
 
-External soundcards are mostly connected through an USB bus, but some
-professional FireWire soundcards are still on the market. The USB bus has the
-drawback of having a fixed minimum latency of 1~ms for isochronous signals,
-which increases latencies even more, while FireWire is faster -- good internal
-soundcards have a negligible latency.
+External soundcards are usually connected through an USB bus, but some
+professional \emph{FireWire} (\emph{IEEE 1394}) soundcards are still on the
+market. The USB bus has the drawback of having a fixed minimum latency of 1~ms
+for isochronous signals, which increases latencies even more, while FireWire
+is faster -- good internal soundcards have a negligible latency.
 
 \begin{figurehere}
 	\centering
@@ -422,17 +422,17 @@ soundcards have a negligible latency.
 
 
 \paragraph{Signal pattern}
-The timecoded signal is printed on the source media -- vinyl, CD -- with
+The timecoded signal is printed on the source media (vinyl, CD) with
 patterns recognized by the specific user software. In general, the timecoded
 signal is composed by a left sine and right cosine signals at a constant
 frequency, usually in the range of 1~kHz to 3~kHz. The amplitude of each
-half-wave of the same sign is slightly modulated with a proprietary digital
-code, which represents the absolute position inside the whole timecoded track.
+positive half-wave is slightly modulated with a proprietary digital code,
+which represents the absolute position inside the whole timecoded track.
 
 In \citef{fig:serato_timecode_slice} it is possible to see a slice of the
-\emph{Serato Scratch Live} \cite{rane_ssl} timecode signal (aka
-\emph{noisemap}), with some amplitude-modulated bits at the sine wave top
-peaks.
+\emph{Serato Scratch Live} \cite{rane_ssl} timecode signal (named
+\emph{noisemap}), with some amplitude-modulated bits at the top peaks of
+the sine waves.
 
 \begin{figurehere}
 	\centering
@@ -441,11 +441,11 @@ peaks.
 	\label{fig:serato_timecode_slice}
 \end{figurehere}
 
-To read the code from a timecoded stream, it is sufficient to trigger a
-positive-slope zero-crossing on one channel, and read the amplitude on the
-other channel (peak), then convert the amplitude into a bit of the code
+To read the code from a timecoded stream it is sufficient to trigger a
+positive-slope zero-crossing on one channel, then the amplitude on the other
+channel (peak), and finally convert the amplitude into a bit of the code
 word. If the absolute position is not needed, instead of the whole code it
-is possible to interpret the sine/cosine simply as a quadrature control
+is possible to interpret the sine/cosine pair simply as a quadrature control
 signal, for relative motions.
 
 The code is designed to be decoded in both directions, so that the user can
@@ -462,7 +462,7 @@ sufficient to get the adjacent code, with only 1~ms delay at 1~kHz.
 
 Some problems arise when the turntable is turning slowly. Due to the bandpass
 behavior of the needle and active input/output stages of the whole signal
-chain, slow transitions have a small amplitude. As it is well known in
+chain, slow transitions have a small amplitude. As it is well known in the
 communication technology field, slow and small transitions make zero-crossings
 much harder to be tracked correctly, thus generating jitter or missing codes.
 This is where optical motion sensors show their best performance instead.
@@ -478,7 +478,7 @@ This is where optical motion sensors show their best performance instead.
 
 \paragraph{Cons}
 \begin{itemize*}
-	\item Needs high quality components in the signal chain
+	\item Need of a high quality signal chain
 	\item Expensive for a novice
 	\item Signal subsceptible to corruption
 	\item Bad tracking at low speeds
@@ -500,8 +500,8 @@ Their main strength is the achievement of very high resolution comparisons, in
 the order of hundreds, if not thousands, \emph{Dots Per Inch} (\emph{DPI}), at
 a very low price -- less than a dollar for average sensors, or a few dollars
 for high performance (\emph{gaming}) mouse sensors. Also, the maximum
-detectable speed is in the order of some tens inches per second, compatible
-with human and motion.
+detectable speed is in the order of some tens of inches per second, compatible
+with human hand motions.
 
 As a drawback, the absolute accuracy is poor, as they are designed to capture
 the slow relative movements of a screen cursor. It can be repositioned by
@@ -514,7 +514,7 @@ are for office or home use, and provide average accuracy and speed. Other
 sensors are designed for wireless devices, and can provide automatic switching
 between average (or high) and low performance, based on the amount of
 interaction of the user in the last time window. The most advanced sensors are
-for those professionals or enthusiasts who need very high speed and precise
+for those professionals or enthusiasts who need a very high speed yet accurate
 motion detection, for example for pro-gamers.
 
 
@@ -540,7 +540,7 @@ illuminates the small surface to be captured.
 \paragraph{Lens}
 A lens focuses the surface to get the best resolution at detector side.
 The lens also increases the effectiveness of the light source on the surface,
-when correctly focused on the surface beneath through a mirror.
+when correctly focused through a mirror.
 
 Usually the lens is placed at a few millimiters from the surface, and
 it is quite important to keep the nominal distance for the best perofrmance.
@@ -548,10 +548,10 @@ it is quite important to keep the nominal distance for the best perofrmance.
 
 \paragraph{CCD}
 The actual light sensor is a common \emph{Charge-Coupled Device}
-(\emph{CCD}). It is designed to be very fast, to achieve a high frame rate.
-It is also sensitive to a very small light spectrum, e.g. the infrared one,
-so that environmental light noise is rejected, and image artifacts are acquired
-better.
+(\emph{CCD}). It is designed to be very fast, to reach very high frame rates,
+in the order of some thousands. It is also sensitive to a very small light
+spectrum, typically the infrared one, so that the environmental light noise is
+rejected, and image artifacts are acquired better.
 
 There are also some considerations based on the light type. LED-based devices
 work well with all the bumpy surfaces, even the dark ones, but cannot work
@@ -571,7 +571,7 @@ from the previously acquired frame. The DSP must be fast enough to reach the
 \paragraph{Controller}
 Finally, the controller accumulates the DSP deltas. Some configuration
 parameters and device properties, along with deltas, can be accessed through
-an interface to an external controller.
+an interface to an external control unit.
 
 
 %-----------------------------------------------------------------------------
@@ -587,7 +587,7 @@ selection, flow control, and so on.
 Sensors with only quadrature wave outputs (see \citef{fig:quad_wave}) are now
 outdated, because they do not offer any advanced features, and require an
 interrupt-driven counter at controller side. On the other hand, quadrature
-outputs can be used with any device which natively accepts such signals.
+outputs can be used with any devices which natively accept such signals.
 
 
 \paragraph{SSP}
@@ -655,8 +655,8 @@ digital music equipment nowadays.
 Common output and input circuits can be seen respectively in \citef{fig:midi_out}
 and \citef{fig:midi_in}. Basically, it is a standard serial point-to-point
 connection based on a common UART powered at TTL levels. Data transmitted by
-the UART is converted into current bursts, which light the optocoupler at the
-receiver. The optocoupler provides galvanic isolation, so that no
+the UART is converted into current bursts, which feed the optocoupler light of
+the receiver. The optocoupler provides galvanic isolation, so that no
 \emph{current loops} can create audible noise in the target device, which used
 to be a synthesizer in the first place.
 
@@ -665,15 +665,15 @@ devices. This is enough for common synthesizers, but not to drive an entire
 production studio.
 
 The event-based nature of the protocol makes it suitable for most of the
-situations, but for events which could be accumulated, or state streaming.
-For example, jogwheels could generate way too many motion delta events, usually
-as Control Change messages, which would easily flood the entire bus. A packed
-streaming state would be better suited in such cases.
-Also, when transmitting to a host computer, its operating system (often
-time-shared), software buffers can saturate while processing too many events
-at a time, or complex sound textures.
+situations, except for events which could be accumulated, or for state
+streaming. For example, jogwheels could generate way too many motion delta
+events, usually as Control Change messages, which would easily flood the
+entire bus. A packed streaming state would be better suited in such cases.
+Also, when transmitting to a host computer, software buffers of its operating
+system (often time-shared) can saturate while processing too many events at a
+time, or complex sound textures.
 
-The protocol does not support any kind of flow control. Massages can be lost,
+The protocol does not support any kind of flow control. Messages can be lost,
 partially received (ignored), contain errors, without being corrected or asked
 for retransmission. Also, the relatively slow baud rate can generate small
 delays between sound generation/control events, which can be detected by
@@ -682,14 +682,14 @@ the human brain, which is very sensitive to audio timing.
 \begin{figurehere}
 	\centering
 	\includegraphics[keepaspectratio=true,width=0.6\columnwidth]{images/midi_out.pdf}
-	\caption{MIDI output circuit, UART sends \emph{OUT} signal}
+	\caption{MIDI output circuit, UART sends the \emph{OUT} signal}
 	\label{fig:midi_out}
 \end{figurehere}
 
 \begin{figurehere}
 	\centering
 	\includegraphics[keepaspectratio=true,width=\columnwidth]{images/midi_in.pdf}
-	\caption{MIDI input circuit, UART receives \emph{IN} signal}
+	\caption{MIDI input circuit, UART receives the \emph{IN} signal}
 	\label{fig:midi_in}
 \end{figurehere}
 
@@ -807,14 +807,14 @@ The protocol supports \emph{bulk} USB transfers. They add flow control to bare
 USB streams, which in order adds flow control to the encapsulated MIDI stream.
 Bulk packets have the lowest priority over the USB bus, which could introduce
 delays when the bus is saturated by \emph{interrupt} and \emph{isochronous}
-endpoint transfers. Also, packet handshaking and retransmission may add
-some delay too.
+endpoint transfers.
 
 
 \paragraph{Pros}
 \begin{itemize*}
 	\item USB is \emph{de-facto} standard for consumer electronics
 	\item Much higher bandwidth than plain MIDI
+	\item Flow control of USB bulk transfers
 	\item Up to 16 virtual cables
 	\item Multi-purpose device through a single USB cable
 \end{itemize*}
@@ -920,7 +920,7 @@ the market -- obviously in the set of those affordable for a DJ, not the
 state-of-the-art encoders for hi-end industrial machineries.
 
 In the following, a simplified prototype will be presented. A low-end MCU and
-a standard COTS mouse sensor were chosen, just to see if it is possible to
+a standard COTS mouse sensor were chosen, just to check if it is possible to
 achieve good performance with a simple circuit.
 
 
@@ -971,12 +971,14 @@ The USB bus is directly connected to the MCU, which has an internal
 The sensor board in \citef{fig:sensor_photo} simply hosts the mouse sensor,
 the surface illumination LED, and the lens. The sensor is an \emph{ADNS-2080}
 \cite{avago_adns2080} by \emph{Avago}. It is a sensor aimed at office users,
-with average performance and low cost. As for the MCU, higher performance
+with average performance and low cost. Like for the MCU, higher performance
 modules are on the market, but the challenge of this proposal was to find a
-basic average solution, which can be improved with further research. Briefly,
-the sensor can reach an interesting resolution of up to 2000~DPI, and motion
-speed up to 30~in/s (76.2~cm/s). There is no guarantee of constant latencies,
-because the clock speed is variable.
+basic average solution, which can be improved with further research.
+
+Briefly, the sensor can reach an interesting resolution of up to 2000~DPI, and
+motion speed up to 30~in/s (76.2~cm/s). There is no guarantee of constant
+latencies, because the clock speed is variable, but the datasheet reports an
+average delay of 4~ms.
 
 \begin{figurehere}
 	\centering
@@ -989,9 +991,9 @@ because the clock speed is variable.
 \paragraph{Timecode preamp board}
 An optional board, seen in \citef{fig:preamp_photo}, was designed to properly
 amplify a \emph{Line} -- no \emph{Phono}! -- timecode signal so that it can be
-recognized by comparators of the controller board.
+recognized by two comparators of the controller board.
 
-Each audio channel can be amplified in amplitude, by controlling the inverting
+Each audio channel can be regulated in amplitude, by controlling the inverting
 gain of the opamp with a potentiometer. A spare opamp generates the $V_{DD}/2$
 voltage reference for single-supply conditioning.
 
@@ -1036,12 +1038,12 @@ HID control.
 
 The bootloader can be called by plugging RATT into the USB host socket, while
 pressing the user button. The developer can then use the HID bootloader
-software provided by Microchip to download the complied HEX executable to the
+software provided by Microchip to download the compiled HEX executable to the
 program memory of the MCU.
 
 
 \paragraph{HID/USB module}
-The HID/USB module is devloped over the \emph{HID Simple Custom Demo}
+The HID/USB module is developed over the \emph{HID Simple Custom Demo}
 provided with the \emph{Microchip Application Libraries} \cite{microchip_mal},
 using the \emph{USB Framework} version \emph{2.9d}. The code itself is almost
 the same, so please refer to the documentation delivered by Microchip for more
@@ -1054,8 +1056,9 @@ described briefly.
 
 \citet{tab:usb_device_desc} shows the \emph{Device} descriptor. It tells the
 host it is a standard USB 2.0 device, with its vendor and product identifiers
-(dummy in this case), with only one configuration. It also indicates there
-are a manufacturer and product name strings to be received and indexed later.
+(dummy in this case), with only one configuration. It also indicates that
+there are a manufacturer and product name strings to be received and indexed
+later.
 
 \begin{tablehere}
 \centering \footnotesize
@@ -1345,8 +1348,8 @@ which resets it.
 The initialization routine simply configures the voltage reference DAC, the
 two comparators, and interrupts.
 
-There is no background service, since all the processing is triggered by
-interrupt events.
+The background service simply synchronizes the cached data, for the
+collection of deltas by the main module.
 
 
 \paragraph{Sensor module}
@@ -1359,9 +1362,9 @@ they are executed in the background service (main loop) of the firmware
 architecture.
 
 An initialization routine configures the SPI port, then the mouse sensor. Its
-setup will allow for top-performance (no low-power states), 12-bits deltas
-reporting, and active-low level-sensitive motion interrupt generation.
-This routine will also check for proper communication with the daughter board.
+setup will allow for 12-bits deltas reporting, and active-low level-sensitive
+motion interrupt generation. This routine will also check for proper
+communication with the daughter board.
 
 The high-priority motion interrupt is generated by the sensor whenever motion
 is detected. This interrupt is cached by raising a firmware flag. The high
@@ -1370,7 +1373,7 @@ priority level will minimize CPU cycles for this very simply operation.
 The background service polls for the interrupt flag, and starts a \emph{motion
 burst} read, which collects motion deltas over the serial port by minimizing
 dead times. Deltas are accumulated on global counters, which will be gathered
-by the HID report generator and thuse reset.
+by the HID report generator and thus reset.
 
 
 \paragraph{Main module}
@@ -1439,7 +1442,7 @@ Virtual~DJ, in this case for a HID device \cite{vdj_hiddef} as seen in
 identifier, and the HID report size is specified. The device supports only one
 deck at a time.
 
-The device description is divided in four pages. The \emph{init} and
+The device description is divided into four pages. The \emph{init} and
 \emph{exit} pages should contain information for both initialization and
 deinitialization respectively, and are ignored. The \emph{out} page is ignored
 too, because the device does not receive any meaningful messages from the
@@ -1448,8 +1451,8 @@ host software.
 Instead, the \emph{in} page contains the description of the three motion
 sources. They are all interpreted as jogwheels, with full 16-bit unsigned
 counters which keep track of the accumulated position. The \emph{full}
-attribute tells the jogwheel CPR, and needs to be calibrated with geometrical
-parameters of the wheel itself.
+attribute tells the jogwheel CPR, and needs to be calibrated with the
+geometrical parameters of the wheel itself, as seen later.
 
 On Windows, the XML text must be saved in:\\
 {\ttfamily\small {\%}UserProfile{\%}/Documents/VirtualDJ/Devices/}\\
@@ -1769,11 +1772,12 @@ range of around 90$^\circ$ each. The final status is finally recorded, as in
 \citef{fig:scratch_test_end}.
 
 The sensor was placed at 3.00~in (7.62~cm) from the center of the wheel,
-thus reaching theoretically 37699 counts per rotations.
+thus reaching theoretically 37699 counts per rotation.
 
 The error between the start and the end position was 949 counts, which is an
 error of 9.06$^\circ$. This error is not small, but is still quite acceptable
-for such a long travel ($\approx$1800$^\circ$, total length of $\approx$94~in).
+for such a long travel ($\approx$1800$^\circ$, total length of $\approx$94~in),
+keeping in mind that mouse senors are designed only for relative motions.
 
 \begin{figurehere}
 	\centering
@@ -1797,7 +1801,7 @@ with ease, even though very fast scratches feel a bit odd.
 
 Anyway, when trying to reposition the virtual needle the precision is very
 high, altough the absolute tracking of the sensor alone is not as accurate as
-with the help of an incremental encoder. Such a good precision is comes handy
+with the help of an incremental encoder. Such a good precision comes handy
 also when using the jogwheel to push/pull the virtual vinyl -- usually called
 \emph{nudge} operations.
 
@@ -1885,8 +1889,8 @@ MCU interrupt signals (edge-triggered, both signs).
 Instead, motion sensors must be connected to the appropriate digital bus
 (SSP, SPI), and additional pins to suitable inputs.
 
-Jogwheels should also provide touch-sensitivity, so that a digital signal
-(see above) can be generated when the user puts fingers on the wheel.
+Jogwheels should also provide \emph{touch sensitivity}, so that a digital
+signal (see above) can be generated when the user puts fingers on the wheel.
 There are different ways to provide touch sensitivity, but will not be
 covered in this document.
 
@@ -2025,7 +2029,7 @@ refresh periodically some hardware peripherals inside a task, to have light
 correctly lit. This task could be given a low priority, because delaying the
 deadline for a few milliseconds is not that critical. Anyway, the refresh rate
 should be high enough to give a smooth transition between light states, around
-60~Hz ($\approx$ 16~ms) for the best feeling and user reaction time.
+60~Hz ($\approx$16~ms) for the best feeling and user reaction time.
 
 The Controller task tells the state of lights to the Lights task through a
 double-buffered record.
@@ -2178,7 +2182,7 @@ kind of jogwheel presented in the simplified approach, but also peripherals of
 various nature. The advanced device needs a more powerful MCU to handle all
 those peripherals. In order to make firmware programming more flexible and
 easier to manage, a RTOS should be chosen. Thanks to this advanced approach,
-it is possible to develope a whole commercial DJ controller, with cheap yet
+it is possible to develop a whole commercial DJ controller, with cheap yet
 accurate jogwheels.
 
 
